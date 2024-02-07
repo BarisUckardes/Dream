@@ -6,6 +6,7 @@
 
 namespace Dream
 {
+	class Monitor;
 	class RUNTIME_API Window final
 	{
 	private:
@@ -24,19 +25,19 @@ namespace Dream
 		}
 		FORCEINLINE unsigned int GetWidth() const noexcept
 		{
-			return mWidth;
+			return mSize[0];
 		}
 		FORCEINLINE unsigned int GetHeight() const noexcept
 		{
-			return mHeight;
+			return mSize[1];
 		}
 		FORCEINLINE int GetPositionX() const noexcept
 		{
-			return mX;
+			return mPosition[0];
 		}
 		FORCEINLINE int GetPositionY() const noexcept
 		{
-			return mY;
+			return mPosition[1];
 		}
 		FORCEINLINE WindowMode GetMode() const noexcept
 		{
@@ -62,22 +63,26 @@ namespace Dream
 		void SetTitle(const std::string& title);
 		void SetSize(const unsigned int width, const unsigned int height);
 		void SetPosition(const int x, const int y);
-		void SetMode(const WindowMode mode);
 		void Show();
 		void Hide();
 		void PollMessages();
-	
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mode"></param>
+		/// <param name="pTargetFullscreenMonitor">Must be not nullptr when requesting a transition to fullscreen</param>
+		void SetMode(const WindowMode mode,Monitor* pTargetFullscreenMonitor);
 	private:
 		void DispatchEvent(const WindowEventData& event);
 		void OnClose();
 
 	private:
 		std::vector<WindowEventData> mBufferedEvents;
+		Monitor* mMonitor;
 		std::string mTitle;
-		unsigned int mWidth;
-		unsigned int mHeight;
-		int mX;
-		int mY;
+		unsigned int mSize[2];
+		int mPosition[2];
 		WindowMode mMode;
 		HWND mWindowHandle;
 		HDC mContextHandle;

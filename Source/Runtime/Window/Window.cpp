@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <Runtime/Core/Core.h>
 #include <Runtime/Input/Win32Keys.h>
+#include <Runtime/Monitor/Monitor.h>
 
 namespace Dream
 {
@@ -199,7 +200,7 @@ namespace Dream
 		}
 
 	}
-	Window::Window(const WindowCreateDesc& desc)
+	Window::Window(const WindowCreateDesc& desc) : mMonitor(nullptr)
 	{
 		constexpr const char WINDOW_CLASS_NAME[] = "DreamWin32WindowName";
 
@@ -227,7 +228,7 @@ namespace Dream
 			WINDOW_CLASS_NAME,
 			desc.Title.c_str(),
 			WS_OVERLAPPEDWINDOW | WS_EX_ACCEPTFILES,
-			desc.X,desc.Y,desc.Width,desc.Height,
+			desc.Position[0], desc.Position[1], desc.Size[0], desc.Size[1],
 			NULL,NULL,processHandle,
 			this
 		);
@@ -241,11 +242,11 @@ namespace Dream
 
 		//Set properties
 		mTitle = desc.Title;
-		mWidth = desc.Width;
-		mHeight = desc.Height;
-		mX = desc.X;
-		mY = desc.Y;
-		mMode = desc.Mode;
+		mSize[0] = desc.Size[0];
+		mSize[1] = desc.Size[1];
+		mPosition[0] = desc.Position[0];
+		mPosition[1] = desc.Position[1];
+		mMode = WindowMode::Windowed;
 		mVisible = false;
 		mAlive = true;
 		mWindowHandle = windowHandle;
@@ -266,19 +267,46 @@ namespace Dream
 	void Window::SetSize(const unsigned int width, const unsigned int height)
 	{
 		SetWindowPos(mWindowHandle, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_SHOWWINDOW);
-		mWidth = width;
-		mHeight = height;
+		mSize[0] = width;
+		mSize[1] = height;
 	}
 	void Window::SetPosition(const int x, const int y)
 	{
 		SetWindowPos(mWindowHandle, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_SHOWWINDOW);
-		mX = x;
-		mY = y;
+		mPosition[0] = x;
+		mPosition[1] = y;
 	}
-	void Window::SetMode(const WindowMode mode)
+	void Window::SetMode(const WindowMode mode, Monitor* pTargetFullscreenMonitor)
 	{
-		//TODO
+		//Do nothing if states are same
+		if (mode == mMode)
+			return;
+
+		//Do nothing if the target monitor is empty while the requested mode is fullscreen
+		if (mode == WindowMode::Fulscreen && pTargetFullscreenMonitor == nullptr)
+			return;
+
+		//Does it transition from fullscreen->windowed
+		if (mMode == WindowMode::Fulscreen && mode == WindowMode::Windowed)
+		{
+			SetWindowLongPtr(mWindowHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+			SetSize(mSize[0],mSize[1]);
+			SetPosition(mPosition[0],mPosition[1]);
+		}
+		//Does it transition from windowed->fulscreen
+		else if (mMode == WindowMode::Windowed && mode == WindowMode::Fulscreen)
+		{
+			SetWindowLongPtr(mWindowHandle, GWL_STYLE, WS_POPUP);
+			SetSize(pTargetFullscreenMonitor->GetWidth(), pTargetFullscreenMonitor->GetHeight());
+			SetPosition(pTargetFullscreenMonitor->GetX(), pTargetFullscreenMonitor->GetY());
+		}
+		else
+		{
+			return;
+		}
+
 		mMode = mode;
+		mMonitor = mode == WindowMode::Fulscreen ? pTargetFullscreenMonitor: nullptr;
 	}
 	void Window::Show()
 	{
@@ -301,6 +329,7 @@ namespace Dream
 
 		mBufferedEvents.clear();
 	}
+	
 	void Window::DispatchEvent(const WindowEventData& event)
 	{
 		mBufferedEvents.push_back(event);

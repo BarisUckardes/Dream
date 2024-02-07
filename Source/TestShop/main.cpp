@@ -1,14 +1,14 @@
 #include <Runtime/Window/Window.h>
+#include <Runtime/Monitor/Monitor.h>
 
 int main(const unsigned int count, const char** ppArguments)
 {
 	Dream::WindowCreateDesc windowDesc = {};
 	windowDesc.Title = "Dream Vulkan Renderer Layer";
-	windowDesc.Width = 1024;
-	windowDesc.Height = 1024;
-	windowDesc.X = 100;
-	windowDesc.Y = 100;
-	windowDesc.Mode = Dream::WindowMode::Windowed;
+	windowDesc.Size[0] = 1024;
+	windowDesc.Size[1] = 1024;
+	windowDesc.Position[0] = 100;
+	windowDesc.Position[1] = 100;
 
 	Dream::Window* pWindow = new Dream::Window(windowDesc);
 
