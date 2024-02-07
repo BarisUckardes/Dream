@@ -1,21 +1,29 @@
-﻿# CMakeList.txt : CMake project for Dream, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.26)
 
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+# ------------------ PROJECT NAME ------------------
+project("Dream")
+# --------------------------------------------------
+
+# ------------------ CXX FLAGS ---------------------
+if(POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW) 
 endif()
 
-project ("Dream")
+set(CMAKE_CXX_STANDARD 20)
+# --------------------------------------------------
 
-# Add source to this project's executable.
-add_executable (Dream "Dream.cpp" "Dream.h")
+# --------------- COMPILER VERSIONS ----------------
+    message(STATUS "Platform is Windows, Using MSVC Compiler Version ${MSVC_VERSION}")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Platform is Unix, Using Clang Compiler Version ${CMAKE_CXX_COMPILER_VERSION}")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Platform is Unix, Using GCC Compiler Version ${CMAKE_CXX_COMPILER_VERSION}")
+else()
+    message(FATAL_ERROR "[CMAKE ERROR] -- UNSUPPORTED COMPILER. PLEASE CHANGE YOUR COMPILER.")
+endif ()
+# --------------------------------------------------
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Dream PROPERTY CXX_STANDARD 20)
-endif()
-
-# TODO: Add tests and install targets if needed.
+# ------------------ SUBDIRECTORIES ----------------
+add_subdirectory("Source/Runtime")
+add_subdirectory("Source/TestShop")

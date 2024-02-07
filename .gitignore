@@ -361,3 +361,30 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+Testing
+Makefile
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+Build
+Build/Debug/*
+Build/Release/*
+Build/RelWithDebInfo/*
+Build/MinSizeRel/*
+.vs
+.idea
+out
+bin
+obj
+Tools/ReflectionParserTool/Build
+Tools/ReflectionParserTool/Intermediate
+Tools/ReflectionParserTool/obj
+Tools/ReflectionParserTool/out
+Tools/ReflectionParserTool/bin
+External
+*.reflected.h
+ReflectionManifest.h
+# Every developer needs to generate their own reflected headers.
+##**/*.reflected.h
