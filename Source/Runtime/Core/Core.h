@@ -12,3 +12,13 @@
 #define SECONDS_TO_MS(seconds) seconds * 1000.0f
 #define SECONDS_TO_NANO(seconds) seconds * 1000000000.0f
 #define MS_TO_NANO(ms) ms * 1000000.0f
+#define uint64_max 0xFFFFFFFFFFFFFFFF
+#define GENERATE_FLAGS(flagType,dataType)\
+	FORCEINLINE static flagType operator |(const flagType a, const flagType b)\
+	{\
+		return  (flagType)((dataType)a | (dataType)b);\
+	}\
+	FORCEINLINE static bool operator &(const flagType a, const flagType b)\
+	{\
+		return ((dataType)a & (dataType)b);\
+	}

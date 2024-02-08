@@ -1,5 +1,5 @@
 #pragma once
-#include <Runtime/Window/WindowCreateDesc.h>
+#include <Runtime/Window/WindowDesc.h>
 #include <Runtime/Window/WindowEventData.h>
 #include <Windows.h>
 #include <vector>
@@ -12,7 +12,7 @@ namespace Dream
 	private:
 		static LRESULT CALLBACK Win32WindowMessageProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	public:
-		Window(const WindowCreateDesc& desc);
+		Window(const WindowDesc& desc);
 		~Window();
 
 		FORCEINLINE const std::vector<WindowEventData>& GetBufferedEvents() const noexcept

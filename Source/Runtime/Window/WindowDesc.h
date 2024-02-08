@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-	struct RUNTIME_API WindowCreateDesc
+	struct RUNTIME_API WindowDesc
 	{
 		std::string Title;
 		unsigned int Size[2];

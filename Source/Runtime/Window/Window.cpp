@@ -200,7 +200,7 @@ namespace Dream
 		}
 
 	}
-	Window::Window(const WindowCreateDesc& desc) : mMonitor(nullptr)
+	Window::Window(const WindowDesc& desc) : mMonitor(nullptr)
 	{
 		constexpr const char WINDOW_CLASS_NAME[] = "DreamWin32WindowName";
 
