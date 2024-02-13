@@ -71,6 +71,32 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
 endif ()
 # ------------------------------------------------------------
 
+# ------------------ PLATFORM DEFINITIONS --------------------
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_WINDOWS=1)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_LINUX=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_MACOS=0)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND PLATFORM_ID STREQUAL "Linux")
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_WINDOWS=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_LINUX=1)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_MACOS=0)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND PLATFORM_ID STREQUAL "Linux")
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_WINDOWS=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_LINUX=1)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_MACOS=0)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND PLATFORM_ID STREQUAL "Darwin")
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_WINDOWS=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_LINUX=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_MACOS=1)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND PLATFORM_ID STREQUAL "Darwin")
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_WINDOWS=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_LINUX=0)
+    target_compile_definitions(Runtime PUBLIC DREAM_PLATFORM_MACOS=1)
+else()
+	pMessage(FATAL_ERROR "[CMAKE ERROR] -- UNSUPPORTED PLATFORM. PLEASE CHECK YOUR COMPILER AND PLATFORM.")
+endif()
+# ------------------------------------------------------------
+
 # -------------------- MACRO DEFINITIONS ---------------------
     target_compile_definitions(Runtime PUBLIC RUNTIME_API=__declspec\(dllexport\))
     target_compile_definitions(Runtime PUBLIC FORCEINLINE=__forceinline)

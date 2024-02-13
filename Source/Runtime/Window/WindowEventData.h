@@ -1,4 +1,5 @@
 #pragma once
+#include <Runtime/Core/Core.h>
 #include <Runtime/Window/WindowEventType.h>
 #include <Runtime/Input/KeyboardKeys.h>
 #include <Runtime/Input/MouseButtons.h>
@@ -7,12 +8,15 @@
 
 namespace Dream
 {
+	/// <summary>
+	/// Event data that PlatformWindow broadcasts
+	/// </summary>
 	struct RUNTIME_API WindowEventData
 	{
 		WindowEventType Type;
 
 		unsigned int WindowSize[2];
-		unsigned int WindowPosition[2];
+		int WindowPosition[2];
 
 		MouseButtons MouseButton;
 		int MousePosition[2];
@@ -20,6 +24,8 @@ namespace Dream
 
 		KeyboardKeys KeyboardKey;
 		char KeyboardChar;
+
+		unsigned char WindowIndex;
 
 		std::vector<std::string> DropItems;
 	};

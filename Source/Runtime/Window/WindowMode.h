@@ -1,10 +1,12 @@
 #pragma once
+#include <Runtime/Core/Core.h>
 
 namespace Dream
 {
 	enum class RUNTIME_API WindowMode : unsigned char
 	{
-		Fulscreen,
-		Windowed
+		Windowed,
+		Fullscreen,
+		Borderless
 	};
 }

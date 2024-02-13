@@ -1,5 +1,5 @@
-#pragma once
 #include <Runtime/Core/Core.h>
+#pragma once
 
 namespace Dream
 {
@@ -19,6 +19,5 @@ namespace Dream
         Macro_9,
         Macro_0
     };
-
 }
 
