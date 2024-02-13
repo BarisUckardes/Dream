@@ -41,12 +41,22 @@ namespace Dream
 		{
 			return mMode;
 		}
+		FORCEINLINE bool IsVisible() const noexcept
+		{
+			return mVisible;
+		}
+		FORCEINLINE bool IsActive() const noexcept
+		{
+			return mActive;
+		}
 
 		void SetTitle(const std::string& title);
 		void SetOffset(const int x, const int y);
 		void SetSize(const unsigned int width, const unsigned int height);
 		void SetMode(const WindowMode mode, Monitor* pTargetMonitor);
 		void PollEvents();
+		void Show();
+		void Hide();
 	protected:
 		Window(const WindowDesc& desc);
 
@@ -55,6 +65,10 @@ namespace Dream
 		virtual void SetSizeCore(const unsigned int width, const unsigned int height) = 0;
 		virtual void SetModeCore(const WindowMode mode, Monitor* pTargetMonitor) = 0;
 		virtual void PollEventsCore() = 0;
+		virtual void ShowCore() = 0;
+		virtual void HideCore() = 0;
+
+		void DispatchWindowEvent(const WindowEventData& event);
 	private:
 		std::vector<WindowEventData> mBufferedEvents;
 		std::string mTitle;
@@ -62,5 +76,7 @@ namespace Dream
 		int mSize[2];
 		WindowMode mMode;
 		Monitor* mMonitor;
+		bool mVisible;
+		bool mActive;
 	};
 }
