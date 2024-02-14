@@ -23,19 +23,19 @@ namespace Dream
 		}
 		FORCEINLINE int GetPositionX() const noexcept
 		{
-			return mOffset[0];
+			return mX;
 		}
 		FORCEINLINE int GetPositionY() const noexcept
 		{
-			return mOffset[1];
+			return mY;
 		}
 		FORCEINLINE unsigned int GetWidth() const noexcept
 		{
-			return mSize[0];
+			return mWidth;
 		}
 		FORCEINLINE unsigned int GetHeight() const noexcept
 		{
-			return mSize[1];
+			return mHeight;
 		}
 		FORCEINLINE WindowMode GetMode() const noexcept
 		{
@@ -72,8 +72,10 @@ namespace Dream
 	private:
 		std::vector<WindowEventData> mBufferedEvents;
 		std::string mTitle;
-		int mOffset[2];
-		int mSize[2];
+		int mX;
+		int mY;
+		unsigned int mWidth;
+		unsigned int mHeight;
 		WindowMode mMode;
 		Monitor* mMonitor;
 		bool mVisible;

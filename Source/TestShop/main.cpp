@@ -1,4 +1,5 @@
 #include <Runtime/Window/Window.h>
+#include <Runtime/Monitor/Monitor.h>
 
 namespace Dream
 {
@@ -7,17 +8,13 @@ namespace Dream
 		//Create window
 		WindowDesc windowDesc = {};
 		windowDesc.Title = "DreamTestShop";
-		windowDesc.Offset[0] = 100;
-		windowDesc.Offset[1] = 100;
-		windowDesc.Size[0] = 512;
-		windowDesc.Size[1] = 512;
+		windowDesc.X = 100;
+		windowDesc.Y = 100;
+		windowDesc.Width = 1024;
+		windowDesc.Height = 1024;
 
 		Window* pWindow = Window::Create(windowDesc);
 		pWindow->Show();
-
-		pWindow->SetMode(WindowMode::Fullscreen, nullptr);
-		pWindow->SetOffset(0, 0);
-		pWindow->SetSize(3840, 2160);
 
 		while (pWindow->IsActive())
 		{

@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <Runtime/Monitor/Monitor.h>
 
 #ifdef DREAM_PLATFORM_WINDOWS
 #include <Runtime/Windows/Win32Window.h>
@@ -25,20 +26,44 @@ namespace Dream
 	{
 		SetOffsetCore(x, y);
 
-		mOffset[0] = x;
-		mOffset[1] = y;
+		mX = x;
+		mY = y;
 	}
 	void Window::SetSize(const unsigned int width, const unsigned int height)
 	{
 		SetSizeCore(width, height);
 
-		mSize[0] = width;
-		mSize[1] = height;
+		mWidth = width;
+		mHeight = height;
 	}
 	void Window::SetMode(const WindowMode mode, Monitor* pTargetMonitor)
 	{
+		//Validations
+		if (mode == WindowMode::Fullscreen && pTargetMonitor == nullptr)
+		{
+			DEV_LOG("Window", "You cannot set for Fullscreen while the pTargetMonitor is nullptr!");
+			return;
+		}
+
+		//Call implementation
 		SetModeCore(mode, pTargetMonitor);
 
+		//Make position and size arrangements
+		if (mode == WindowMode::Fullscreen)
+		{
+			SetOffset(pTargetMonitor->GetPositionX(), pTargetMonitor->GetPositionY());
+			SetSize(pTargetMonitor->GetWidth(), pTargetMonitor->GetHeight());
+		}
+		else
+		{
+			Monitor* pPrimaryMonitor = Monitor::GetPrimaryMonitor();
+			DEV_ASSERT(pPrimaryMonitor != nullptr, "Monitor", "Failed to get the primary monitor!");
+
+			SetOffset(pPrimaryMonitor->GetPositionX(), pPrimaryMonitor->GetPositionY());
+			SetSize(pPrimaryMonitor->GetWidth(), pPrimaryMonitor->GetHeight());
+		}
+
+		//Set properties
 		mMode = mode;
 		mMonitor = pTargetMonitor;
 	}
@@ -60,12 +85,9 @@ namespace Dream
 
 		mVisible = false;
 	}
-	Window::Window(const WindowDesc& desc) : mMode(WindowMode::Windowed),mMonitor(nullptr),mTitle(desc.Title),mOffset(),mSize(),mVisible(false),mActive(true)
+	Window::Window(const WindowDesc& desc) : mMode(WindowMode::Windowed),mMonitor(nullptr),mTitle(desc.Title),mX(desc.X),mY(desc.Y),mWidth(desc.Width),mHeight(desc.Height), mVisible(false), mActive(true)
 	{
-		mOffset[0] = desc.Offset[0];
-		mOffset[1] = desc.Offset[1];
-		mSize[0] = desc.Size[0];
-		mSize[1] = desc.Size[1];
+
 	}
 	void Window::DispatchWindowEvent(const WindowEventData& event)
 	{

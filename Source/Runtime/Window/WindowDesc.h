@@ -7,7 +7,9 @@ namespace Dream
 	struct RUNTIME_API WindowDesc
 	{
 		std::string Title;
-		int Offset[2];
-		unsigned int Size[2];
+		int X;
+		int Y;
+		unsigned int Width;
+		unsigned int Height;
 	};
 }

@@ -63,7 +63,12 @@ namespace Dream
 		DEV_ASSERT(RegisterClassEx(&wndClassDesc) != NULL, "Win32Window","Failed to register window class");
 
 		//Create window
-		const HWND windowHandle = CreateWindowEx(NULL, WINDOW_CLASS_NAME, desc.Title.c_str(), WS_OVERLAPPEDWINDOW, desc.Offset[0], desc.Offset[1], desc.Size[0], desc.Size[1], NULL, NULL, processHandle, this);
+		const HWND windowHandle = CreateWindowEx(NULL,
+			WINDOW_CLASS_NAME, desc.Title.c_str(),
+			WS_OVERLAPPEDWINDOW,
+			desc.X, desc.Y, desc.Width, desc.Height,
+			NULL, NULL, processHandle,
+			this);
 		DEV_ASSERT(windowHandle != NULL, "Win32Window", "Failed to create win32 window");
 
 		mHandle = windowHandle;
