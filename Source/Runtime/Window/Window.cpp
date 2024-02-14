@@ -61,6 +61,8 @@ namespace Dream
 
 			SetOffset(pPrimaryMonitor->GetPositionX(), pPrimaryMonitor->GetPositionY());
 			SetSize(pPrimaryMonitor->GetWidth(), pPrimaryMonitor->GetHeight());
+
+			delete pPrimaryMonitor;
 		}
 
 		//Set properties
