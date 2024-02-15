@@ -13,6 +13,8 @@
 #include <Runtime/Vulkan/Texture/VulkanTexture.h>
 #include <Runtime/Vulkan/Texture/VulkanTextureView.h>
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
+#include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 
 namespace Dream
 {
@@ -183,7 +185,7 @@ namespace Dream
 			}
 		}
 	}
-	unsigned char VulkanDevice::vkGetQueueFamilyIndex(const GraphicsQueueType type)
+	unsigned char VulkanDevice::vkGetQueueFamilyIndex(const GraphicsQueueType type) const noexcept
 	{
 		switch (type)
 		{
@@ -306,5 +308,17 @@ namespace Dream
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
 
 		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()), "VulkanDevice", "Failed to wait for queue");
+	}
+	Pipeline* VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
+	{
+		return new VulkanPipeline(desc,this);
+	}
+	Pipeline* VulkanDevice::CreateComputePipelineCore(const ComputePipelineDesc& desc)
+	{
+		return new VulkanPipeline(desc,this);
+	}
+	RenderPass* VulkanDevice::CreateRenderPassCore(const RenderPassDesc& desc)
+	{
+		return new VulkanRenderPass(desc,this);
 	}
 }

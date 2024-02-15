@@ -15,6 +15,8 @@
 #include <Runtime/Graphics/Texture/Texture.h>
 #include <Runtime/Graphics/Texture/TextureView.h>
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
+#include <Runtime/Graphics/Pipeline/Pipeline.h>
+#include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <vector>
 
 namespace Dream
@@ -44,6 +46,9 @@ namespace Dream
 		Texture* CreateTexture(const TextureDesc& desc);
 		TextureView* CreateTextureView(const TextureViewDesc& desc);
 		Swapchain* CreateSwapchain(const SwapchainDesc& desc);
+		Pipeline* CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
+		Pipeline* CreateComputePipeline(const ComputePipelineDesc& desc);
+		RenderPass* CreateRenderPass(const RenderPassDesc& desc);
 
 		void ResetFences(Fence** ppFences, const unsigned int count);
 		void WaitFences(Fence** ppFences, const unsigned int count);
@@ -67,6 +72,9 @@ namespace Dream
 		virtual Texture* CreateTextureCore(const TextureDesc& desc) = 0;
 		virtual TextureView* CreateTextureViewCore(const TextureViewDesc& desc) = 0;
 		virtual Swapchain* CreateSwapchainCore(const SwapchainDesc& desc) = 0;
+		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) = 0;
+		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) = 0;
+		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) = 0;
 
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) =  0;

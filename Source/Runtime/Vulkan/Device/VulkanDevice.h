@@ -44,7 +44,7 @@ namespace Dream
 		}
 		VkQueue vkOwnQueue(const GraphicsQueueType type);
 		void vkReturnQueue(const GraphicsQueueType type,const VkQueue queue);
-		unsigned char vkGetQueueFamilyIndex(const GraphicsQueueType type);
+		unsigned char vkGetQueueFamilyIndex(const GraphicsQueueType type) const noexcept;
 		Texture* vkCreateSwapchainTexture(const TextureDesc& desc,const VkImage image);
 		TextureView* vkCreateSwapchainTextureView(const TextureViewDesc& desc, const VkImageView view);
 	private:
@@ -66,6 +66,9 @@ namespace Dream
 		virtual Texture* CreateTextureCore(const TextureDesc& desc) override;
 		virtual TextureView* CreateTextureViewCore(const TextureViewDesc& desc) override;
 		virtual Swapchain* CreateSwapchainCore(const SwapchainDesc& desc) override;
+		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) override;
+		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) override;
+		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) override;
 
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;

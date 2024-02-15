@@ -114,6 +114,30 @@ namespace Dream
 
         return pSwapchain;
     }
+    Pipeline* GraphicsDevice::CreateGraphicsPipeline(const GraphicsPipelineDesc& desc)
+    {
+        Pipeline* pPipeline = CreateGraphicsPipelineCore(desc);
+
+        RegisterObject(pPipeline);
+
+        return pPipeline;
+    }
+    Pipeline* GraphicsDevice::CreateComputePipeline(const ComputePipelineDesc& desc)
+    {
+        Pipeline* pPipeline = CreateComputePipelineCore(desc);
+
+        RegisterObject(pPipeline);
+
+        return pPipeline;
+    }
+    RenderPass* GraphicsDevice::CreateRenderPass(const RenderPassDesc& desc)
+    {
+        RenderPass* pRenderPass = CreateRenderPassCore(desc);
+
+        RegisterObject(pRenderPass);
+
+        return pRenderPass;
+    }
     void GraphicsDevice::ResetFences(Fence** ppFences, const unsigned int count)
     {
         ResetFencesCore(ppFences, count);

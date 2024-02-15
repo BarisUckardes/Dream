@@ -37,7 +37,7 @@ namespace Dream
 
 		void BeginRecording();
 		void EndRecording();
-		void SetVertexBuffer(GraphicsBuffer* pBuffer);
+		void SetVertexBuffer(GraphicsBuffer** ppBuffers, const unsigned char count);
 		void SetIndexBuffer(GraphicsBuffer* pBuffer, const IndexBufferType type);
 		void DrawIndexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount);
 		void DispatchCompute(const unsigned int x, const unsigned int y, const unsigned int z);
@@ -55,10 +55,24 @@ namespace Dream
 	protected:
 		CommandList(const CommandListDesc& desc, GraphicsDevice* pDevice);
 
-		FORCEINLINE GraphicsBuffer* GetBoundVertexBuffer() const noexcept
-		{
-			return mBoundVertexBuffer;
-		}
+		virtual void BeginRecordingCore() = 0;
+		virtual void EndRecordingCore() = 0;
+		virtual void SetVertexBufferCore(GraphicsBuffer** ppBuffers, const unsigned char count) = 0;
+		virtual void SetIndexBufferCore(GraphicsBuffer* pBuffer, const IndexBufferType type) = 0;
+		virtual void DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) = 0;
+		virtual void DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z) = 0;
+		virtual void SetPipelineCore(Pipeline* pPipeline) = 0;
+		virtual void BeginRenderPassCore(RenderPass* pPass, const float clearColor[4]) = 0;
+		virtual void EndRenderPassCore() = 0;
+		virtual void SetViewportsCore(const ViewportDesc** ppViewports, const unsigned char count) = 0;
+		virtual void SetScissorsCore(const ScissorDesc** ppScissors, const unsigned char count) = 0;
+		virtual void CopyBufferToBufferCore(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc) = 0;
+		virtual void CopyBufferToTextureCore(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc) = 0;
+		virtual void CopyTextureToTextureCore(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc) = 0;
+		virtual void SetTextureMemoryBarrierCore(const Texture* pTexture, const TextureMemoryBarrierDesc& desc) = 0;
+		virtual void SetBufferMemoryBarrierCore(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc) = 0;
+		virtual void CommitResourceSetsCore(DescriptorSet** ppSets, const unsigned char count) = 0;
+
 		FORCEINLINE GraphicsBuffer* GetBoundIndexBuffer() const noexcept
 		{
 			return mBoundIndexBuffer;
@@ -75,7 +89,6 @@ namespace Dream
 		void ClearCachedState();
 	private:
 		const CommandPool* mCmdPool;
-		GraphicsBuffer* mBoundVertexBuffer;
 		GraphicsBuffer* mBoundIndexBuffer;
 		Pipeline* mBoundPipeline;
 		RenderPass* mBoundRenderPass;
