@@ -5,12 +5,15 @@ namespace Dream
 {
 	Swapchain::~Swapchain()
 	{
-
+		ClearTextures();
 	}
 	void Swapchain::Resize(const unsigned int width, const unsigned int height)
 	{
 		//Wait device idle
 		GetDevice()->WaitDeviceIdle();
+
+		//Clear the textures
+		ClearTextures();
 
 		//Resize
 		ResizeCore(width, height);
@@ -49,9 +52,27 @@ namespace Dream
 		mWidth = width;
 		mHeight = height;
 	}
-	void Swapchain::SetCustomSwapchainTextures(const std::vector<Texture*>& textures,const std::vector<TextureView*>& views)
+	void Swapchain::ClearTextures()
+	{
+		for (unsigned char i = 0; i < mColorTextures.size(); i++)
+		{
+			delete mColorTextureViews[i];
+			delete mColorTextures[i];
+		}
+		mColorTextureViews.clear();
+		mColorTextures.clear();
+	}
+	void Swapchain::SetCustomSwapchainTextures(const std::vector<Texture*>& textures)
 	{
 		mColorTextures = textures;
-		mColorTextureViews = views;
+		for (Texture* pTexture : textures)
+		{
+			TextureViewDesc desc = {};
+			desc.pTexture = pTexture;
+			desc.ArrayLevel = 0;
+			desc.MipLevel = 0;
+
+			mColorTextureViews.push_back(GetDevice()->CreateTextureView(desc));
+		}
 	}
 }

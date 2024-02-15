@@ -34,6 +34,31 @@ namespace Dream
 				pWindow->DispatchWindowEvent(event);
 				break;
 			}
+			case WM_MOVE:
+			{
+				Win32Window* pWindow = GetUserWindowData(hwnd);
+
+				WindowEventData event = {};
+				event.Type = WindowEventType::WindowMoved;
+				event.WindowPosition[0] = LOWORD(lParam);
+				event.WindowPosition[1] = HIWORD(lParam);
+
+				pWindow->DispatchWindowEvent(event);
+
+				break;
+			}
+			case WM_SIZE:
+			{
+				Win32Window* pWindow = GetUserWindowData(hwnd);
+
+				WindowEventData event = {};
+				event.Type = WindowEventType::WindowResized;
+				event.WindowSize[0] = LOWORD(lParam);
+				event.WindowSize[1] = HIWORD(lParam);
+
+				pWindow->DispatchWindowEvent(event);
+				break;
+			}
 		}
 
 		return DefWindowProc(hwnd, msg, wParam, lParam);

@@ -68,7 +68,7 @@ namespace Dream
 		Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice);
 
 		void SetCustomSize(const unsigned int width, const unsigned int height);
-		void SetCustomSwapchainTextures(const std::vector<Texture*>& textures,const std::vector<TextureView*>& views);
+		void SetCustomSwapchainTextures(const std::vector<Texture*>& textures);
 
 		FORCEINLINE Fence* GetPresentFence(const unsigned char index)
 		{
@@ -77,6 +77,8 @@ namespace Dream
 
 		virtual void ResizeCore(const unsigned int width, const unsigned int height) = 0;
 		virtual void PresentCore() = 0;
+	private:
+		void ClearTextures();
 	private:
 		const PresentMode mMode;
 		const unsigned char mBufferCount;

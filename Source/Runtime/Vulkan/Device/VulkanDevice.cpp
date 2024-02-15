@@ -325,13 +325,13 @@ namespace Dream
 	}
 	void VulkanDevice::WaitDeviceIdleCore()
 	{
-		DEV_ASSERT(vkDeviceWaitIdle(mLogicalDevice), "VulkanDevice", "Failed to wait device idle");
+		DEV_ASSERT(vkDeviceWaitIdle(mLogicalDevice) == VK_SUCCESS, "VulkanDevice", "Failed to wait device idle");
 	}
 	void VulkanDevice::WaitQueueIdleCore(GraphicsQueue* pQueue)
 	{
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
 
-		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()), "VulkanDevice", "Failed to wait for queue");
+		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue");
 	}
 	CommandPool* VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
 	{
