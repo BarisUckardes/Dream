@@ -113,7 +113,6 @@ namespace Dream
 		{
 			mWidth = event.WindowSize[0];
 			mHeight = event.WindowSize[1];
-			DEV_LOG("Window", "Window new size: %d:%d", mWidth, mHeight);
 			break;
 		}
 		case Dream::WindowEventType::DragDrop:

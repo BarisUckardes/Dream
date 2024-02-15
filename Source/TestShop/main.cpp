@@ -162,18 +162,28 @@ namespace Dream
 		unsigned char presentIndex = 0;
 		while (pWindow->IsActive())
 		{
+			//Get screen size
+			const unsigned int screenWidth = pWindow->GetWidth();
+			const unsigned int screenHeight = pWindow->GetHeight();
+
 			//Poll events
 			pWindow->PollEvents();
 
 			//Resize the render pass and swapchain
+			unsigned int currentScreenWidth = screenWidth;
+			unsigned int currentScreenHeight = screenHeight;
 			for (const WindowEventData& eventData : pWindow->GetBufferedEvents())
 			{
 				if (eventData.Type == WindowEventType::WindowResized)
 				{
-					pSwapchain->Resize(pWindow->GetWidth(), pWindow->GetHeight());
-					InvalidateRenderPasses(pDevice, pSwapchain, pCmdList, pFence, pQueue, renderPasses);
-					break;
+					currentScreenWidth = eventData.WindowSize[0];
+					currentScreenHeight = eventData.WindowSize[1];
 				}
+			}
+			if (currentScreenWidth != screenWidth || currentScreenHeight != screenHeight)
+			{
+				pSwapchain->Resize(currentScreenWidth,currentScreenHeight);
+				InvalidateRenderPasses(pDevice, pSwapchain, pCmdList, pFence, pQueue, renderPasses);
 			}
 
 			//Begin recording
