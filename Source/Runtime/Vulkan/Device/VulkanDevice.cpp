@@ -15,6 +15,8 @@
 #include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 #include <Runtime/Vulkan/Pipeline/VulkanPipeline.h>
 #include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
+#include <Runtime/Vulkan/Command/VulkanCommandPool.h>
+#include <Runtime/Vulkan/Command/VulkanCommandList.h>
 
 namespace Dream
 {
@@ -277,6 +279,28 @@ namespace Dream
 	{
 		return new VulkanSwapchain(desc,this);
 	}
+	void VulkanDevice::SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue, const Fence* pFence)
+	{
+		const VulkanFence* pVkFence = (const VulkanFence*)pFence;
+		const VulkanQueue* pVkQueue = (const VulkanQueue*)pTargetQueue;
+
+		VkCommandBuffer vkCmdBuffers[255];
+		for (unsigned int cmdListIndex = 0; cmdListIndex < count; cmdListIndex++)
+		{
+			const VulkanCommandList* pCmdList = (const VulkanCommandList*)ppCmdLists[cmdListIndex];
+			vkCmdBuffers[cmdListIndex] = pCmdList->GetVkCmdBuffer();
+		}
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.pNext = nullptr;
+		submitInfo.waitSemaphoreCount = 0;
+		submitInfo.pWaitSemaphores = nullptr;
+		submitInfo.pCommandBuffers = vkCmdBuffers;
+		submitInfo.commandBufferCount = count;
+
+		DEV_ASSERT(vkQueueSubmit(pVkQueue->GetVkQueue(), count, &submitInfo, pVkFence != nullptr ? pVkFence->GetVkFence() :VK_NULL_HANDLE) == VK_SUCCESS, "VulkanDevice", "Failed to submit the command lists");
+	}
 	void VulkanDevice::ResetFencesCore(Fence** ppFences, const unsigned int count)
 	{
 		VkFence fences[512];
@@ -308,6 +332,14 @@ namespace Dream
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
 
 		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()), "VulkanDevice", "Failed to wait for queue");
+	}
+	CommandPool* VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
+	{
+		return new VulkanCommandPool(desc,this);
+	}
+	CommandList* VulkanDevice::CreateCommandListCore(const CommandListDesc& desc)
+	{
+		return new VulkanCommandList(desc,this);
 	}
 	Pipeline* VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
 	{

@@ -69,7 +69,10 @@ namespace Dream
 		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) override;
 		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) override;
 		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) override;
+		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) override;
+		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) override;
 
+		virtual void SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue,const Fence* pFence) override;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitDeviceIdleCore() override;

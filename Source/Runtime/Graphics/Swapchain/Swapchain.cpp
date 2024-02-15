@@ -36,7 +36,7 @@ namespace Dream
 	}
 	Swapchain::Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice) :
 		GraphicsDeviceObject(pDevice),mMode(desc.Mode),mBufferCount(desc.BufferCount),mColorBufferFormat(desc.ColorFormat),mDepthStencilBufferFormat(desc.DepthStencilFormat),mWindow(desc.pWindow),
-		mIndex(0),mQueue(desc.pQueue),mDepthStencilTexture(nullptr),mDepthStencilTextureView(nullptr)
+		mIndex(0),mQueue(desc.pQueue)
 	{
 		mWidth = mWindow->GetWidth();
 		mHeight = mWindow->GetHeight();
@@ -49,11 +49,9 @@ namespace Dream
 		mWidth = width;
 		mHeight = height;
 	}
-	void Swapchain::SetCustomSwapchainTextures(const std::vector<Texture*>& textures, Texture* pDepthStencilTexture, const std::vector<TextureView*>& views, TextureView* pDepthStencilView)
+	void Swapchain::SetCustomSwapchainTextures(const std::vector<Texture*>& textures,const std::vector<TextureView*>& views)
 	{
 		mColorTextures = textures;
 		mColorTextureViews = views;
-		mDepthStencilTexture = pDepthStencilTexture;
-		mDepthStencilTextureView = pDepthStencilView;
 	}
 }

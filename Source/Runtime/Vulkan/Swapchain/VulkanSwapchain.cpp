@@ -170,7 +170,7 @@ namespace Dream
 
 		//Create depth stencil texture
 
-		SetCustomSwapchainTextures(textures,nullptr,views,nullptr);
+		SetCustomSwapchainTextures(textures,views);
 	}
 	VulkanSwapchain::~VulkanSwapchain()
 	{

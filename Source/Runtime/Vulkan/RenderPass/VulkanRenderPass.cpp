@@ -13,15 +13,14 @@ namespace Dream
 	{
 		//Create color attachment descs
 		const unsigned char colorAttachmentCount = desc.ColorAttachments.size();
-		const bool bHasDepthStencilAttachment = desc.DepthStencilAttachment.pTexture != nullptr;
-		const unsigned totalAttachmentCount = colorAttachmentCount + bHasDepthStencilAttachment;
+		const unsigned totalAttachmentCount = colorAttachmentCount;
 		std::vector<VkAttachmentDescription> attachments(totalAttachmentCount);
 		for (unsigned char i = 0; i < totalAttachmentCount; i++)
 		{
 			const RenderPassAttachmentDesc& attachmentDesc = desc.ColorAttachments[i];
 			VkAttachmentDescription attachment = {};
-			attachment.format = VulkanTextureUtils::GetTextureFormat(attachmentDesc.pTexture->GetFormat());
-			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(attachmentDesc.pTexture->GetSampleCount());
+			attachment.format = VulkanTextureUtils::GetTextureFormat(attachmentDesc.Format);
+			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(attachmentDesc.SampleCount);
 			attachment.loadOp = VulkanRenderPassUtils::GetLoadOperation(attachmentDesc.ColorLoadOperation);
 			attachment.storeOp = VulkanRenderPassUtils::GetStoreOperation(attachmentDesc.ColorStoreOperation);
 			attachment.initialLayout = VulkanTextureUtils::GetImageLayout(attachmentDesc.InputLayout);
@@ -30,23 +29,6 @@ namespace Dream
 			attachment.stencilStoreOp = VulkanRenderPassUtils::GetStoreOperation(attachmentDesc.StencilStoreOperation);
 
 			attachments[i] = attachment;
-		}
-
-		//Create depth stencil attachment desc
-		{
-			if (bHasDepthStencilAttachment)
-			{
-				VkAttachmentDescription attachment = {};
-				attachment.format = VulkanTextureUtils::GetTextureFormat(desc.DepthStencilAttachment.pTexture->GetFormat());
-				attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(desc.DepthStencilAttachment.pTexture->GetSampleCount());
-				attachment.loadOp = VulkanRenderPassUtils::GetLoadOperation(desc.DepthStencilAttachment.ColorLoadOperation);
-				attachment.storeOp = VulkanRenderPassUtils::GetStoreOperation(desc.DepthStencilAttachment.ColorStoreOperation);
-				attachment.initialLayout = VulkanTextureUtils::GetImageLayout(desc.DepthStencilAttachment.InputLayout);
-				attachment.finalLayout = VulkanTextureUtils::GetImageLayout(desc.DepthStencilAttachment.OutputLayout);
-				attachment.stencilLoadOp = VulkanRenderPassUtils::GetLoadOperation(desc.DepthStencilAttachment.StencilLoadOperation);
-				attachment.stencilStoreOp = VulkanRenderPassUtils::GetStoreOperation(desc.DepthStencilAttachment.StencilStoreOperation);
-				attachments[attachments.size()-1] = attachment;
-			}
 		}
 
 		//Create attachment references

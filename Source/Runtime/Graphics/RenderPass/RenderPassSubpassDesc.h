@@ -12,6 +12,6 @@ namespace Dream
 		std::vector<unsigned char> Inputs;
 		std::vector<unsigned char> MultisampleInputs;
 		std::vector<unsigned char> PreserveAttachments;
-		std::vector<unsigned char> DepthStencilInput;
+		unsigned char DepthStencilInput;
 	};
 }

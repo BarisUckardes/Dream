@@ -138,6 +138,26 @@ namespace Dream
 
         return pRenderPass;
     }
+    CommandPool* GraphicsDevice::CreateCommandPool(const CommandPoolDesc& desc)
+    {
+        CommandPool* pCmdPool = CreateCommandPoolCore(desc);
+
+        RegisterObject(pCmdPool);
+
+        return pCmdPool;
+    }
+    CommandList* GraphicsDevice::CreateCommandList(const CommandListDesc& desc)
+    {
+        CommandList* pCmdList = CreateCommandListCore(desc);
+
+        RegisterObject(pCmdList);
+
+        return pCmdList;
+    }
+    void GraphicsDevice::SubmitCommands(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence)
+    {
+        SubmitCommandsCore(ppCmdLists, count, pTargetQueue,pFence);
+    }
     void GraphicsDevice::ResetFences(Fence** ppFences, const unsigned int count)
     {
         ResetFencesCore(ppFences, count);

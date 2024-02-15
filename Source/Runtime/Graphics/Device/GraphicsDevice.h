@@ -17,6 +17,8 @@
 #include <Runtime/Graphics/Swapchain/Swapchain.h>
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
+#include <Runtime/Graphics/Command/CommandPool.h>
+#include <Runtime/Graphics/Command/CommandList.h>
 #include <vector>
 
 namespace Dream
@@ -49,7 +51,10 @@ namespace Dream
 		Pipeline* CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
 		Pipeline* CreateComputePipeline(const ComputePipelineDesc& desc);
 		RenderPass* CreateRenderPass(const RenderPassDesc& desc);
+		CommandPool* CreateCommandPool(const CommandPoolDesc& desc);
+		CommandList* CreateCommandList(const CommandListDesc& desc);
 
+		void SubmitCommands(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence);
 		void ResetFences(Fence** ppFences, const unsigned int count);
 		void WaitFences(Fence** ppFences, const unsigned int count);
 		void WaitDeviceIdle();
@@ -75,7 +80,10 @@ namespace Dream
 		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) = 0;
 		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) = 0;
 		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) = 0;
+		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) = 0;
+		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) = 0;
 
+		virtual void SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence) = 0;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitDeviceIdleCore() =  0;

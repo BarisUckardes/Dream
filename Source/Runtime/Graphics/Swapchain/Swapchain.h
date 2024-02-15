@@ -28,6 +28,14 @@ namespace Dream
 		{
 			return mDepthStencilBufferFormat;
 		}
+		FORCEINLINE const std::vector<Texture*>& GetColorTextures() const noexcept
+		{
+			return mColorTextures;
+		}
+		FORCEINLINE const std::vector<TextureView*>& GetColorTextureViews() const noexcept
+		{
+			return mColorTextureViews;
+		}
 		FORCEINLINE const Window* GetWindow() const noexcept
 		{
 			return mWindow;
@@ -60,7 +68,7 @@ namespace Dream
 		Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice);
 
 		void SetCustomSize(const unsigned int width, const unsigned int height);
-		void SetCustomSwapchainTextures(const std::vector<Texture*>& textures,Texture* pDepthStencilTexture, const std::vector<TextureView*>& views,TextureView* pDepthStencilView);
+		void SetCustomSwapchainTextures(const std::vector<Texture*>& textures,const std::vector<TextureView*>& views);
 
 		FORCEINLINE Fence* GetPresentFence(const unsigned char index)
 		{
@@ -79,8 +87,6 @@ namespace Dream
 		std::vector<Fence*> mPresentFences;
 		std::vector<Texture*> mColorTextures;
 		std::vector<TextureView*> mColorTextureViews;
-		Texture* mDepthStencilTexture;
-		TextureView* mDepthStencilTextureView;
 		unsigned int mWidth;
 		unsigned int mHeight;
 		unsigned char mIndex;

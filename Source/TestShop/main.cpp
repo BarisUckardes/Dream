@@ -74,11 +74,96 @@ namespace Dream
 		swapchainDesc.pWindow = pWindow;
 		Swapchain* pSwapchain = pDevice->CreateSwapchain(swapchainDesc);
 
+		//Create command pool
+		CommandPoolDesc cmdPoolDesc = {};
+		cmdPoolDesc.Type = CommandPoolType::Graphics;
+		CommandPool* pCmdPool = pDevice->CreateCommandPool(cmdPoolDesc);
+
+		//Create command list
+		CommandListDesc cmdListDesc = {};
+		cmdListDesc.pCmdPool = pCmdPool;
+		CommandList* pCmdList = pDevice->CreateCommandList(cmdListDesc);
+
+		//Create fence
+		FenceDesc fenceDesc = {};
+		fenceDesc.bSignalled = false;
+		Fence* pFence = pDevice->CreateFence(fenceDesc);
+
+		//Transition the swapchain textures to color attachment optimal
+		const std::vector<Texture*>& swapchainTextures = pSwapchain->GetColorTextures();
+		pCmdList->BeginRecording();
+		for (const Texture* pTexture : swapchainTextures)
+		{
+			TextureMemoryBarrierDesc barrier = {};
+			barrier.MipIndex = 0;
+			barrier.ArrayIndex = 0;
+			barrier.AspectFlags = TextureAspectFlags::Color;
+			barrier.SourceAccessFlags = GraphicsMemoryAccessFlags::Unknown;
+			barrier.SourceLayout = TextureMemoryLayout::Unknown;
+			barrier.SourceQueue = GraphicsQueueType::Graphics;
+			barrier.SourceStageFlags = PipelineStageFlags::TopOfPipe;
+
+			barrier.DestinationAccessFlags = GraphicsMemoryAccessFlags::ColorAttachmentRead;
+			barrier.DestinationLayout = TextureMemoryLayout::Present;
+			barrier.DestinationQueue = GraphicsQueueType::Graphics;
+			barrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+
+			pCmdList->SetTextureMemoryBarrier(pTexture, barrier);
+		}
+		pCmdList->EndRecording();
+		pDevice->SubmitCommands((const CommandList**)&pCmdList, 1, pQueue, pFence);
+		pDevice->WaitFences(&pFence, 1);
+		pDevice->ResetFences(&pFence, 1);
+
+		//Create render pass
+		std::vector<RenderPass*> renderPasses;
+		const std::vector<TextureView*>& swapchainTextureViews = pSwapchain->GetColorTextureViews();
+		for (unsigned char i = 0; i < pSwapchain->GetBufferCount(); i++)
+		{
+			Texture* pTexture = swapchainTextures[i];
+			TextureView* pView = swapchainTextureViews[i];
+
+			RenderPassDesc renderPassDesc = {};
+			renderPassDesc.TargetRenderWidth = pSwapchain->GetWidth();
+			renderPassDesc.TargetRenderHeight = pSwapchain->GetHeight();
+			renderPassDesc.AttachmentViews = { pView };
+
+			RenderPassAttachmentDesc colorAttachmentDesc = {};
+			colorAttachmentDesc.ArrayLevel = 0;
+			colorAttachmentDesc.MipLevel = 0;
+			colorAttachmentDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
+			colorAttachmentDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
+			colorAttachmentDesc.InputLayout = TextureMemoryLayout::Present;
+			colorAttachmentDesc.OutputLayout = TextureMemoryLayout::Present;
+			colorAttachmentDesc.StencilLoadOperation = RenderPassLoadOperation::Clear;
+			colorAttachmentDesc.StencilStoreOperation = RenderPassStoreOperation::Ignore;
+			colorAttachmentDesc.Format = pTexture->GetFormat();
+			colorAttachmentDesc.SampleCount = pTexture->GetSampleCount();
+			renderPassDesc.ColorAttachments.push_back(colorAttachmentDesc);
+
+			RenderPassSubpassDesc subpassDesc = {};
+			subpassDesc.Attachments = { 0 };
+			subpassDesc.BindPoint = PipelineBindPoint::Graphics;
+			subpassDesc.DepthStencilInput = 0;
+			renderPassDesc.Subpasses.push_back(subpassDesc);
+
+			renderPasses.push_back(pDevice->CreateRenderPass(renderPassDesc));
+		}
+
 		//Create device
 		unsigned char presentIndex = 0;
 		while (pWindow->IsActive())
 		{
 			pWindow->PollEvents();
+
+			pCmdList->BeginRecording();
+			constexpr float clearColor[] = {100/255.0f,149/255.0f,237/255.0f,1 };
+			pCmdList->BeginRenderPass(renderPasses[presentIndex], clearColor);
+			pCmdList->EndRenderPass();
+			pCmdList->EndRecording();
+			pDevice->SubmitCommands((const CommandList**)& pCmdList, 1, pQueue, pFence);
+			pDevice->WaitFences(&pFence, 1);
+			pDevice->ResetFences(&pFence, 1);
 
 			pSwapchain->Present();
 			pSwapchain->WaitForPresent(presentIndex);
