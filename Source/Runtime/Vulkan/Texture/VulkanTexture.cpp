@@ -5,7 +5,11 @@
 
 namespace Dream
 {
-	VulkanTexture::VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice) : Texture(desc,pDevice),mImage(VK_NULL_HANDLE),mLogicalDevice(pDevice->GetVkLogicalDevice())
+	VulkanTexture::VulkanTexture(const TextureDesc& desc, const VkImage image, VulkanDevice* pDevice) : Texture(desc, pDevice), mImage(image), mLogicalDevice(pDevice->GetVkLogicalDevice()), mMemoryOffset(0), mMemoryAlignedOffset(0),mSwapchain(true)
+	{
+
+	}
+	VulkanTexture::VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice) : Texture(desc,pDevice),mImage(VK_NULL_HANDLE),mLogicalDevice(pDevice->GetVkLogicalDevice()),mSwapchain(false)
 	{
 		const VulkanMemory* pVkMemory = (const VulkanMemory*)desc.pMemory;
 
@@ -41,6 +45,7 @@ namespace Dream
 	}
 	VulkanTexture::~VulkanTexture()
 	{
-		vkDestroyImage(mLogicalDevice, mImage, nullptr);
+		if(!mSwapchain)
+			vkDestroyImage(mLogicalDevice, mImage, nullptr);
 	}
 }

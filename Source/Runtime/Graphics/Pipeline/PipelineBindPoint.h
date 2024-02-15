@@ -3,10 +3,9 @@
 
 namespace Dream
 {
-	enum class RUNTIME_API GraphicsQueueType : unsigned char
+	enum class RUNTIME_API PipelineBindPoint : unsigned char
 	{
 		Graphics,
 		Compute,
-		Transfer,
 	};
 }

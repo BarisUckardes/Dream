@@ -5,7 +5,11 @@
 
 namespace Dream
 {
-	VulkanTextureView::VulkanTextureView(const TextureViewDesc& desc, VulkanDevice* pDevice) : TextureView(desc,pDevice),mView(VK_NULL_HANDLE),mLogicalDevice(pDevice->GetVkLogicalDevice())
+    VulkanTextureView::VulkanTextureView(const TextureViewDesc& desc, const VkImageView view, VulkanDevice* pDevice) : TextureView(desc,pDevice),mView(view),mLogicalDevice(pDevice->GetVkLogicalDevice()),mSwapchain(true)
+    {
+
+    }
+    VulkanTextureView::VulkanTextureView(const TextureViewDesc& desc, VulkanDevice* pDevice) : TextureView(desc,pDevice),mView(VK_NULL_HANDLE),mLogicalDevice(pDevice->GetVkLogicalDevice()),mSwapchain(false)
 	{
         //Get vulkan texture
         const VulkanTexture* pTexture = (VulkanTexture*)desc.pTexture;
@@ -35,6 +39,7 @@ namespace Dream
 	}
 	VulkanTextureView::~VulkanTextureView()
 	{
-        vkDestroyImageView(mLogicalDevice, mView, nullptr);
+        if(!mSwapchain)
+            vkDestroyImageView(mLogicalDevice, mView, nullptr);
 	}
 }

@@ -63,11 +63,26 @@ namespace Dream
 		GraphicsQueueDesc queueDesc = {};
 		queueDesc.Type = GraphicsQueueType::Graphics;
 		GraphicsQueue* pQueue = pDevice->CreateQueue(queueDesc);
+		
+		//Create swapchain
+		SwapchainDesc swapchainDesc = {};
+		swapchainDesc.BufferCount = 3;
+		swapchainDesc.ColorFormat = TextureFormat::R8_G8_B8_A8_UNorm;
+		swapchainDesc.DepthStencilFormat = TextureFormat::None;
+		swapchainDesc.Mode = PresentMode::VsyncImmediate;
+		swapchainDesc.pQueue = pQueue;
+		swapchainDesc.pWindow = pWindow;
+		Swapchain* pSwapchain = pDevice->CreateSwapchain(swapchainDesc);
 
 		//Create device
+		unsigned char presentIndex = 0;
 		while (pWindow->IsActive())
 		{
 			pWindow->PollEvents();
+
+			pSwapchain->Present();
+			pSwapchain->WaitForPresent(presentIndex);
+			presentIndex = (presentIndex + 1) % 3;
 		}
 	}
 }

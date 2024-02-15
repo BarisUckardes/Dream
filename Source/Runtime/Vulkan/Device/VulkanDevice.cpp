@@ -2,6 +2,17 @@
 #include <Runtime/Vulkan/Adapter/VulkanAdapter.h>
 #include <Runtime/Vulkan/Device/VulkanDeviceFeatures.h>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
+#include <Runtime/Vulkan/Buffer/VulkanBuffer.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorPool.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorSetLayout.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorSet.h>
+#include <Runtime/Vulkan/Memory/VulkanMemory.h>
+#include <Runtime/Vulkan/Fence/VulkanFence.h>
+#include <Runtime/Vulkan/Sampler/VulkanSampler.h>
+#include <Runtime/Vulkan/Shader/VulkanShader.h>
+#include <Runtime/Vulkan/Texture/VulkanTexture.h>
+#include <Runtime/Vulkan/Texture/VulkanTextureView.h>
+#include <Runtime/Vulkan/Swapchain/VulkanSwapchain.h>
 
 namespace Dream
 {
@@ -172,6 +183,32 @@ namespace Dream
 			}
 		}
 	}
+	unsigned char VulkanDevice::vkGetQueueFamilyIndex(const GraphicsQueueType type)
+	{
+		switch (type)
+		{
+			case Dream::GraphicsQueueType::Graphics:
+				return mGraphicsFamily.FamilyIndex;
+			case Dream::GraphicsQueueType::Compute:
+				return mComputeFamily.FamilyIndex;
+			case Dream::GraphicsQueueType::Transfer:
+				return mTransferFamily.FamilyIndex;
+			default:
+				return 255;
+		}
+	}
+	Texture* VulkanDevice::vkCreateSwapchainTexture(const TextureDesc& desc, const VkImage image)
+	{
+		Texture* pTexture = new VulkanTexture(desc, image, this);
+		RegisterObject(pTexture);
+		return pTexture;
+	}
+	TextureView* VulkanDevice::vkCreateSwapchainTextureView(const TextureViewDesc& desc, const VkImageView view)
+	{
+		TextureView* pView = new VulkanTextureView(desc, view, this);
+		RegisterObject(pView);
+		return pView;
+	}
 	bool VulkanDevice::HasQueue(const GraphicsQueueType type) const noexcept
 	{
 		switch (type)
@@ -188,6 +225,86 @@ namespace Dream
 	}
 	GraphicsQueue* VulkanDevice::CreateQueueCore(const GraphicsQueueDesc& desc)
 	{
-		return new VulkanQueue(desc,this);
+		const VkQueue queue = vkOwnQueue(desc.Type);
+		const unsigned char familyIndex = vkGetQueueFamilyIndex(desc.Type);
+		DEV_ASSERT(familyIndex != 255, "VulkanDevice", "Requested invalid queue family index!");
+
+		return new VulkanQueue(desc,queue,familyIndex,this);
+	}
+	GraphicsBuffer* VulkanDevice::CreateBufferCore(const GraphicsBufferDesc& desc)
+	{
+		return new VulkanBuffer(desc,this);
+	}
+	DescriptorSet* VulkanDevice::CreateDescriptorSetCore(const DescriptorSetDesc& desc)
+	{
+		return new VulkanDescriptorSet(desc,this);
+	}
+	DescriptorPool* VulkanDevice::CreateDescriptorPoolCore(const DescriptorPoolDesc& desc)
+	{
+		return new VulkanDescriptorPool(desc,this);
+	}
+	DescriptorSetLayout* VulkanDevice::CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc)
+	{
+		return new VulkanDescriptorSetLayout(desc,this);
+	}
+	Fence* VulkanDevice::CreateFenceCore(const FenceDesc& desc)
+	{
+		return new VulkanFence(desc,this);
+	}
+	GraphicsMemory* VulkanDevice::AllocateMemoryCore(const GraphicsMemoryDesc& desc)
+	{
+		return new VulkanMemory(desc,this);
+	}
+	Sampler* VulkanDevice::CreateSamplerCore(const SamplerDesc& desc)
+	{
+		return new VulkanSampler(desc,this);
+	}
+	Shader* VulkanDevice::CreateShaderCore(const ShaderDesc& desc)
+	{
+		return new VulkanShader(desc,this);
+	}
+	Texture* VulkanDevice::CreateTextureCore(const TextureDesc& desc)
+	{
+		return new VulkanTexture(desc,this);
+	}
+	TextureView* VulkanDevice::CreateTextureViewCore(const TextureViewDesc& desc)
+	{
+		return new VulkanTextureView(desc,this);
+	}
+	Swapchain* VulkanDevice::CreateSwapchainCore(const SwapchainDesc& desc)
+	{
+		return new VulkanSwapchain(desc,this);
+	}
+	void VulkanDevice::ResetFencesCore(Fence** ppFences, const unsigned int count)
+	{
+		VkFence fences[512];
+		for (unsigned int i = 0; i < count; i++)
+		{
+			const VulkanFence* pFence = (const VulkanFence*)ppFences[i];
+			fences[i] = pFence->GetVkFence();
+		}
+
+		DEV_ASSERT(vkResetFences(mLogicalDevice, count, fences) == VK_SUCCESS, "VulkanDevice", "Failed to reset the fences");
+	}
+	void VulkanDevice::WaitFencesCore(Fence** ppFences, const unsigned int count)
+	{
+		VkFence fences[512];
+		for (unsigned int i = 0; i < count; i++)
+		{
+			const VulkanFence* pFence = (const VulkanFence*)ppFences[i];
+			fences[i] = pFence->GetVkFence();
+		}
+
+		DEV_ASSERT(vkWaitForFences(mLogicalDevice, count, fences, VK_TRUE, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for fences");
+	}
+	void VulkanDevice::WaitDeviceIdleCore()
+	{
+		DEV_ASSERT(vkDeviceWaitIdle(mLogicalDevice), "VulkanDevice", "Failed to wait device idle");
+	}
+	void VulkanDevice::WaitQueueIdleCore(GraphicsQueue* pQueue)
+	{
+		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
+
+		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()), "VulkanDevice", "Failed to wait for queue");
 	}
 }

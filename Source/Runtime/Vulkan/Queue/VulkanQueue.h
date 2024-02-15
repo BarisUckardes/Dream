@@ -8,14 +8,19 @@ namespace Dream
 	class RUNTIME_API VulkanQueue : public GraphicsQueue
 	{
 	public:
-		VulkanQueue(const GraphicsQueueDesc& desc, VulkanDevice* pDevice);
+		VulkanQueue(const GraphicsQueueDesc& desc,const VkQueue queue,const unsigned char familyIndex, VulkanDevice* pDevice);
 		~VulkanQueue();
 
 		FORCEINLINE VkQueue GetVkQueue() const noexcept
 		{
 			return mQueue;
 		}
+		FORCEINLINE unsigned char GetVkFamilyIndex() const noexcept
+		{
+			return mFamilyIndex;
+		}
 	private:
-		VkQueue mQueue;
+		const VkQueue mQueue;
+		const unsigned char mFamilyIndex;
 	};
 }

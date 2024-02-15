@@ -8,6 +8,7 @@ namespace Dream
 	class RUNTIME_API VulkanTextureView : public TextureView
 	{
 	public:
+		VulkanTextureView(const TextureViewDesc& desc, const VkImageView view, VulkanDevice* pDevice);
 		VulkanTextureView(const TextureViewDesc& desc, VulkanDevice* pDevice);
 		~VulkanTextureView();
 
@@ -18,5 +19,6 @@ namespace Dream
 	private:
 		VkImageView mView;
 		VkDevice mLogicalDevice;
+		const bool mSwapchain;
 	};
 }

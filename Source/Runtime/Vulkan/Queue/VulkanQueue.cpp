@@ -3,9 +3,9 @@
 
 namespace Dream
 {
-	VulkanQueue::VulkanQueue(const GraphicsQueueDesc& desc, VulkanDevice* pDevice) : GraphicsQueue(desc,pDevice),mQueue(VK_NULL_HANDLE)
+	VulkanQueue::VulkanQueue(const GraphicsQueueDesc& desc, const VkQueue queue, const unsigned char familyIndex, VulkanDevice* pDevice) : GraphicsQueue(desc,pDevice),mQueue(queue),mFamilyIndex(familyIndex)
 	{
-		mQueue = pDevice->vkOwnQueue(desc.Type);
+
 	}
 	VulkanQueue::~VulkanQueue()
 	{

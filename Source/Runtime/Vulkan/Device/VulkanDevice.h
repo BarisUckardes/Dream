@@ -38,13 +38,15 @@ namespace Dream
 		VulkanDevice(const VulkanDeviceDesc* pDesc);
 		~VulkanDevice();
 
-		VkQueue vkOwnQueue(const GraphicsQueueType type);
-		void vkReturnQueue(const GraphicsQueueType type,const VkQueue queue);
 		FORCEINLINE VkDevice GetVkLogicalDevice() const noexcept
 		{
 			return mLogicalDevice;
 		}
-
+		VkQueue vkOwnQueue(const GraphicsQueueType type);
+		void vkReturnQueue(const GraphicsQueueType type,const VkQueue queue);
+		unsigned char vkGetQueueFamilyIndex(const GraphicsQueueType type);
+		Texture* vkCreateSwapchainTexture(const TextureDesc& desc,const VkImage image);
+		TextureView* vkCreateSwapchainTextureView(const TextureViewDesc& desc, const VkImageView view);
 	private:
 		virtual GraphicsBackend GetBackend() const noexcept
 		{
@@ -53,6 +55,22 @@ namespace Dream
 
 		virtual bool HasQueue(const GraphicsQueueType type) const noexcept override;
 		virtual GraphicsQueue* CreateQueueCore(const GraphicsQueueDesc& desc) override;
+		virtual GraphicsBuffer* CreateBufferCore(const GraphicsBufferDesc& desc) override;
+		virtual DescriptorSet* CreateDescriptorSetCore(const DescriptorSetDesc& desc) override;
+		virtual DescriptorPool* CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) override;
+		virtual DescriptorSetLayout* CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc) override;
+		virtual Fence* CreateFenceCore(const FenceDesc& desc) override;
+		virtual GraphicsMemory* AllocateMemoryCore(const GraphicsMemoryDesc& desc) override;
+		virtual Sampler* CreateSamplerCore(const SamplerDesc& desc) override;
+		virtual Shader* CreateShaderCore(const ShaderDesc& desc) override;
+		virtual Texture* CreateTextureCore(const TextureDesc& desc) override;
+		virtual TextureView* CreateTextureViewCore(const TextureViewDesc& desc) override;
+		virtual Swapchain* CreateSwapchainCore(const SwapchainDesc& desc) override;
+
+		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
+		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;
+		virtual void WaitDeviceIdleCore() override;
+		virtual void WaitQueueIdleCore(GraphicsQueue* pQueue) override;
 	private:
 		VkDevice mLogicalDevice;
         DeviceQueueFamily mGraphicsFamily;

@@ -11,11 +11,17 @@ namespace Dream
         {
             VkShaderStageFlags flags = VkShaderStageFlags();
 
-            if (stages & ShaderStage::VertexStage)
+            if (stages & ShaderStage::Vertex)
                 flags |= VK_SHADER_STAGE_VERTEX_BIT;
-            if (stages & ShaderStage::FragmentStage)
+            if (stages & ShaderStage::Fragment)
                 flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-            if (stages & ShaderStage::ComputeStage)
+            if (stages & ShaderStage::TesellationEval)
+                flags |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+            if (stages & ShaderStage::TesellationControl)
+                flags |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+            if (stages & ShaderStage::Geometry)
+                flags |= VK_SHADER_STAGE_GEOMETRY_BIT;
+            if (stages & ShaderStage::Compute)
                 flags |= VK_SHADER_STAGE_COMPUTE_BIT;
 
             return flags;

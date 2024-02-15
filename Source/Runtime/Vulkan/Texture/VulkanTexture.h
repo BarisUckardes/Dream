@@ -8,6 +8,7 @@ namespace Dream
 	class RUNTIME_API VulkanTexture : public Texture
 	{
 	public:
+		VulkanTexture(const TextureDesc& desc, const VkImage image, VulkanDevice* pDevice);
 		VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice);
 		~VulkanTexture();
 
@@ -24,6 +25,7 @@ namespace Dream
 			return mMemoryAlignedOffset;
 		}
 	private:
+		const bool mSwapchain;
 		VkImage mImage;
 		VkDevice mLogicalDevice;
 		unsigned long long mMemoryOffset;
