@@ -25,7 +25,7 @@ namespace Dream
 		void SetTitleCore(const std::string& title) override;
 		void SetOffsetCore(const int x, const int y) override;
 		void SetSizeCore(const unsigned int width, const unsigned int height) override;
-		void SetModeCore(const WindowMode mode, Monitor* pTargetMonitor) override;
+		void SetModeCore(const WindowMode mode) override;
 		void PollEventsCore() override;
 		void ShowCore() override;
 		void HideCore() override;

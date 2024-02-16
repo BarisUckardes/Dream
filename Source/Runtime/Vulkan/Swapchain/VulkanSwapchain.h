@@ -22,7 +22,6 @@ namespace Dream
 	private:
 		virtual void ResizeCore(const unsigned int width, const unsigned int height) override;
 		virtual void PresentCore() override;
-
 		void Delete();
 	private:
 		VkSwapchainKHR mSwapchain;

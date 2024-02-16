@@ -1,16 +1,20 @@
 #include <Runtime/Window/Window.h>
 #include <Runtime/Monitor/Monitor.h>
 #include <Runtime/Graphics/Instance/GraphicsInstance.h>
-#include <Runtime/Vulkan/Instance/VulkanInstanceDesc.h>
-#include <Runtime/Vulkan/Device/VulkanDeviceDesc.h>
 #include <Runtime/Graphics/Adapter/GraphicsAdapter.h>
+#include <Runtime/Graphics/Device/GraphicsDevice.h>
+#include <Runtime/ShaderCompiler/ShaderCompiler.h>
+
+#define USE_VULKAN
+
+#ifdef USE_VULKAN
 #include <vulkan.h>
 #include <Windows.h>
 #include <vulkan_win32.h>
-#include <Runtime/Graphics/Device/GraphicsDevice.h>
+#include <Runtime/Vulkan/Instance/VulkanInstanceDesc.h>
+#include <Runtime/Vulkan/Device/VulkanDeviceDesc.h>
 #include <Runtime/Vulkan/Device/VulkanDeviceFeatures.h>
-#include <Runtime/ShaderCompiler/ShaderCompiler.h>
-
+#endif
 
 namespace Dream
 {
@@ -203,9 +207,18 @@ namespace Dream
 		windowDesc.Height = 1024;
 
 		Window* pWindow = Window::Create(windowDesc);
+
 		pWindow->Show();
 
+		pWindow->SetMode(WindowMode::Borderless);
+
+		Monitor* pMonitor = Monitor::GetPrimaryMonitor();
+
+		pWindow->SetOffset(pMonitor->GetPositionX(), pMonitor->GetPositionY());
+		pWindow->SetSize(pMonitor->GetWidth(), pMonitor->GetHeight());
+
 		//Create instance
+#ifdef USE_VULKAN
 		VulkanInstanceDesc instanceDesc = {};
 		instanceDesc.Extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 		instanceDesc.Extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
@@ -221,24 +234,27 @@ namespace Dream
 		instanceDesc.ApplicationName = "Runtime";
 		instanceDesc.Backend = GraphicsBackend::Vulkan;
 		GraphicsInstance* pInstance = GraphicsInstance::Create(&instanceDesc);
+#endif
 
 		//Get adapter
 		GraphicsAdapter* pAdapter = pInstance->GetAdapter(0);
 		
 		//Create device
+#ifdef USE_VULKAN
 		VulkanDeviceDesc deviceDesc = {};
 		deviceDesc.Extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 		deviceDesc.Extensions.push_back(VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME);
 		deviceDesc.Extensions.push_back(VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME);
 		deviceDesc.Extensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 		deviceDesc.Extensions.push_back(VK_KHR_MAINTENANCE2_EXTENSION_NAME);
-		deviceDesc.pOwnerAdapter = pAdapter;
 		VulkanDeviceFeatures deviceFeatures = {};
 		deviceDesc.pRequestedFeatures = &deviceFeatures;
+		deviceDesc.pOwnerAdapter = pAdapter;
 		deviceDesc.GraphicsQueueCount = 1;
 		deviceDesc.ComputeQueueCount = 1;
 		deviceDesc.TransferQueueCount = 1;
 		GraphicsDevice* pDevice = pAdapter->CreateDevice(&deviceDesc);
+#endif
 
 		//Create queue
 		GraphicsQueueDesc queueDesc = {};

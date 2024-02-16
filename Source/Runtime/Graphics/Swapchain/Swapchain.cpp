@@ -24,22 +24,23 @@ namespace Dream
 	void Swapchain::Present()
 	{
 		//First wait for target fence
-		GetDevice()->WaitFences(&mPresentFences[mIndex], 1);
-		GetDevice()->ResetFences(&mPresentFences[mIndex],1);
+		GetDevice()->WaitFences(&mPresentFences[mImageIndex], 1);
+		GetDevice()->ResetFences(&mPresentFences[mImageIndex],1);
 
 		//Present
 		PresentCore();
 
 		//Increment index
-		mIndex = (mIndex + 1) % mBufferCount;
+		mImageIndex = (mImageIndex + 1) % mBufferCount;
 	}
 	void Swapchain::WaitForPresent(const unsigned char index)
 	{
 		GetDevice()->WaitFences(&mPresentFences[index], 1);
 	}
+	
 	Swapchain::Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice) :
 		GraphicsDeviceObject(pDevice),mMode(desc.Mode),mBufferCount(desc.BufferCount),mColorBufferFormat(desc.ColorFormat),mDepthStencilBufferFormat(desc.DepthStencilFormat),mWindow(desc.pWindow),
-		mIndex(0),mQueue(desc.pQueue)
+		mImageIndex(0),mQueue(desc.pQueue)
 	{
 		mWidth = mWindow->GetWidth();
 		mHeight = mWindow->GetHeight();

@@ -53,7 +53,7 @@ namespace Dream
 		void SetTitle(const std::string& title);
 		void SetOffset(const int x, const int y);
 		void SetSize(const unsigned int width, const unsigned int height);
-		void SetMode(const WindowMode mode, Monitor* pTargetMonitor);
+		void SetMode(const WindowMode mode);
 		void PollEvents();
 		void Show();
 		void Hide();
@@ -63,7 +63,7 @@ namespace Dream
 		virtual void SetTitleCore(const std::string& title) = 0;
 		virtual void SetOffsetCore(const int x, const int y) = 0;
 		virtual void SetSizeCore(const unsigned int width, const unsigned int height) = 0;
-		virtual void SetModeCore(const WindowMode mode, Monitor* pTargetMonitor) = 0;
+		virtual void SetModeCore(const WindowMode mode) = 0;
 		virtual void PollEventsCore() = 0;
 		virtual void ShowCore() = 0;
 		virtual void HideCore() = 0;
@@ -77,7 +77,6 @@ namespace Dream
 		unsigned int mWidth;
 		unsigned int mHeight;
 		WindowMode mMode;
-		Monitor* mMonitor;
 		bool mVisible;
 		bool mActive;
 	};

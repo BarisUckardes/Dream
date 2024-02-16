@@ -48,9 +48,9 @@ namespace Dream
 		{
 			return mHeight;
 		}
-		FORCEINLINE unsigned char GetCurrentIndex() const noexcept
+		FORCEINLINE unsigned char GetCurrentImageIndex() const noexcept
 		{
-			return mIndex;
+			return mImageIndex;
 		}
 		FORCEINLINE const GraphicsQueue* GetQueue() const noexcept
 		{
@@ -91,6 +91,6 @@ namespace Dream
 		std::vector<TextureView*> mColorTextureViews;
 		unsigned int mWidth;
 		unsigned int mHeight;
-		unsigned char mIndex;
+		unsigned char mImageIndex;
 	};
 }

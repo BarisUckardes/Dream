@@ -36,38 +36,15 @@ namespace Dream
 		mWidth = width;
 		mHeight = height;
 	}
-	void Window::SetMode(const WindowMode mode, Monitor* pTargetMonitor)
+	void Window::SetMode(const WindowMode mode)
 	{
-		//Validations
-		if (mode == WindowMode::Fullscreen && pTargetMonitor == nullptr)
-		{
-			DEV_LOG("Window", "You cannot set for Fullscreen while the pTargetMonitor is nullptr!");
-			return;
-		}
-
 		//Call implementation
-		SetModeCore(mode, pTargetMonitor);
+		SetModeCore(mode);
 
-		//Make position and size arrangements
-		if (mode == WindowMode::Fullscreen)
-		{
-			SetOffset(pTargetMonitor->GetPositionX(), pTargetMonitor->GetPositionY());
-			SetSize(pTargetMonitor->GetWidth(), pTargetMonitor->GetHeight());
-		}
-		else
-		{
-			Monitor* pPrimaryMonitor = Monitor::GetPrimaryMonitor();
-			DEV_ASSERT(pPrimaryMonitor != nullptr, "Monitor", "Failed to get the primary monitor!");
-
-			SetOffset(pPrimaryMonitor->GetPositionX(), pPrimaryMonitor->GetPositionY());
-			SetSize(pPrimaryMonitor->GetWidth(), pPrimaryMonitor->GetHeight());
-
-			delete pPrimaryMonitor;
-		}
+		SetSize(mWidth, mHeight);
 
 		//Set properties
 		mMode = mode;
-		mMonitor = pTargetMonitor;
 	}
 	void Window::PollEvents()
 	{
@@ -87,7 +64,7 @@ namespace Dream
 
 		mVisible = false;
 	}
-	Window::Window(const WindowDesc& desc) : mMode(WindowMode::Windowed),mMonitor(nullptr),mTitle(desc.Title),mX(desc.X),mY(desc.Y),mWidth(desc.Width),mHeight(desc.Height), mVisible(false), mActive(true)
+	Window::Window(const WindowDesc& desc) : mMode(WindowMode::Border),mTitle(desc.Title),mX(desc.X),mY(desc.Y),mWidth(desc.Width),mHeight(desc.Height), mVisible(false), mActive(true)
 	{
 
 	}

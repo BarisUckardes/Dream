@@ -181,12 +181,17 @@ namespace Dream
 #ifdef DREAM_PLATFORM_WINDOWS
 		const Win32Window* pWindow = (const Win32Window*)GetWindow();
 
+		VkSurfaceFullScreenExclusiveInfoEXT fullscreenExclusiveInfo = {};
+		fullscreenExclusiveInfo.fullScreenExclusive = VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT;
+		fullscreenExclusiveInfo.sType = VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_INFO_EXT;
+		fullscreenExclusiveInfo.pNext = nullptr;
+
 		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
 		surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceInfo.hinstance = GetModuleHandle(NULL);
 		surfaceInfo.hwnd = pWindow->GetWin32WindowHandle();
-		surfaceInfo.pNext = nullptr;
 		surfaceInfo.flags = VkWin32SurfaceCreateFlagsKHR();
+		surfaceInfo.pNext = &fullscreenExclusiveInfo;
 
 		DEV_ASSERT(vkCreateWin32SurfaceKHR(pInstance->GetVkInstance(), &surfaceInfo, nullptr, &mSurface) == VK_SUCCESS, "VulkanSwapchain", "Failed to create surface");
 #endif
@@ -319,7 +324,7 @@ namespace Dream
 	}
 	void VulkanSwapchain::PresentCore()
 	{
-		VkFence fence = ((VulkanFence*)GetPresentFence(GetCurrentIndex()))->GetVkFence();
+		VkFence fence = ((VulkanFence*)GetPresentFence(GetCurrentImageIndex()))->GetVkFence();
 
 		unsigned int imageIndex = 0;
 		if (vkAcquireNextImageKHR(mLogicalDevice, mSwapchain, uint64_max, VK_NULL_HANDLE, fence, &imageIndex) != VK_SUCCESS)

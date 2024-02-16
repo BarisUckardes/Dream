@@ -110,17 +110,17 @@ namespace Dream
 	}
 	void Win32Window::SetOffsetCore(const int x, const int y)
 	{
-		SetWindowPos(mHandle, NULL, x, y, 0, 0, SWP_NOSIZE);
+		SetWindowPos(mHandle, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_FRAMECHANGED);
 	}
 	void Win32Window::SetSizeCore(const unsigned int width, const unsigned int height)
 	{
-		SetWindowPos(mHandle, NULL, 0, 0, width, height, SWP_NOMOVE);
+		SetWindowPos(mHandle, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_FRAMECHANGED);
 	}
-	void Win32Window::SetModeCore(const WindowMode mode, Monitor* pTargetMonitor)
+	void Win32Window::SetModeCore(const WindowMode mode)
 	{
 		switch (mode)
 		{
-			case Dream::WindowMode::Windowed:
+			case Dream::WindowMode::Border:
 			default:
 			{
 				SetWindowLongPtr(mHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
@@ -128,12 +128,7 @@ namespace Dream
 			}
 			case Dream::WindowMode::Borderless:
 			{
-				SetWindowLongPtr(mHandle, GWL_STYLE, WS_POPUP);
-				break;
-			}
-			case Dream::WindowMode::Fullscreen:
-			{
-				SetWindowLongPtr(mHandle, GWL_STYLE, WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+				SetWindowLongPtr(mHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 				break;
 			}
 		}
