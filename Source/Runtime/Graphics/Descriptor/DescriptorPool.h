@@ -9,6 +9,10 @@ namespace Dream
 	public:
 		~DescriptorPool();
 
+		FORCEINLINE DescriptorMemoryType GetMemoryType() const noexcept
+		{
+			return mType;
+		}
 		FORCEINLINE unsigned long long GetSetCount() const noexcept
 		{
 			return mSetCount;
@@ -25,6 +29,7 @@ namespace Dream
 		DescriptorPool(const DescriptorPoolDesc& desc,GraphicsDevice* pDevice);
 	private:
 		const unsigned long long mSetCount;
-		std::vector<DescriptorPoolSize> mSizes;
+		const DescriptorMemoryType mType;
+		const std::vector<DescriptorPoolSize> mSizes;
 	};
 }

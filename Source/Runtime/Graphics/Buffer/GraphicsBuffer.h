@@ -25,6 +25,10 @@ namespace Dream
 		{
 			return mTotalSize;
 		}
+		FORCEINLINE const GraphicsMemory* GetMemory() const noexcept
+		{
+			return mMemory;
+		}
 
 		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
 		{
@@ -38,5 +42,6 @@ namespace Dream
 		const unsigned int mSubItemCount;
 		const unsigned int mSubItemSize;
 		const unsigned long long mTotalSize;
+		const GraphicsMemory* mMemory;
 	};
 }

@@ -27,6 +27,8 @@ namespace Dream
         info.pPoolSizes = sizes;
         info.pNext = nullptr;
         info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        if (desc.Type == DescriptorMemoryType::Host)
+            info.flags |= VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT;
 
         DEV_ASSERT(vkCreateDescriptorPool(mLogicalDevice, &info, nullptr, &mPool) == VK_SUCCESS, "VulkanDescriptorPool", "Failed to allocate descriptor pool!");
     }

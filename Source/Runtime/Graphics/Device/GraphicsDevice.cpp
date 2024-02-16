@@ -154,7 +154,19 @@ namespace Dream
 
         return pCmdList;
     }
-    void GraphicsDevice::SubmitCommands(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence)
+    void GraphicsDevice::UpdateDescriptorSet(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
+    {
+        UpdateDescriptorSetCore(pSet, desc);
+    }
+    void GraphicsDevice::CopyDescriptorSet(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
+    {
+        CopyDescriptorSetCore(pSourceSet, pDestinationSet,desc);
+    }
+    void GraphicsDevice::UpdateHostBuffer(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
+    {
+        UpdateHostBufferCore(pTargetBuffer, desc);
+    }
+    void GraphicsDevice::SubmitCommands(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence)
     {
         SubmitCommandsCore(ppCmdLists, count, pTargetQueue,pFence);
     }

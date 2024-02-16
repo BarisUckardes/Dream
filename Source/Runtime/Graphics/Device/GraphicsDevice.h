@@ -19,7 +19,10 @@
 #include <Runtime/Graphics/RenderPass/RenderPass.h>
 #include <Runtime/Graphics/Command/CommandPool.h>
 #include <Runtime/Graphics/Command/CommandList.h>
+#include <Runtime/Graphics/Common/HostBufferUpdateDesc.h>
 #include <vector>
+#include <Runtime/Graphics/Common/DescriptorSetUpdateDesc.h>
+#include <Runtime/Graphics/Common/DescriptorSetCopyDesc.h>
 
 namespace Dream
 {
@@ -54,7 +57,10 @@ namespace Dream
 		CommandPool* CreateCommandPool(const CommandPoolDesc& desc);
 		CommandList* CreateCommandList(const CommandListDesc& desc);
 
-		void SubmitCommands(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence);
+		void UpdateDescriptorSet(DescriptorSet* pSet,const DescriptorSetUpdateDesc& desc);
+		void CopyDescriptorSet(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet,const DescriptorSetCopyDesc& desc);
+		void UpdateHostBuffer(GraphicsBuffer* pTargetBuffer,const HostBufferUpdateDesc& desc);
+		void SubmitCommands(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence);
 		void ResetFences(Fence** ppFences, const unsigned int count);
 		void WaitFences(Fence** ppFences, const unsigned int count);
 		void WaitDeviceIdle();
@@ -83,7 +89,10 @@ namespace Dream
 		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) = 0;
 		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) = 0;
 
-		virtual void SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence) = 0;
+		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) = 0;
+		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) = 0;
+		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) = 0;
+		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence) = 0;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitDeviceIdleCore() =  0;

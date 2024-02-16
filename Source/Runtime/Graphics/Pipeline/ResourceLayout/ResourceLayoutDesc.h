@@ -3,9 +3,9 @@
 
 namespace Dream
 {
-    class ResourceTableLayout;
+    class DescriptorSetLayout;
     struct RUNTIME_API ResourceLayoutDesc
     {
-        std::vector<ResourceTableLayout*> ResourceLayouts;
+        std::vector<DescriptorSetLayout*> ResourceLayouts;
     };
 }

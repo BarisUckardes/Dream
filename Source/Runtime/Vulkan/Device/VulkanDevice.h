@@ -72,7 +72,10 @@ namespace Dream
 		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) override;
 		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) override;
 
-		virtual void SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue,const Fence* pFence) override;
+		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) override;
+		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) override;
+		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) override;
+		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue,const Fence* pFence) override;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitDeviceIdleCore() override;

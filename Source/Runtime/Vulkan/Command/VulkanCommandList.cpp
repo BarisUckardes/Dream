@@ -51,7 +51,7 @@ namespace Dream
 	{
 		DEV_ASSERT(vkEndCommandBuffer(mCommandBuffer) == VK_SUCCESS, "VulkanCommandList", "Failed to end command list");
 	}
-	void VulkanCommandList::SetVertexBufferCore(GraphicsBuffer** ppBuffers, const unsigned char count)
+	void VulkanCommandList::SetVertexBuffersCore(GraphicsBuffer** ppBuffers, const unsigned char count)
 	{
 		VkDeviceSize offsets[32];
 		VkBuffer buffers[32];
@@ -114,35 +114,35 @@ namespace Dream
 	{
 		vkCmdEndRenderPass(mCommandBuffer);
 	}
-	void VulkanCommandList::SetViewportsCore(const ViewportDesc** ppViewports, const unsigned char count)
+	void VulkanCommandList::SetViewportsCore(ViewportDesc* pViewports, const unsigned char count)
 	{
 		VkViewport vkViewports[32];
 		for (unsigned char viewportIndex = 0; viewportIndex < count; viewportIndex++)
 		{
-			const ViewportDesc* pViewport = ppViewports[viewportIndex];
+			const ViewportDesc& viewport = pViewports[viewportIndex];
 
 			VkViewport vkViewport = {};
-			vkViewport.x = pViewport->X;
-			vkViewport.y = pViewport->Y;
-			vkViewport.width = pViewport->Width;
-			vkViewport.height = pViewport->Height;
-			vkViewport.minDepth = pViewport->DepthMin;
-			vkViewport.maxDepth = pViewport->DepthMax;
+			vkViewport.x = viewport.X;
+			vkViewport.y = viewport.Y;
+			vkViewport.width = viewport.Width;
+			vkViewport.height = viewport.Height;
+			vkViewport.minDepth = viewport.DepthMin;
+			vkViewport.maxDepth = viewport.DepthMax;
 
 			vkViewports[viewportIndex] = vkViewport;
 		}
 		vkCmdSetViewport(mCommandBuffer, 0, count, vkViewports);
 	}
-	void VulkanCommandList::SetScissorsCore(const ScissorDesc** ppScissors, const unsigned char count)
+	void VulkanCommandList::SetScissorsCore(ScissorDesc* pScissors, const unsigned char count)
 	{
 		VkRect2D vkScissors[32];
 		for (unsigned char scissorIndex = 0; scissorIndex < count; scissorIndex++)
 		{
-			const ScissorDesc* pScissor = ppScissors[scissorIndex];
+			const ScissorDesc& scissor = pScissors[scissorIndex];
 
 			VkRect2D rect = {};
-			rect.offset = { (int)pScissor->X,(int)pScissor->Y };
-			rect.extent = { pScissor->Width,pScissor->Height };
+			rect.offset = { (int)scissor.X,(int)scissor.Y };
+			rect.extent = { scissor.Width,scissor.Height };
 
 			vkScissors[scissorIndex] = rect;
 		}
@@ -257,7 +257,7 @@ namespace Dream
 	{
 		const VulkanPipeline* pPipeline = (const VulkanPipeline*)GetBoundPipeline();
 
-		VkDescriptorSet descriptorSets[128];
+		VkDescriptorSet descriptorSets[32];
 
 		for (unsigned char resourceIndex = 0; resourceIndex < count; resourceIndex++)
 		{

@@ -11,6 +11,8 @@ namespace Dream
 		info.pCode = (const uint32_t*)desc.pByteCode;
 		info.codeSize = desc.ByteCodeLength;
 		info.flags = VkShaderModuleCreateFlags();
+
+		DEV_ASSERT(vkCreateShaderModule(mLogicalDevice, &info, nullptr, &mModule) == VK_SUCCESS, "VulkanShader", "Failed to create shader module");
 	}
 	VulkanShader::~VulkanShader()
 	{

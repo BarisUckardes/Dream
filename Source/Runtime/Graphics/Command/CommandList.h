@@ -37,15 +37,15 @@ namespace Dream
 
 		void BeginRecording();
 		void EndRecording();
-		void SetVertexBuffer(GraphicsBuffer** ppBuffers, const unsigned char count);
+		void SetVertexBuffers(GraphicsBuffer** ppBuffers, const unsigned char count);
 		void SetIndexBuffer(GraphicsBuffer* pBuffer, const IndexBufferType type);
 		void DrawIndexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount);
 		void DispatchCompute(const unsigned int x, const unsigned int y, const unsigned int z);
 		void SetPipeline(Pipeline* pPipeline);
 		void BeginRenderPass(RenderPass* pPass, const float clearColor[4]);
 		void EndRenderPass();
-		void SetViewports(const ViewportDesc** ppViewports,const unsigned char count);
-		void SetScissors(const ScissorDesc** ppScissors, const unsigned char count);
+		void SetViewports(ViewportDesc* pViewports,const unsigned char count);
+		void SetScissors(ScissorDesc* pScissors, const unsigned char count);
 		void CopyBufferToBuffer(const GraphicsBuffer* pSourceBuffer,const GraphicsBuffer* pDestinationBuffer,const BufferBufferCopyDesc& desc);
 		void CopyBufferToTexture(const GraphicsBuffer* pSourceBuffer,const Texture* pDestinationTexture,const BufferTextureCopyDesc& desc);
 		void CopyTextureToTexture(const Texture* pSourceTexture,const Texture* pDestinationTexture,const TextureCopyDesc& desc);
@@ -57,15 +57,15 @@ namespace Dream
 
 		virtual void BeginRecordingCore() = 0;
 		virtual void EndRecordingCore() = 0;
-		virtual void SetVertexBufferCore(GraphicsBuffer** ppBuffers, const unsigned char count) = 0;
+		virtual void SetVertexBuffersCore(GraphicsBuffer** ppBuffers, const unsigned char count) = 0;
 		virtual void SetIndexBufferCore(GraphicsBuffer* pBuffer, const IndexBufferType type) = 0;
 		virtual void DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) = 0;
 		virtual void DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z) = 0;
 		virtual void SetPipelineCore(Pipeline* pPipeline) = 0;
 		virtual void BeginRenderPassCore(RenderPass* pPass, const float clearColor[4]) = 0;
 		virtual void EndRenderPassCore() = 0;
-		virtual void SetViewportsCore(const ViewportDesc** ppViewports, const unsigned char count) = 0;
-		virtual void SetScissorsCore(const ScissorDesc** ppScissors, const unsigned char count) = 0;
+		virtual void SetViewportsCore(ViewportDesc* pViewports, const unsigned char count) = 0;
+		virtual void SetScissorsCore(ScissorDesc* pScissors, const unsigned char count) = 0;
 		virtual void CopyBufferToBufferCore(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc) = 0;
 		virtual void CopyBufferToTextureCore(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc) = 0;
 		virtual void CopyTextureToTextureCore(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc) = 0;

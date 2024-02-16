@@ -17,6 +17,7 @@
 #include <Runtime/Vulkan/RenderPass/VulkanRenderPass.h>
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 #include <Runtime/Vulkan/Command/VulkanCommandList.h>
+#include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
 
 namespace Dream
 {
@@ -57,7 +58,7 @@ namespace Dream
 				mTransferFamily.FamilyIndex = i;
 			}
 		}
-
+		
 		//Get queue create informations
 		constexpr float queuePriorities[] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInformations;
@@ -111,7 +112,6 @@ namespace Dream
 
 		VkDeviceCreateInfo deviceInfo = {};
 		deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		deviceInfo.pNext = nullptr;
 		deviceInfo.queueCreateInfoCount = queueCreateInformations.size();
 		deviceInfo.pQueueCreateInfos = queueCreateInformations.data();
 		deviceInfo.enabledExtensionCount = extensions.size();
@@ -120,6 +120,11 @@ namespace Dream
 		deviceInfo.ppEnabledLayerNames = layers.data();
 		deviceInfo.pEnabledFeatures = pFeatures;
 		deviceInfo.flags = VkDeviceCreateFlags();
+		VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT descriptorFeatures = {};
+		descriptorFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_EXT;
+		descriptorFeatures.mutableDescriptorType = true;
+		descriptorFeatures.pNext = nullptr;
+		deviceInfo.pNext = &descriptorFeatures;
 
 		DEV_ASSERT(vkCreateDevice(pVkAdapter->GetVkPhysicalDevice(), &deviceInfo, nullptr, &mLogicalDevice) == VK_SUCCESS, "VulkanDevice", "Failed to create logical device");
 
@@ -279,7 +284,7 @@ namespace Dream
 	{
 		return new VulkanSwapchain(desc,this);
 	}
-	void VulkanDevice::SubmitCommandsCore(const CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue, const Fence* pFence)
+	void VulkanDevice::SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue, const Fence* pFence)
 	{
 		const VulkanFence* pVkFence = (const VulkanFence*)pFence;
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pTargetQueue;
@@ -332,6 +337,151 @@ namespace Dream
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
 
 		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue");
+	}
+	void VulkanDevice::UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
+	{
+		const VulkanDescriptorSet* pVkSet = (const VulkanDescriptorSet*)pSet;
+
+		VkWriteDescriptorSet writeInformations[32];
+		VkDescriptorBufferInfo writeBufferInformations[32];
+		VkDescriptorImageInfo writeImageInformations[32];
+		unsigned int bufferIndex = 0;
+		unsigned int imageIndex = 0;
+
+		for (unsigned char i = 0; i < desc.Entries.size(); i++)
+		{
+			const DescriptorSetUpdateEntry& entry = desc.Entries[i];
+
+			VkWriteDescriptorSet writeInfo = {};
+			writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			writeInfo.descriptorType = VulkanDescriptorUtils::GetDescriptorType(entry.Type);
+			writeInfo.descriptorCount = 1;
+			writeInfo.dstArrayElement = entry.ArrayElement;
+			writeInfo.dstBinding = entry.Binding;
+			writeInfo.dstSet = pVkSet->GetVkSet();
+			writeInfo.pNext = nullptr;
+			writeInfo.pBufferInfo = nullptr;
+			writeInfo.pImageInfo = nullptr;
+
+			switch (entry.Type)
+			{
+				case Dream::DescriptorResourceType::Sampler:
+				{
+					const VulkanSampler* pSampler = (const VulkanSampler*)entry.pResource;
+
+					VkDescriptorImageInfo samplerImageInfo = {};
+					samplerImageInfo.imageView = VK_NULL_HANDLE;
+					samplerImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					samplerImageInfo.sampler = pSampler->GetVkSampler();
+					writeImageInformations[imageIndex] = samplerImageInfo;
+					writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+					imageIndex++;
+					break;
+				}
+				case Dream::DescriptorResourceType::SampledTexture:
+				{
+					const VulkanTextureView* pView = (const VulkanTextureView*)entry.pResource;
+
+					VkDescriptorImageInfo imageInfo = {};
+					imageInfo.imageView = pView->GetVkView();
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.sampler = VK_NULL_HANDLE;
+					writeImageInformations[imageIndex] = imageInfo;
+					writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+					imageIndex++;
+					break;
+				}
+				case Dream::DescriptorResourceType::StorageTexture:
+				{
+					const VulkanTextureView* pView = (const VulkanTextureView*)entry.pResource;
+
+					VkDescriptorImageInfo imageInfo = {};
+					imageInfo.imageView = pView->GetVkView();
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.sampler = VK_NULL_HANDLE;
+					writeImageInformations[imageIndex] = imageInfo;
+					writeInfo.pImageInfo = &writeImageInformations[imageIndex];
+					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+					imageIndex++;
+					break;
+				}
+				case Dream::DescriptorResourceType::ConstantBuffer:
+				{
+					const VulkanBuffer* pBuffer = (const VulkanBuffer*)entry.pResource;
+
+					VkDescriptorBufferInfo bufferInfo = {};
+					bufferInfo.buffer = pBuffer->GetVkBuffer();
+					bufferInfo.offset = entry.BufferOffsetInBytes;
+					bufferInfo.range = pBuffer->GetTotalSize();
+					writeBufferInformations[bufferIndex] = bufferInfo;
+					writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					bufferIndex++;
+					break;
+				}
+				case Dream::DescriptorResourceType::StorageBuffer:
+				{
+					const VulkanBuffer* pBuffer = (const VulkanBuffer*)entry.pResource;
+
+					VkDescriptorBufferInfo bufferInfo = {};
+					bufferInfo.buffer = pBuffer->GetVkBuffer();
+					bufferInfo.offset = entry.BufferOffsetInBytes;
+					bufferInfo.range = pBuffer->GetTotalSize();
+					writeBufferInformations[bufferIndex] = bufferInfo;
+					writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
+					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					bufferIndex++;
+					break;
+				}
+				default:
+					break;
+			}
+
+			writeInformations[i] = writeInfo;
+		}
+
+		vkUpdateDescriptorSets(mLogicalDevice, desc.Entries.size(), writeInformations, 0, nullptr);
+	}
+	void VulkanDevice::CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
+	{
+		const VulkanDescriptorSet* pVkSourceSet = (const VulkanDescriptorSet*)pSourceSet;
+		const VulkanDescriptorSet* pVkDestinationSet = (const VulkanDescriptorSet*)pDestinationSet;
+
+		VkCopyDescriptorSet informations[32];
+
+		for (unsigned char i = 0;i<desc.Entries.size();i++)
+		{
+			const DescriptorSetCopyEntry& entry = desc.Entries[i];
+
+			VkCopyDescriptorSet info = {};
+			info.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+			info.srcSet = pVkSourceSet->GetVkSet();
+			info.srcBinding = entry.SourceBinding;
+			info.srcArrayElement = entry.SourceArrayElement;
+
+			info.dstSet = pVkDestinationSet->GetVkSet();
+			info.dstBinding = entry.DestinationBinding;
+			info.dstArrayElement = entry.DestinationArrayElement;
+
+			info.descriptorCount = entry.DescriptorCount;
+			
+			info.pNext = nullptr;
+			informations[i] = info;
+		}
+		
+		vkUpdateDescriptorSets(mLogicalDevice, 0, nullptr, desc.Entries.size(), informations);
+	}
+	void VulkanDevice::UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
+	{
+		const VulkanMemory* pMemory = (const VulkanMemory*)pTargetBuffer->GetMemory();
+		const VulkanBuffer* pBuffer = (const VulkanBuffer*)pTargetBuffer;
+
+		unsigned char* pTargetHostData = nullptr;
+		DEV_ASSERT(vkMapMemory(mLogicalDevice, pMemory->GetVkMemory(), pBuffer->GetVkMemoryAlignedOffset() + desc.OffsetInBytes, desc.SizeInBytes, VkMemoryMapFlags(), (void**)&pTargetHostData) == VK_SUCCESS, "VulkanDevice", "Failed to map memory");
+		memcpy(pTargetHostData, desc.pBuffer, desc.SizeInBytes);
+		vkUnmapMemory(mLogicalDevice, pMemory->GetVkMemory());
 	}
 	CommandPool* VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
 	{

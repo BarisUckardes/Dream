@@ -19,9 +19,9 @@ namespace Dream
 		EndRecordingCore();
 		ClearCachedState();
 	}
-	void CommandList::SetVertexBuffer(GraphicsBuffer** ppBuffers, const unsigned char count)
+	void CommandList::SetVertexBuffers(GraphicsBuffer** ppBuffers, const unsigned char count)
 	{
-		SetVertexBufferCore(ppBuffers,count);
+		SetVertexBuffersCore(ppBuffers,count);
 	}
 	void CommandList::SetIndexBuffer(GraphicsBuffer* pBuffer, const IndexBufferType type)
 	{
@@ -51,13 +51,13 @@ namespace Dream
 		EndRenderPassCore();
 		mBoundRenderPass = nullptr;
 	}
-	void CommandList::SetViewports(const ViewportDesc** ppViewports, const unsigned char count)
+	void CommandList::SetViewports(ViewportDesc* pViewports, const unsigned char count)
 	{
-		SetViewportsCore(ppViewports, count);
+		SetViewportsCore(pViewports, count);
 	}
-	void CommandList::SetScissors(const ScissorDesc** ppScissors, const unsigned char count)
+	void CommandList::SetScissors(ScissorDesc* pScissors, const unsigned char count)
 	{
-		SetScissorsCore(ppScissors, count);
+		SetScissorsCore(pScissors, count);
 	}
 	void CommandList::CopyBufferToBuffer(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc)
 	{
