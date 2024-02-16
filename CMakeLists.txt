@@ -26,4 +26,5 @@ endif ()
 
 # ------------------ SUBDIRECTORIES ----------------
 add_subdirectory("Source/Runtime")
-add_subdirectory("Source/TestShop")
+add_subdirectory("Samples/HelloTriangle")
+add_subdirectory("Samples/TexturedQuad")

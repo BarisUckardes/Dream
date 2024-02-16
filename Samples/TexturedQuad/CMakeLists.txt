@@ -5,9 +5,9 @@ include(${CMAKE_SOURCE_DIR}/Scripts/CMake/FetchLibraries.cmake)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------
-file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/TestShop/**.cpp" "${CMAKE_SOURCE_DIR}/Source/TestShop/**.h")
-source_group(TREE "${CMAKE_SOURCE_DIR}/Source/TestShop" FILES ${SUBDIRECTORIES})
-add_executable(TestShop main.cpp ${SUBDIRECTORIES})
+file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Sample/TexturedQuad/**.cpp" "${CMAKE_SOURCE_DIR}/Sample/TexturedQuad/**.h")
+source_group(TREE "${CMAKE_SOURCE_DIR}/Sample/TexturedQuad" FILES ${SUBDIRECTORIES})
+add_executable(TexturedQuad main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # ---------------- WINDOWS EXECUTALE OPTIONS -----------------
@@ -21,24 +21,13 @@ add_executable(TestShop main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # -------------------- INCLUDE LIBRARIES ---------------------
-target_include_directories(TestShop PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+target_include_directories(TexturedQuad PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 # ------------------------------------------------------------
 
 # --------------------- LINK LIBRARIES -----------------------
-target_link_libraries(TestShop PRIVATE Runtime)
+target_link_libraries(TexturedQuad PRIVATE Runtime)
 # ------------------------------------------------------------
 
-# -------------------- MACRO DEFINITIONS ---------------------
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_definitions(TestShop PUBLIC PLAYER_API=__declspec\(dllexport\))
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	target_compile_definitions(TestShop PUBLIC PLAYER_API=__attribute__\(\(visibility\(\"default\"\)\)\))
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_definitions(TestShop PUBLIC PLAYER_API=__attribute__\(\(visibility\(\"default\"\)\)\))
-else()
-	message(FATAL_ERROR "[CMAKE ERROR] -- UNSUPPORTED COMPILER. PLEASE CHECK YOUR COMPILER AND PLATFORM.")
-endif()
-# ------------------------------------------------------------
 
 # -------------------- REFLECTION PARSER ---------------------
 ###SetReflectionParser(EditorPlayer)

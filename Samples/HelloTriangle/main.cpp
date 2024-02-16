@@ -213,7 +213,6 @@ namespace Dream
 		pWindow->SetMode(WindowMode::Borderless);
 
 		Monitor* pMonitor = Monitor::GetPrimaryMonitor();
-
 		pWindow->SetOffset(pMonitor->GetPositionX(), pMonitor->GetPositionY());
 		pWindow->SetSize(pMonitor->GetWidth(), pMonitor->GetHeight());
 
@@ -297,6 +296,7 @@ namespace Dream
 		deviceMemoryDesc.Type = GraphicsMemoryType::Device;
 		GraphicsMemory* pDeviceMemory = pDevice->AllocateMemory(deviceMemoryDesc);
 
+		//Create vertex buffer
 		struct Vertex
 		{
 			float X;
@@ -313,7 +313,6 @@ namespace Dream
 			{-0.5f,0.5f,0,1.0f},
 		};
 
-		//Create vertex buffer
 		GraphicsBufferDesc vertexBufferDesc = {};
 		vertexBufferDesc.Usage = GraphicsBufferUsage::VertexBuffer | GraphicsBufferUsage::TransferDestination;
 		vertexBufferDesc.SubItemCount = sizeof(vertexes)/sizeof(Vertex);
@@ -321,12 +320,12 @@ namespace Dream
 		vertexBufferDesc.pMemory = pDeviceMemory;
 		GraphicsBuffer* pVertexBuffer = pDevice->CreateBuffer(vertexBufferDesc);
 
+		//Create index buffer
 		constexpr unsigned short indexes[] =
 		{
 			0,1,2
 		};
 
-		//Create index buffer
 		GraphicsBufferDesc indexBufferDesc = {};
 		indexBufferDesc.Usage = GraphicsBufferUsage::IndexBuffer | GraphicsBufferUsage::TransferDestination;
 		indexBufferDesc.SubItemCount = sizeof(indexes) / sizeof(unsigned short);
