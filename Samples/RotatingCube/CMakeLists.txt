@@ -4,10 +4,14 @@ cmake_minimum_required(VERSION 3.26)
 include(${CMAKE_SOURCE_DIR}/Scripts/CMake/FetchLibraries.cmake)
 # ------------------------------------------------------------
 
+# ---------------------- CMAKE FETCH -------------------------
+FetchContent_MakeAvailable(glm)
+# ------------------------------------------------------------
+
 # ---------------------- FILE ADDITION -----------------------
-file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Samples/TexturedQuad/**.cpp" "${CMAKE_SOURCE_DIR}/Samples/TexturedQuad/**.h")
-source_group(TREE "${CMAKE_SOURCE_DIR}/Samples/TexturedQuad" FILES ${SUBDIRECTORIES})
-add_executable(TexturedQuad main.cpp ${SUBDIRECTORIES})
+file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Samples/RotatingCube/**.cpp" "${CMAKE_SOURCE_DIR}/Samples/RotatingCube/**.h")
+source_group(TREE "${CMAKE_SOURCE_DIR}/Samples/RotatingCube" FILES ${SUBDIRECTORIES})
+add_executable(RotatingCube main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # ---------------- WINDOWS EXECUTALE OPTIONS -----------------
@@ -21,11 +25,12 @@ add_executable(TexturedQuad main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
 # -------------------- INCLUDE LIBRARIES ---------------------
-target_include_directories(TexturedQuad PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+target_include_directories(RotatingCube PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+target_include_directories(Runtime PUBLIC "${glm_SOURCE_DIR}")
 # ------------------------------------------------------------
 
 # --------------------- LINK LIBRARIES -----------------------
-target_link_libraries(TexturedQuad PRIVATE Runtime)
+target_link_libraries(RotatingCube PRIVATE Runtime)
 # ------------------------------------------------------------
 
 

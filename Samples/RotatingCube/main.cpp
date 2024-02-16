@@ -4,9 +4,6 @@
 #include <Runtime/Graphics/Adapter/GraphicsAdapter.h>
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
-#include <glm/vec3.hpp>
-#include <glm/matrix.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <stb_image.h>
 
 #define USE_VULKAN
@@ -27,9 +24,13 @@
 namespace Dream
 {
 	static const char vertexShaderSource[] =
-		"struct VS_INPUT\
+		"layout(set=0,binding=0) cbuffer vertexBuffer\
             {\
-              float2 pos : POSITION;\
+              float4x4 Mvp;\
+            };\
+			struct VS_INPUT\
+            {\
+              float3 pos : POSITION;\
               float2 uv  : TEXCOORD0;\
             };\
             \
@@ -42,7 +43,7 @@ namespace Dream
             PS_INPUT main(VS_INPUT input)\
             {\
               PS_INPUT output;\
-              output.pos = float4(input.pos.xy, 0.f, 1.f);\
+              output.pos = float4(input.pos.xyz, 1.f);\
               output.uv  = input.uv;\
               return output;\
             }";
@@ -53,8 +54,8 @@ namespace Dream
             float4 pos : SV_POSITION;\
             float2 uv  : TEXCOORD0;\
             };\
-            layout(set=0,binding=0) sampler sampler0;\
-            layout(set=0,binding=1) Texture2D texture0;\
+            layout(set=0,binding=1) sampler sampler0;\
+            layout(set=0,binding=2) Texture2D texture0;\
             \
             float4 main(PS_INPUT input) : SV_Target\
             {\
@@ -342,19 +343,19 @@ namespace Dream
 		GraphicsBuffer* pIndexBuffer = pDevice->CreateBuffer(indexBufferDesc);
 
 		//Create constant buffer
-		struct ConstantBufferData
+		struct Color
 		{
-			glm::mat4x4 Mvp;
+			float R;
+			float G;
+			float B;
+			float A;
 		};
+		constexpr Color color = { 1.0f,0,0,1.0f };
 
-		const ConstantBufferData constantBufferData =
-		{
-
-		};
 		GraphicsBufferDesc constantBufferDesc = {};
 		constantBufferDesc.Usage = GraphicsBufferUsage::ConstantBuffer | GraphicsBufferUsage::TransferDestination;
 		constantBufferDesc.SubItemCount = 1;
-		constantBufferDesc.SubItemSizeInBytes = sizeof(constantBufferData);
+		constantBufferDesc.SubItemSizeInBytes = sizeof(color);
 		constantBufferDesc.pMemory = pDeviceMemory;
 
 		GraphicsBuffer* pConstantBuffer = pDevice->CreateBuffer(constantBufferDesc);
@@ -375,7 +376,7 @@ namespace Dream
 		GraphicsBufferDesc constantStageBufferDesc = {};
 		constantStageBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 		constantStageBufferDesc.SubItemCount = 1;
-		constantStageBufferDesc.SubItemSizeInBytes = sizeof(constantBufferData);
+		constantStageBufferDesc.SubItemSizeInBytes = sizeof(color);
 		constantStageBufferDesc.pMemory = pHostMemory;
 
 		GraphicsBuffer* pVertexStageBuffer = pDevice->CreateBuffer(vertexStageBufferDesc);
@@ -397,8 +398,8 @@ namespace Dream
 
 		HostBufferUpdateDesc constantBufferUpdateDesc = {};
 		constantBufferUpdateDesc.OffsetInBytes = 0;
-		constantBufferUpdateDesc.SizeInBytes = sizeof(constantBufferData);
-		constantBufferUpdateDesc.pBuffer = (unsigned char*)&constantBufferData;
+		constantBufferUpdateDesc.SizeInBytes = sizeof(color);
+		constantBufferUpdateDesc.pBuffer = (unsigned char*)&color;
 		pDevice->UpdateHostBuffer(pConstantStageBuffer, constantBufferUpdateDesc);
 
 		//Create sampler
@@ -477,7 +478,7 @@ namespace Dream
 
 		BufferBufferCopyDesc constantBufferCopyDesc = {};
 		constantBufferCopyDesc.DestinationOffsetInBytes = 0;
-		constantBufferCopyDesc.SizeInBytes = sizeof(constantBufferData);
+		constantBufferCopyDesc.SizeInBytes = sizeof(color);
 		constantBufferCopyDesc.SourceOffsetInBytes = 0;
 		pCmdList->CopyBufferToBuffer(pConstantStageBuffer, pConstantBuffer, constantBufferCopyDesc);
 
@@ -569,6 +570,7 @@ namespace Dream
 		hostDescriptorPoolDesc.SetCount = 3;
 		hostDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::SampledTexture,1 });
 		hostDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::Sampler,1 });
+		hostDescriptorPoolDesc.Sizes.push_back({DescriptorResourceType::ConstantBuffer,1});
 		DescriptorPool* pDescriptorHostPool = pDevice->CreateDescriptorPool(hostDescriptorPoolDesc);
 
 		DescriptorPoolDesc deviceDescriptorPoolDesc = {};
@@ -576,19 +578,26 @@ namespace Dream
 		deviceDescriptorPoolDesc.SetCount = 3;
 		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::SampledTexture,1 });
 		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::Sampler,1 });
+		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::ConstantBuffer,1 });
 		DescriptorPool* pDescriptorDevicePool = pDevice->CreateDescriptorPool(deviceDescriptorPoolDesc);
 
 		//Create descriptor set layout
 		DescriptorSetLayoutDesc setLayoutDesc = {};
 		{
+			DescriptorSetLayoutEntry constantBufferEntry = {};
+			constantBufferEntry.Binding = 0;
+			constantBufferEntry.Stages = ShaderStage::Vertex;
+			constantBufferEntry.Type = DescriptorResourceType::ConstantBuffer;
+			setLayoutDesc.Entries.push_back(constantBufferEntry);
+
 			DescriptorSetLayoutEntry textureEntry = {};
-			textureEntry.Binding = 0;
+			textureEntry.Binding = 1;
 			textureEntry.Stages = ShaderStage::Fragment;
 			textureEntry.Type = DescriptorResourceType::Sampler;
 			setLayoutDesc.Entries.push_back(textureEntry);
 
 			DescriptorSetLayoutEntry samplerEntry = {};
-			samplerEntry.Binding = 1;
+			samplerEntry.Binding = 2;
 			samplerEntry.Stages = ShaderStage::Fragment;
 			samplerEntry.Type = DescriptorResourceType::SampledTexture;
 			setLayoutDesc.Entries.push_back(samplerEntry);
@@ -610,8 +619,9 @@ namespace Dream
 		DescriptorSetUpdateDesc descriptorSetHostUpdateDesc = {};
 		descriptorSetHostUpdateDesc.Entries =
 		{
-			{pSampler,DescriptorResourceType::Sampler,1,0,0,0},
-			{pTextureView,DescriptorResourceType::SampledTexture,1,0,0,1}
+			{pConstantBuffer,DescriptorResourceType::ConstantBuffer,1,0,0,0},
+			{pSampler,DescriptorResourceType::Sampler,1,0,0,1},
+			{pTextureView,DescriptorResourceType::SampledTexture,1,0,0,2}
 		};
 		pDevice->UpdateDescriptorSet(pDescriptorSetHost, descriptorSetHostUpdateDesc);
 
@@ -619,7 +629,8 @@ namespace Dream
 		descriptorSetCopyDesc.Entries =
 		{
 			{0,0,0,0,1},
-			{1,0,1,0,1}
+			{1,0,1,0,1},
+			{2,0,2,0,1}
 		};
 		pDevice->CopyDescriptorSet(pDescriptorSetHost, pDescriptorSetDevice, descriptorSetCopyDesc);
 

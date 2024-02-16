@@ -5,8 +5,8 @@ include(${CMAKE_SOURCE_DIR}/Scripts/CMake/FetchLibraries.cmake)
 # ------------------------------------------------------------
 
 # ---------------------- FILE ADDITION -----------------------
-file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Sample/HelloTriangle/**.cpp" "${CMAKE_SOURCE_DIR}/Sample/HelloTriangle/**.h")
-source_group(TREE "${CMAKE_SOURCE_DIR}/Sample/HelloTriangle" FILES ${SUBDIRECTORIES})
+file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Samples/HelloTriangle/**.cpp" "${CMAKE_SOURCE_DIR}/Samples/HelloTriangle/**.h")
+source_group(TREE "${CMAKE_SOURCE_DIR}/Samples/HelloTriangle" FILES ${SUBDIRECTORIES})
 add_executable(HelloTriangle main.cpp ${SUBDIRECTORIES})
 # ------------------------------------------------------------
 
