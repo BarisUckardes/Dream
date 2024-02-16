@@ -9,8 +9,12 @@
 
 #ifdef USE_VULKAN
 #include <vulkan.h>
+
+#ifdef DREAM_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <vulkan_win32.h>
+#endif
+
 #include <Runtime/Vulkan/Instance/VulkanInstanceDesc.h>
 #include <Runtime/Vulkan/Device/VulkanDeviceDesc.h>
 #include <Runtime/Vulkan/Device/VulkanDeviceFeatures.h>
@@ -200,7 +204,7 @@ namespace Dream
 	{
 		//Create window
 		WindowDesc windowDesc = {};
-		windowDesc.Title = "DreamTestShop";
+		windowDesc.Title = "HelloTriangle Sample";
 		windowDesc.X = 100;
 		windowDesc.Y = 100;
 		windowDesc.Width = 1024;
@@ -221,7 +225,9 @@ namespace Dream
 		VulkanInstanceDesc instanceDesc = {};
 		instanceDesc.Extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 		instanceDesc.Extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+#ifdef DREAM_PLATFORM_WINDOWS
 		instanceDesc.Extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#endif
 		instanceDesc.Extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 #ifdef DREAM_DEBUG
 		instanceDesc.Extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -631,7 +637,7 @@ namespace Dream
 			sc.Height = currentScreenHeight;
 			pCmdList->SetScissors(&sc, 1);
 			pCmdList->CommitResourceSets(&pDescriptorSetDevice, 1);
-			pCmdList->DrawIndexed(3, 0, 0, 0, 1);
+			pCmdList->DrawIndexed(sizeof(indexes) / sizeof(unsigned short), 0, 0, 0, 1);
 
 			//End render pass
 			pCmdList->EndRenderPass();
@@ -647,7 +653,7 @@ namespace Dream
 			//Present and wait for the present to finish
 			pSwapchain->Present();
 			pSwapchain->WaitForPresent(presentIndex);
-			presentIndex = (presentIndex + 1) % 3;
+			presentIndex = (presentIndex + 1) % swapchainDesc.BufferCount;
 		}
 	}
 }
