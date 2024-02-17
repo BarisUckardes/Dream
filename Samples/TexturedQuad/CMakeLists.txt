@@ -26,6 +26,7 @@ target_include_directories(TexturedQuad PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
 # --------------------- LINK LIBRARIES -----------------------
 target_link_libraries(TexturedQuad PRIVATE Runtime)
+target_compile_definitions(TexturedQuad PUBLIC RES_PATH="${CMAKE_SOURCE_DIR}/Resources")
 # ------------------------------------------------------------
 
 

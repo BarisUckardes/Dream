@@ -31,6 +31,7 @@ target_include_directories(Runtime PUBLIC "${glm_SOURCE_DIR}")
 
 # --------------------- LINK LIBRARIES -----------------------
 target_link_libraries(RotatingCube PRIVATE Runtime)
+target_compile_definitions(RotatingCube PUBLIC RES_PATH="${CMAKE_SOURCE_DIR}/Resources")
 # ------------------------------------------------------------
 
 

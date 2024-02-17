@@ -5,12 +5,14 @@
 #include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
 #include <Runtime/Graphics/Texture/TextureSampleCount.h>
+#include <Runtime/Graphics/Texture/TextureView.h>
 
 namespace Dream
 {
 	class Texture;
 	struct RUNTIME_API RenderPassAttachmentDesc
 	{
+		TextureView* pView;
 		TextureFormat Format;
 		TextureSampleCount SampleCount;
 		RenderPassLoadOperation ColorLoadOperation;

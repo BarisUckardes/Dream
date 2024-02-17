@@ -39,6 +39,7 @@ namespace Dream
          * and the stencil is stored in an 8-bit unsigned integer.
          */
         D24_UNorm_S8_UInt,
+        D32_SFloat,
         /**
          * @brief A depth-stencil format where the depth is stored in a 32-bit signed floating-point value,
          * and the stencil is stored in an 8-bit unsigned integer.

@@ -11,8 +11,7 @@ namespace Dream
 		ShaderReadOnly,
 		TransferSource,
 		TransferDestination,
-		DepthReadOnly,
-		StencilReadOnly,
+		DepthAttachment,
 		Present
 	};
 }

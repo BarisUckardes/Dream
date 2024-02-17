@@ -9,6 +9,7 @@
 #include <Runtime/Graphics/Common/TextureCopyDesc.h>
 #include <Runtime/Graphics/Common/TextureMemoryBarrierDesc.h>
 #include <Runtime/Graphics/Common/BufferMemoryBarrierDesc.h>
+#include <Runtime/Graphics/Common/ClearValue.h>
 
 namespace Dream
 {
@@ -42,7 +43,7 @@ namespace Dream
 		void DrawIndexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount);
 		void DispatchCompute(const unsigned int x, const unsigned int y, const unsigned int z);
 		void SetPipeline(Pipeline* pPipeline);
-		void BeginRenderPass(RenderPass* pPass, const float clearColor[4]);
+		void BeginRenderPass(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount,const double clearDepth,const double clearStencil);
 		void EndRenderPass();
 		void SetViewports(ViewportDesc* pViewports,const unsigned char count);
 		void SetScissors(ScissorDesc* pScissors, const unsigned char count);
@@ -62,7 +63,7 @@ namespace Dream
 		virtual void DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) = 0;
 		virtual void DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z) = 0;
 		virtual void SetPipelineCore(Pipeline* pPipeline) = 0;
-		virtual void BeginRenderPassCore(RenderPass* pPass, const float clearColor[4]) = 0;
+		virtual void BeginRenderPassCore(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil) = 0;
 		virtual void EndRenderPassCore() = 0;
 		virtual void SetViewportsCore(ViewportDesc* pViewports, const unsigned char count) = 0;
 		virtual void SetScissorsCore(ScissorDesc* pScissors, const unsigned char count) = 0;

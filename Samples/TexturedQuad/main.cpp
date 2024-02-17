@@ -111,25 +111,21 @@ namespace Dream
 			RenderPassDesc renderPassDesc = {};
 			renderPassDesc.TargetRenderWidth = pSwapchain->GetWidth();
 			renderPassDesc.TargetRenderHeight = pSwapchain->GetHeight();
-			renderPassDesc.AttachmentViews = { pView };
+			renderPassDesc.pDepthStencilAttachment = nullptr;
+
 			RenderPassAttachmentDesc colorAttachmentDesc = {};
+			colorAttachmentDesc.pView = pView;
 			colorAttachmentDesc.ArrayLevel = 0;
 			colorAttachmentDesc.MipLevel = 0;
 			colorAttachmentDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
 			colorAttachmentDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
-			colorAttachmentDesc.InputLayout = TextureMemoryLayout::Present;
+			colorAttachmentDesc.InputLayout = TextureMemoryLayout::ColorAttachment;
 			colorAttachmentDesc.OutputLayout = TextureMemoryLayout::Present;
 			colorAttachmentDesc.StencilLoadOperation = RenderPassLoadOperation::Clear;
 			colorAttachmentDesc.StencilStoreOperation = RenderPassStoreOperation::Ignore;
 			colorAttachmentDesc.Format = pTexture->GetFormat();
 			colorAttachmentDesc.SampleCount = pTexture->GetSampleCount();
 			renderPassDesc.ColorAttachments.push_back(colorAttachmentDesc);
-
-			RenderPassSubpassDesc subpassDesc = {};
-			subpassDesc.Attachments = { 0 };
-			subpassDesc.BindPoint = PipelineBindPoint::Graphics;
-			subpassDesc.DepthStencilInput = 0;
-			renderPassDesc.Subpasses.push_back(subpassDesc);
 
 			RenderPass* pRenderPass = pDevice->CreateRenderPass(renderPassDesc);
 			passes.push_back(pRenderPass);
@@ -422,7 +418,9 @@ namespace Dream
 		int textureWidth = 0;
 		int textureHeight = 0;
 		int textureBitsPerPixel = 0;
-		unsigned char* pTextureData = stbi_load("texture.png", &textureWidth, &textureHeight, &textureBitsPerPixel, 4);
+		std::string texturePath = RES_PATH;
+		texturePath += "/Smiley.png";
+		unsigned char* pTextureData = stbi_load(texturePath.c_str(), &textureWidth, &textureHeight, &textureBitsPerPixel, 4);
 
 		//Create texture
 		TextureDesc textureDesc = {};
@@ -440,6 +438,7 @@ namespace Dream
 
 		//Create texture view
 		TextureViewDesc textureViewDesc = {};
+		textureViewDesc.AspectFlags = TextureAspectFlags::Color;
 		textureViewDesc.ArrayLevel = 0;
 		textureViewDesc.MipLevel = 0;
 		textureViewDesc.pTexture = pTexture;
@@ -660,10 +659,27 @@ namespace Dream
 			//Begin recording
 			pCmdList->BeginRecording();
 
+			//Set memory barrier
+			Texture* pSwapchainTexture = pSwapchain->GetColorTextures()[presentIndex];
+			TextureMemoryBarrierDesc swapchainTextureBarrier = {};
+			swapchainTextureBarrier.AspectFlags = TextureAspectFlags::Color;
+			swapchainTextureBarrier.ArrayIndex = 0;
+			swapchainTextureBarrier.MipIndex = 0;
+			swapchainTextureBarrier.SourceAccessFlags = GraphicsMemoryAccessFlags::ColorAttachmentRead;
+			swapchainTextureBarrier.SourceLayout = TextureMemoryLayout::Present;
+			swapchainTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
+			swapchainTextureBarrier.SourceStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+			swapchainTextureBarrier.DestinationAccessFlags = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
+			swapchainTextureBarrier.DestinationLayout = TextureMemoryLayout::ColorAttachment;
+			swapchainTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+			swapchainTextureBarrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+			pCmdList->SetTextureMemoryBarrier(pSwapchainTexture, swapchainTextureBarrier);
+
 			//Start render pass
 			constexpr float clearColor[] = { 100 / 255.0f,149 / 255.0f,237 / 255.0f,1 };
 
-			pCmdList->BeginRenderPass(renderPasses[presentIndex], clearColor);
+			constexpr ClearValue clearColorValue = { 100 / 255.0f,149 / 255.0f,237 / 255.0f,1 };
+			pCmdList->BeginRenderPass(renderPasses[presentIndex], &clearColorValue, 1, 0, 0);
 
 			pCmdList->SetVertexBuffers(&pVertexBuffer, 1);
 			pCmdList->SetIndexBuffer(pIndexBuffer, IndexBufferType::UInt16);

@@ -86,7 +86,7 @@ namespace Dream
 
 		vkCmdBindPipeline(mCommandBuffer, pVkPipeline->GetVkPipelinBindPoint(), pVkPipeline->GetVkPipeline());
 	}
-	void VulkanCommandList::BeginRenderPassCore(RenderPass* pPass, const float clearColor[4])
+	void VulkanCommandList::BeginRenderPassCore(RenderPass* pPass,const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
 	{
 		//Get framebuffer
 		const VulkanRenderPass* pVkPass = (const VulkanRenderPass*)pPass;
@@ -99,13 +99,32 @@ namespace Dream
 		renderPassInfo.framebuffer = framebuffer;
 		renderPassInfo.renderArea.offset = { 0,0 };
 		renderPassInfo.renderArea.extent = { pPass->GetRenderWidth(),pPass->GetRenderHeight()};
-		VkClearValue color = {};
-		color.color.float32[0] = clearColor[0];
-		color.color.float32[1] = clearColor[1];
-		color.color.float32[2] = clearColor[2];
-		color.color.float32[3] = clearColor[3];
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &color;
+
+		VkClearValue clearValues[32];
+		unsigned int clearValueCount = clearColorValueCount;
+		for (unsigned char i = 0; i < clearColorValueCount; i++)
+		{
+			VkClearValue clearColor = {};
+			clearColor.color.float32[0] = pClearColorValues[i].R;
+			clearColor.color.float32[1] = pClearColorValues[i].G;
+			clearColor.color.float32[2] = pClearColorValues[i].B;
+			clearColor.color.float32[3] = pClearColorValues[i].A;
+			clearValues[i] = clearColor;
+		}
+
+		if (clearDepth != -1 || clearStencil != -1)
+		{
+			VkClearValue clearDepthStencilValue = {};
+			clearDepthStencilValue.depthStencil.depth = clearDepth;
+			clearDepthStencilValue.depthStencil.stencil = clearStencil;
+			clearValues[clearColorValueCount] = clearDepthStencilValue;
+			clearValueCount++;
+		}
+		
+		const unsigned char totalClearValues = clearValueCount;
+		renderPassInfo.clearValueCount = totalClearValues;
+		renderPassInfo.pClearValues = clearValues;
+
 
 		//Start render pass
 		vkCmdBeginRenderPass(mCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

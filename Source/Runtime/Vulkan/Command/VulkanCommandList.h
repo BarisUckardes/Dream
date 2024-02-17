@@ -24,7 +24,7 @@ namespace Dream
 		virtual void DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) override;
 		virtual void DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z) override;
 		virtual void SetPipelineCore(Pipeline* pPipeline) override;
-		virtual void BeginRenderPassCore(RenderPass* pPass, const float clearColor[4]) override;
+		virtual void BeginRenderPassCore(RenderPass* pPass,const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil) override;
 		virtual void EndRenderPassCore() override;
 		virtual void SetViewportsCore(ViewportDesc* pViewports, const unsigned char count) override;
 		virtual void SetScissorsCore(ScissorDesc* pScissors, const unsigned char count) override;

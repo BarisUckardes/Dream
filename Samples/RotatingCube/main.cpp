@@ -4,6 +4,9 @@
 #include <Runtime/Graphics/Adapter/GraphicsAdapter.h>
 #include <Runtime/Graphics/Device/GraphicsDevice.h>
 #include <Runtime/ShaderCompiler/ShaderCompiler.h>
+#include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <stb_image.h>
 
 #define USE_VULKAN
@@ -24,11 +27,11 @@
 namespace Dream
 {
 	static const char vertexShaderSource[] =
-		"layout(set=0,binding=0) cbuffer vertexBuffer\
+		"layout(set = 0, binding = 0) cbuffer vertexBuffer\
             {\
               float4x4 Mvp;\
             };\
-			struct VS_INPUT\
+		struct VS_INPUT\
             {\
               float3 pos : POSITION;\
               float2 uv  : TEXCOORD0;\
@@ -43,7 +46,7 @@ namespace Dream
             PS_INPUT main(VS_INPUT input)\
             {\
               PS_INPUT output;\
-              output.pos = float4(input.pos.xyz, 1.f);\
+              output.pos = Mvp*float4(input.pos.xyz, 1.f);\
               output.uv  = input.uv;\
               return output;\
             }";
@@ -63,7 +66,7 @@ namespace Dream
             return out_col; \
             }";
 
-	void InvalidateScene(GraphicsDevice* pDevice, Swapchain* pSwapchain, CommandList* pCmdList, Fence* pFence, GraphicsQueue* pQueue, Shader* pVertexShader, Shader* pFragmentShader, DescriptorSetLayout* pSetLayout, std::vector<RenderPass*>& passes, std::vector<Pipeline*>& pipelines)
+	void InvalidateScene(GraphicsDevice* pDevice,GraphicsMemory* pDeviceMemory, Swapchain* pSwapchain, CommandList* pCmdList, Fence* pFence, GraphicsQueue* pQueue, Shader* pVertexShader, Shader* pFragmentShader, DescriptorSetLayout* pSetLayout, std::vector<RenderPass*>& passes, std::vector<Pipeline*>& pipelines,Texture** ppDepthTexture,TextureView** ppDepthTextureView)
 	{
 		//Clear the exsiting pipelines
 		for (Pipeline* pPipeline : pipelines)
@@ -75,6 +78,36 @@ namespace Dream
 			delete pPass;
 		passes.clear();
 
+
+		//Clear depth texture
+		if (*ppDepthTextureView != nullptr)
+			delete* ppDepthTextureView;
+		if (*ppDepthTexture != nullptr)
+			delete* ppDepthTexture;
+
+		//Create depth texture
+		TextureDesc depthTextureDesc = {};
+		depthTextureDesc.Type = TextureType::Texture2D;
+		depthTextureDesc.Usages = TextureUsage::DepthStencilAttachment;
+		depthTextureDesc.Format = TextureFormat::D32_SFloat;
+		depthTextureDesc.ArrayLevels = 1;
+		depthTextureDesc.MipLevels = 1;
+		depthTextureDesc.Width = pSwapchain->GetWidth();
+		depthTextureDesc.Height = pSwapchain->GetHeight();
+		depthTextureDesc.Depth = 1;
+		depthTextureDesc.SampleCount = TextureSampleCount::SAMPLE_COUNT_1;
+		depthTextureDesc.pMemory = pDeviceMemory;
+		Texture* pDepthTexture = pDevice->CreateTexture(depthTextureDesc);
+		*ppDepthTexture = pDepthTexture;
+		
+		TextureViewDesc depthTextureViewDesc = {};
+		depthTextureViewDesc.ArrayLevel = 0;
+		depthTextureViewDesc.MipLevel = 0;
+		depthTextureViewDesc.pTexture = pDepthTexture;
+		depthTextureViewDesc.AspectFlags = TextureAspectFlags::Depth;
+		TextureView* pDepthTextureView = pDevice->CreateTextureView(depthTextureViewDesc);
+		*ppDepthTextureView = pDepthTextureView;
+		
 		//Transition the swapchain textures to color attachment optimal
 		const std::vector<Texture*>& swapchainTextures = pSwapchain->GetColorTextures();
 		pCmdList->BeginRecording();
@@ -96,6 +129,25 @@ namespace Dream
 
 			pCmdList->SetTextureMemoryBarrier(pTexture, barrier);
 		}
+
+		//Transition depth texture to depth attachment
+		{
+			TextureMemoryBarrierDesc barrier = {};
+			barrier.MipIndex = 0;
+			barrier.ArrayIndex = 0;
+			barrier.AspectFlags = TextureAspectFlags::Depth;
+			barrier.SourceAccessFlags = GraphicsMemoryAccessFlags::Unknown;
+			barrier.SourceLayout = TextureMemoryLayout::Unknown;
+			barrier.SourceQueue = GraphicsQueueType::Graphics;
+			barrier.SourceStageFlags = PipelineStageFlags::TopOfPipe;
+
+			barrier.DestinationAccessFlags = GraphicsMemoryAccessFlags::DepthStencilAttachmentRead;
+			barrier.DestinationLayout = TextureMemoryLayout::DepthAttachment;
+			barrier.DestinationQueue = GraphicsQueueType::Graphics;
+			barrier.DestinationStageFlags = PipelineStageFlags::EarlyFragmentTests;
+
+			pCmdList->SetTextureMemoryBarrier(pDepthTexture, barrier);
+		}
 		pCmdList->EndRecording();
 		pDevice->SubmitCommands(&pCmdList, 1, pQueue, pFence);
 		pDevice->WaitFences(&pFence, 1);
@@ -107,30 +159,40 @@ namespace Dream
 		{
 			Texture* pTexture = swapchainTextures[i];
 			TextureView* pView = swapchainTextureViews[i];
-
+			 
 			//Create render pass
 			RenderPassDesc renderPassDesc = {};
 			renderPassDesc.TargetRenderWidth = pSwapchain->GetWidth();
 			renderPassDesc.TargetRenderHeight = pSwapchain->GetHeight();
-			renderPassDesc.AttachmentViews = { pView };
+			renderPassDesc.pDepthStencilAttachment = nullptr;
+
 			RenderPassAttachmentDesc colorAttachmentDesc = {};
 			colorAttachmentDesc.ArrayLevel = 0;
 			colorAttachmentDesc.MipLevel = 0;
 			colorAttachmentDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
 			colorAttachmentDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
-			colorAttachmentDesc.InputLayout = TextureMemoryLayout::Present;
+			colorAttachmentDesc.InputLayout = TextureMemoryLayout::ColorAttachment;
 			colorAttachmentDesc.OutputLayout = TextureMemoryLayout::Present;
-			colorAttachmentDesc.StencilLoadOperation = RenderPassLoadOperation::Clear;
+			colorAttachmentDesc.StencilLoadOperation = RenderPassLoadOperation::Ignore;
 			colorAttachmentDesc.StencilStoreOperation = RenderPassStoreOperation::Ignore;
 			colorAttachmentDesc.Format = pTexture->GetFormat();
 			colorAttachmentDesc.SampleCount = pTexture->GetSampleCount();
+			colorAttachmentDesc.pView = pView;
 			renderPassDesc.ColorAttachments.push_back(colorAttachmentDesc);
 
-			RenderPassSubpassDesc subpassDesc = {};
-			subpassDesc.Attachments = { 0 };
-			subpassDesc.BindPoint = PipelineBindPoint::Graphics;
-			subpassDesc.DepthStencilInput = 0;
-			renderPassDesc.Subpasses.push_back(subpassDesc);
+			RenderPassAttachmentDesc depthStencilAttachmentDesc = {};
+			depthStencilAttachmentDesc.ArrayLevel = 0;
+			depthStencilAttachmentDesc.MipLevel = 0;
+			depthStencilAttachmentDesc.ColorLoadOperation = RenderPassLoadOperation::Clear;
+			depthStencilAttachmentDesc.ColorStoreOperation = RenderPassStoreOperation::Store;
+			depthStencilAttachmentDesc.InputLayout = TextureMemoryLayout::DepthAttachment;
+			depthStencilAttachmentDesc.OutputLayout = TextureMemoryLayout::DepthAttachment;
+			depthStencilAttachmentDesc.StencilLoadOperation = RenderPassLoadOperation::Ignore;
+			depthStencilAttachmentDesc.StencilStoreOperation = RenderPassStoreOperation::Ignore;
+			depthStencilAttachmentDesc.Format = pDepthTexture->GetFormat();
+			depthStencilAttachmentDesc.SampleCount = pDepthTexture->GetSampleCount();
+			depthStencilAttachmentDesc.pView = pDepthTextureView;
+			renderPassDesc.pDepthStencilAttachment = &depthStencilAttachmentDesc;
 
 			RenderPass* pRenderPass = pDevice->CreateRenderPass(renderPassDesc);
 			passes.push_back(pRenderPass);
@@ -143,10 +205,13 @@ namespace Dream
 			pipelineDesc.Viewport.Y = 0;
 			pipelineDesc.Viewport.Width = pTexture->GetWidth();
 			pipelineDesc.Viewport.Height = pTexture->GetHeight();
+			pipelineDesc.Viewport.DepthMin = 0.0f;
+			pipelineDesc.Viewport.DepthMax = 1.0f;
 
 			BlendStateDesc blendStateDesc = {};
 			blendStateDesc.bLogicOperationEnabled = false;
 			blendStateDesc.LogicOperation = LogicOperation::Clear;
+
 			BlendStateAttachment blendAttachment = {};
 			blendAttachment.bEnabled = false;
 			blendAttachment.SourceColorFactor = BlendFactor::One;
@@ -160,10 +225,10 @@ namespace Dream
 			pipelineDesc.BlendState = blendStateDesc;
 
 			DepthStencilStateDesc depthStencilStateDesc = {};
-			depthStencilStateDesc.bDepthTestEnabled = false;
-			depthStencilStateDesc.bDepthWriteEnabled = false;
+			depthStencilStateDesc.bDepthTestEnabled = true;
+			depthStencilStateDesc.bDepthWriteEnabled = true;
 			depthStencilStateDesc.bStencilTestEnabled = false;
-			depthStencilStateDesc.DepthTestOperation = CompareOperation::Never;
+			depthStencilStateDesc.DepthTestOperation = CompareOperation::Less;
 			depthStencilStateDesc.StencilBackFace = {};
 			depthStencilStateDesc.StencilFrontFace = {};
 			pipelineDesc.DepthStencilState = depthStencilStateDesc;
@@ -174,7 +239,7 @@ namespace Dream
 			inputLayoutDesc.Topology = MeshTopology::TriangleList;
 			InputBinding inputBinding = {};
 			inputBinding.StepRate = InputBindingStepRate::Vertex;
-			inputBinding.Elements.push_back({ TextureFormat::R32_G32_Float,InputElementSemantic::Position });
+			inputBinding.Elements.push_back({ TextureFormat::R32_G32_B32_Float,InputElementSemantic::Position });
 			inputBinding.Elements.push_back({ TextureFormat::R32_G32_Float,InputElementSemantic::TexCoord });
 			inputLayoutDesc.Bindings.push_back(inputBinding);
 			pipelineDesc.InputLayout = inputLayoutDesc;
@@ -308,6 +373,7 @@ namespace Dream
 		{
 			float X;
 			float Y;
+			float Z;
 
 			float U;
 			float V;
@@ -315,11 +381,38 @@ namespace Dream
 
 		constexpr Vertex vertexes[] =
 		{
-			{-0.5f,-0.5f,0,0},
-			{-0.5f,0.5f,0.0f,1.0f},
-			{0.5f,0.5f,1.0f,1.0f},
-			{0.5f,-0.5f,1.0f,0.0f},
+			{-1.0f,-1.0f,1.0f,0,0},
+			{-1.0f,1.0f,1.0f,0.0f,1.0f},
+			{1.0f,1.0f,1.0f,1.0f,1.0f},
+			{1.0f,-1.0f,1.0f,1.0f,0.0f},
+
+			{-1.0f,-1.0f,-1.0f,0,0},
+			{-1.0f,1.0f,-1.0f,0.0f,1.0f},
+			{1.0f,1.0f,-1.0f,1.0f,1.0f},
+			{1.0f,-1.0f,-1.0f,1.0f,0.0f},
+
+			{1.0f,1.0f,-1.0f,0,0},
+			{1.0f,-1.0f,-1.0f,0.0f,1.0f},
+			{1.0f,-1.0f,1.0f,1.0f,1.0f},
+			{1.0f,1.0f,1.0f,1.0f,0.0f},
+
+			{-1.0f,1.0f,-1.0f,0,0},
+			{-1.0f,-1.0f,-1.0f,0.0f,1.0f},
+			{-1.0f,-1.0f,1.0f,1.0f,1.0f},
+			{-1.0f,1.0f,1.0f,1.0f,0.0f},
+
+			{-1.0f,1.0f,1.0f,0,0},
+			{-1.0f,1.0f,-1.0f,0.0f,1.0f},
+			{1.0f,1.0f,-1.0f,1.0f,1.0f},
+			{1.0f,1.0f,1.0f,1.0f,0.0f},
+
+			{-1.0f,-1.0f,1.0f,0,0},
+			{-1.0f,-1.0f,-1.0f,0.0f,1.0f},
+			{1.0f,-1.0f,-1.0f,1.0f,1.0f},
+			{1.0f,-1.0f,1.0f,1.0f,0.0f}
 		};
+		
+		
 
 		GraphicsBufferDesc vertexBufferDesc = {};
 		vertexBufferDesc.Usage = GraphicsBufferUsage::VertexBuffer | GraphicsBufferUsage::TransferDestination;
@@ -332,7 +425,22 @@ namespace Dream
 		constexpr unsigned short indexes[] =
 		{
 			0,1,2,
-			0,2,3
+			0,2,3,
+
+			4,5,6,
+			4,6,7,
+
+			8,9,10,
+			8,10,11,
+
+			12,13,14,
+			12,14,15,
+
+			16,17,18,
+			16,18,19,
+
+			20,21,22,
+			20,22,23
 		};
 
 		GraphicsBufferDesc indexBufferDesc = {};
@@ -343,19 +451,17 @@ namespace Dream
 		GraphicsBuffer* pIndexBuffer = pDevice->CreateBuffer(indexBufferDesc);
 
 		//Create constant buffer
-		struct Color
+		struct ConstantBufferData
 		{
-			float R;
-			float G;
-			float B;
-			float A;
+			glm::mat4x4 Mvp;
 		};
-		constexpr Color color = { 1.0f,0,0,1.0f };
 
+		glm::mat4x4 mvp = glm::mat4x4(1);
+		const ConstantBufferData constantBufferData = { mvp };
 		GraphicsBufferDesc constantBufferDesc = {};
 		constantBufferDesc.Usage = GraphicsBufferUsage::ConstantBuffer | GraphicsBufferUsage::TransferDestination;
 		constantBufferDesc.SubItemCount = 1;
-		constantBufferDesc.SubItemSizeInBytes = sizeof(color);
+		constantBufferDesc.SubItemSizeInBytes = sizeof(constantBufferData);
 		constantBufferDesc.pMemory = pDeviceMemory;
 
 		GraphicsBuffer* pConstantBuffer = pDevice->CreateBuffer(constantBufferDesc);
@@ -376,7 +482,7 @@ namespace Dream
 		GraphicsBufferDesc constantStageBufferDesc = {};
 		constantStageBufferDesc.Usage = GraphicsBufferUsage::TransferSource;
 		constantStageBufferDesc.SubItemCount = 1;
-		constantStageBufferDesc.SubItemSizeInBytes = sizeof(color);
+		constantStageBufferDesc.SubItemSizeInBytes = sizeof(constantBufferData);
 		constantStageBufferDesc.pMemory = pHostMemory;
 
 		GraphicsBuffer* pVertexStageBuffer = pDevice->CreateBuffer(vertexStageBufferDesc);
@@ -398,8 +504,8 @@ namespace Dream
 
 		HostBufferUpdateDesc constantBufferUpdateDesc = {};
 		constantBufferUpdateDesc.OffsetInBytes = 0;
-		constantBufferUpdateDesc.SizeInBytes = sizeof(color);
-		constantBufferUpdateDesc.pBuffer = (unsigned char*)&color;
+		constantBufferUpdateDesc.SizeInBytes = sizeof(constantBufferData);
+		constantBufferUpdateDesc.pBuffer = (unsigned char*)&constantBufferData;
 		pDevice->UpdateHostBuffer(pConstantStageBuffer, constantBufferUpdateDesc);
 
 		//Create sampler
@@ -423,7 +529,9 @@ namespace Dream
 		int textureWidth = 0;
 		int textureHeight = 0;
 		int textureBitsPerPixel = 0;
-		unsigned char* pTextureData = stbi_load("texture.png", &textureWidth, &textureHeight, &textureBitsPerPixel, 4);
+		std::string texturePath = RES_PATH;
+		texturePath += "/Smiley.png";
+		unsigned char* pTextureData = stbi_load(texturePath.c_str(), &textureWidth, &textureHeight, &textureBitsPerPixel, 4);
 
 		//Create texture
 		TextureDesc textureDesc = {};
@@ -444,6 +552,7 @@ namespace Dream
 		textureViewDesc.ArrayLevel = 0;
 		textureViewDesc.MipLevel = 0;
 		textureViewDesc.pTexture = pTexture;
+		textureViewDesc.AspectFlags = TextureAspectFlags::Color;
 		TextureView* pTextureView = pDevice->CreateTextureView(textureViewDesc);
 
 		//Create texture stage buffer
@@ -459,8 +568,8 @@ namespace Dream
 		textureStageBufferUpdateDesc.OffsetInBytes = 0;
 		textureStageBufferUpdateDesc.pBuffer = pTextureData;
 		textureStageBufferUpdateDesc.SizeInBytes = textureStageBufferDesc.SubItemSizeInBytes;
-		pDevice->UpdateHostBuffer(pTextureStageBuffer,textureStageBufferUpdateDesc);
-		
+		pDevice->UpdateHostBuffer(pTextureStageBuffer, textureStageBufferUpdateDesc);
+
 		//Update buffers and texture layouts
 		pCmdList->BeginRecording();
 
@@ -478,7 +587,7 @@ namespace Dream
 
 		BufferBufferCopyDesc constantBufferCopyDesc = {};
 		constantBufferCopyDesc.DestinationOffsetInBytes = 0;
-		constantBufferCopyDesc.SizeInBytes = sizeof(color);
+		constantBufferCopyDesc.SizeInBytes = sizeof(constantBufferData);
 		constantBufferCopyDesc.SourceOffsetInBytes = 0;
 		pCmdList->CopyBufferToBuffer(pConstantStageBuffer, pConstantBuffer, constantBufferCopyDesc);
 
@@ -568,17 +677,17 @@ namespace Dream
 		DescriptorPoolDesc hostDescriptorPoolDesc = {};
 		hostDescriptorPoolDesc.Type = DescriptorMemoryType::Host;
 		hostDescriptorPoolDesc.SetCount = 3;
+		hostDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::ConstantBuffer,1 });
 		hostDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::SampledTexture,1 });
 		hostDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::Sampler,1 });
-		hostDescriptorPoolDesc.Sizes.push_back({DescriptorResourceType::ConstantBuffer,1});
 		DescriptorPool* pDescriptorHostPool = pDevice->CreateDescriptorPool(hostDescriptorPoolDesc);
 
 		DescriptorPoolDesc deviceDescriptorPoolDesc = {};
 		deviceDescriptorPoolDesc.Type = DescriptorMemoryType::Device;
 		deviceDescriptorPoolDesc.SetCount = 3;
+		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::ConstantBuffer,1 });
 		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::SampledTexture,1 });
 		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::Sampler,1 });
-		deviceDescriptorPoolDesc.Sizes.push_back({ DescriptorResourceType::ConstantBuffer,1 });
 		DescriptorPool* pDescriptorDevicePool = pDevice->CreateDescriptorPool(deviceDescriptorPoolDesc);
 
 		//Create descriptor set layout
@@ -638,15 +747,45 @@ namespace Dream
 
 		std::vector<RenderPass*> renderPasses;
 		std::vector<Pipeline*> pipelines;
-		InvalidateScene(pDevice, pSwapchain, pCmdList, pFence, pQueue, pVertexShader, pFragmentShader, pDescriptorSetLayout, renderPasses, pipelines);
+		Texture* pDepthTexture = nullptr;
+		TextureView* pDepthTextureView = nullptr;
+		InvalidateScene(pDevice,pDeviceMemory, pSwapchain, pCmdList, pFence, pQueue, pVertexShader, pFragmentShader, pDescriptorSetLayout, renderPasses, pipelines,&pDepthTexture,&pDepthTextureView);
 
 		//Create device
 		unsigned char presentIndex = 0;
+		const glm::vec3 cubePosition = { 0,0,0 };
+		const glm::vec3 cubeScale = { 1,1,1 };
+		glm::vec3 cubeRotation = { 0,0,0 };
+		const glm::vec3 cameraPosition = { 0,0,-5 };
+		const glm::vec3 relativeUp = { 0,1,0 };
+
 		while (pWindow->IsActive())
 		{
 			//Get screen size
 			const unsigned int screenWidth = pWindow->GetWidth();
 			const unsigned int screenHeight = pWindow->GetHeight();
+
+			//Update cube transforms
+			cubeRotation.y += 0.01f;
+			cubeRotation.x += 0.015f;
+			cubeRotation.z += 0.008f;
+			const glm::mat4x4 projection = glm::perspective(glm::radians(60.0f), screenWidth / (float)screenHeight, 0.001f, 7.0f);
+			const glm::mat4x4 view = glm::lookAt(cameraPosition, cubePosition, relativeUp);
+			glm::mat4x4 model(1);
+			model = glm::translate(model, cubePosition);
+			model = glm::scale(model, cubeScale);
+			model = glm::rotate(model, glm::radians(cubeRotation.x), { 1,0,0 });
+			model = glm::rotate(model, glm::radians(cubeRotation.y), { 0,1,0 });
+			model = glm::rotate(model, glm::radians(cubeRotation.z), { 0,0,1 });
+			const glm::mat4x4 mvp = glm::transpose(projection * view * model);
+			const ConstantBufferData constantBufferData2 = { mvp };
+
+			//Update transform buffer
+			HostBufferUpdateDesc constantBufferUpdateDesc = {};
+			constantBufferUpdateDesc.OffsetInBytes = 0;
+			constantBufferUpdateDesc.pBuffer = (unsigned char*)&constantBufferData2;
+			constantBufferUpdateDesc.SizeInBytes = sizeof(constantBufferData2);
+			pDevice->UpdateHostBuffer(pConstantStageBuffer, constantBufferUpdateDesc);
 
 			//Poll events
 			pWindow->PollEvents();
@@ -665,16 +804,38 @@ namespace Dream
 			if (currentScreenWidth != screenWidth || currentScreenHeight != screenHeight)
 			{
 				pSwapchain->Resize(currentScreenWidth, currentScreenHeight);
-				InvalidateScene(pDevice, pSwapchain, pCmdList, pFence, pQueue, pVertexShader, pFragmentShader, pDescriptorSetLayout, renderPasses, pipelines);
+				InvalidateScene(pDevice,pDeviceMemory, pSwapchain, pCmdList, pFence, pQueue, pVertexShader, pFragmentShader, pDescriptorSetLayout, renderPasses, pipelines,&pDepthTexture,&pDepthTextureView);
 			}
 
 			//Begin recording
 			pCmdList->BeginRecording();
 
-			//Start render pass
-			constexpr float clearColor[] = { 100 / 255.0f,149 / 255.0f,237 / 255.0f,1 };
+			//Update device constant buffer
+			BufferBufferCopyDesc constantBufferCopyDesc = {};
+			constantBufferCopyDesc.DestinationOffsetInBytes = 0;
+			constantBufferCopyDesc.SourceOffsetInBytes = 0;
+			constantBufferCopyDesc.SizeInBytes = sizeof(constantBufferData);
+			pCmdList->CopyBufferToBuffer(pConstantStageBuffer, pConstantBuffer, constantBufferCopyDesc);
 
-			pCmdList->BeginRenderPass(renderPasses[presentIndex], clearColor);
+			//Set memory barrier
+			Texture* pSwapchainTexture = pSwapchain->GetColorTextures()[presentIndex];
+			TextureMemoryBarrierDesc swapchainTextureBarrier = {};
+			swapchainTextureBarrier.AspectFlags = TextureAspectFlags::Color;
+			swapchainTextureBarrier.ArrayIndex = 0;
+			swapchainTextureBarrier.MipIndex = 0;
+			swapchainTextureBarrier.SourceAccessFlags = GraphicsMemoryAccessFlags::ColorAttachmentRead;
+			swapchainTextureBarrier.SourceLayout = TextureMemoryLayout::Present;
+			swapchainTextureBarrier.SourceQueue = GraphicsQueueType::Graphics;
+			swapchainTextureBarrier.SourceStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+			swapchainTextureBarrier.DestinationAccessFlags = GraphicsMemoryAccessFlags::ColorAttachmentWrite;
+			swapchainTextureBarrier.DestinationLayout = TextureMemoryLayout::ColorAttachment;
+			swapchainTextureBarrier.DestinationQueue = GraphicsQueueType::Graphics;
+			swapchainTextureBarrier.DestinationStageFlags = PipelineStageFlags::ColorAttachmentOutput;
+			pCmdList->SetTextureMemoryBarrier(pSwapchainTexture, swapchainTextureBarrier);
+
+			//Start render pass
+			constexpr ClearValue clearColorValue = { 100 / 255.0f,149 / 255.0f,237 / 255.0f,1 };
+			pCmdList->BeginRenderPass(renderPasses[presentIndex], &clearColorValue,1,1.0f,0);
 
 			pCmdList->SetVertexBuffers(&pVertexBuffer, 1);
 			pCmdList->SetIndexBuffer(pIndexBuffer, IndexBufferType::UInt16);
@@ -687,7 +848,7 @@ namespace Dream
 			sc.Height = currentScreenHeight;
 			pCmdList->SetScissors(&sc, 1);
 			pCmdList->CommitResourceSets(&pDescriptorSetDevice, 1);
-			pCmdList->DrawIndexed(sizeof(indexes)/sizeof(unsigned short), 0, 0, 0, 1);
+			pCmdList->DrawIndexed(sizeof(indexes) / sizeof(unsigned short), 0, 0, 0, 1);
 
 			//End render pass
 			pCmdList->EndRenderPass();

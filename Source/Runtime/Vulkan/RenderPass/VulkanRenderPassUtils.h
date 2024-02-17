@@ -11,8 +11,10 @@ namespace Dream
 		{
 			switch (op)
 			{
-			case Dream::RenderPassLoadOperation::Load:
 			default:
+			case Dream::RenderPassLoadOperation::Ignore:
+				return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			case Dream::RenderPassLoadOperation::Load:
 				return VK_ATTACHMENT_LOAD_OP_LOAD;
 			case Dream::RenderPassLoadOperation::Clear:
 				return VK_ATTACHMENT_LOAD_OP_CLEAR;

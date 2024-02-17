@@ -12,20 +12,10 @@ namespace Dream
 
 		FORCEINLINE const std::vector<RenderPassAttachmentDesc>& GetColorAttachments() const noexcept
 		{
-			return mColorAttachments;
+			return mAttachments;
 		}
-		FORCEINLINE const RenderPassAttachmentDesc& GetDepthStencilAttachment() const noexcept
-		{
-			return mDepthStencilAttachment;
-		}
-		FORCEINLINE const std::vector<RenderPassSubpassDesc>& GetSubpasses() const noexcept
-		{
-			return mSubpasses;
-		}
-		FORCEINLINE const std::vector<RenderPassSubpassDependencyDesc> GetSubpassDependencies() const noexcept
-		{
-			return mDependencies;
-		}
+
+		
 		FORCEINLINE unsigned int GetRenderWidth() const noexcept
 		{
 			return mTargetRenderWidth;
@@ -40,16 +30,12 @@ namespace Dream
 		}
 	protected:
 		RenderPass(const RenderPassDesc& desc,GraphicsDevice* pDevice) : GraphicsDeviceObject(pDevice),
-			mColorAttachments(desc.ColorAttachments), mDepthStencilAttachment(desc.DepthStencilAttachment), mSubpasses(desc.Subpasses),
-			mDependencies(desc.Dependencies),mTargetRenderWidth(desc.TargetRenderWidth),mTargetRenderHeight(desc.TargetRenderHeight)
+			mAttachments(desc.ColorAttachments),mTargetRenderWidth(desc.TargetRenderWidth),mTargetRenderHeight(desc.TargetRenderHeight)
 		{
 
 		}
 	private:
-		const std::vector<RenderPassAttachmentDesc> mColorAttachments;
-		const RenderPassAttachmentDesc mDepthStencilAttachment;
-		const std::vector<RenderPassSubpassDesc> mSubpasses;
-		const std::vector<RenderPassSubpassDependencyDesc> mDependencies;
+		const std::vector<RenderPassAttachmentDesc> mAttachments;
 		const unsigned int mTargetRenderWidth;
 		const unsigned int mTargetRenderHeight;;
 	};

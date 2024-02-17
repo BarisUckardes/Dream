@@ -41,9 +41,9 @@ namespace Dream
 		SetPipelineCore(pPipeline);
 		mBoundPipeline = pPipeline;
 	}
-	void CommandList::BeginRenderPass(RenderPass* pPass, const float clearColor[4])
+	void CommandList::BeginRenderPass(RenderPass* pPass, const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
 	{
-		BeginRenderPassCore(pPass, clearColor);
+		BeginRenderPassCore(pPass, pClearColorValues,clearColorValueCount,clearDepth,clearStencil);
 		mBoundRenderPass = pPass;
 	}
 	void CommandList::EndRenderPass()

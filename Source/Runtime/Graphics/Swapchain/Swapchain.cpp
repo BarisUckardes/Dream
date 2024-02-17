@@ -69,6 +69,7 @@ namespace Dream
 		for (Texture* pTexture : textures)
 		{
 			TextureViewDesc desc = {};
+			desc.AspectFlags = TextureAspectFlags::Color;
 			desc.pTexture = pTexture;
 			desc.ArrayLevel = 0;
 			desc.MipLevel = 0;

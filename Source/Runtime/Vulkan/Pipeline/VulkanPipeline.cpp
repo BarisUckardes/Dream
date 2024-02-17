@@ -128,9 +128,12 @@ namespace Dream
 		VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
 		depthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencilStateCreateInfo.pNext = nullptr;
-		depthStencilStateCreateInfo.depthBoundsTestEnable = false;
 		depthStencilStateCreateInfo.depthTestEnable = desc.DepthStencilState.bDepthTestEnabled;
 		depthStencilStateCreateInfo.depthWriteEnable = desc.DepthStencilState.bDepthWriteEnabled;
+		depthStencilStateCreateInfo.depthCompareOp = VulkanUtils::GetCompareOperation(desc.DepthStencilState.DepthTestOperation);
+		depthStencilStateCreateInfo.depthBoundsTestEnable = false;
+		depthStencilStateCreateInfo.minDepthBounds = 0;
+		depthStencilStateCreateInfo.maxDepthBounds = 1.0f;
 		depthStencilStateCreateInfo.stencilTestEnable = desc.DepthStencilState.bStencilTestEnabled;
 		depthStencilStateCreateInfo.front = VulkanPipelineUtils::GetStencilFaceState(desc.DepthStencilState.StencilFrontFace);
 		depthStencilStateCreateInfo.back = VulkanPipelineUtils::GetStencilFaceState(desc.DepthStencilState.StencilBackFace);

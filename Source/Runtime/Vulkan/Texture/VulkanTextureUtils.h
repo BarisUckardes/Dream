@@ -38,6 +38,8 @@ namespace Dream
                 return VK_FORMAT_R32_SFLOAT;
             case TextureFormat::BC3_UNorm:
                 return VK_FORMAT_BC3_UNORM_BLOCK;
+            case TextureFormat::D32_SFloat:
+                return VK_FORMAT_D32_SFLOAT;
             case TextureFormat::D24_UNorm_S8_UInt:
                 return VK_FORMAT_D24_UNORM_S8_UINT;
             case TextureFormat::D32_Float_S8_UInt:
@@ -270,10 +272,8 @@ namespace Dream
                 return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
             case TextureMemoryLayout::TransferDestination:
                 return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-            case TextureMemoryLayout::DepthReadOnly:
-                return VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-            case TextureMemoryLayout::StencilReadOnly:
-                return VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL;
+            case TextureMemoryLayout::DepthAttachment:
+                return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
             case TextureMemoryLayout::Present:
                 return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             default:
@@ -283,7 +283,7 @@ namespace Dream
         FORCEINLINE static VkImageAspectFlags GetImageAspects(const TextureAspectFlags aspects) noexcept
         {
             VkImageAspectFlags flags = VkImageAspectFlags();
-
+            
             if (aspects & TextureAspectFlags::Color)
                 flags |= VK_IMAGE_ASPECT_COLOR_BIT;
             if (aspects & TextureAspectFlags::Depth)

@@ -26,7 +26,7 @@ namespace Dream
         info.image = pTexture->GetVkImage();
         info.format = VulkanTextureUtils::GetTextureFormat(pTexture->GetFormat());
         info.viewType = VulkanTextureUtils::GetImageViewType(pTexture->GetTextureType());
-        info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        info.subresourceRange.aspectMask = VulkanTextureUtils::GetImageAspects(desc.AspectFlags);
         info.subresourceRange.baseArrayLayer = desc.ArrayLevel;
         info.subresourceRange.baseMipLevel = desc.MipLevel;
         info.subresourceRange.layerCount = desc.pTexture->GetArrayLevels();
