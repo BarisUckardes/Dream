@@ -20,6 +20,7 @@ namespace Dream
 		DescriptorPool,
 		DescriptorLayout,
 		DescriptorSet,
-		Queue
+		Queue,
+		Semaphore
 	};
 }

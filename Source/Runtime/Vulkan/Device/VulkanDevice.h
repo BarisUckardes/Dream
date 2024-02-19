@@ -60,6 +60,7 @@ namespace Dream
 		virtual DescriptorPool* CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) override;
 		virtual DescriptorSetLayout* CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc) override;
 		virtual Fence* CreateFenceCore(const FenceDesc& desc) override;
+		virtual Semaphore* CreateSyncObjectCore(const SemaphoreDesc& desc) override;
 		virtual GraphicsMemory* AllocateMemoryCore(const GraphicsMemoryDesc& desc) override;
 		virtual Sampler* CreateSamplerCore(const SamplerDesc& desc) override;
 		virtual Shader* CreateShaderCore(const ShaderDesc& desc) override;
@@ -75,7 +76,7 @@ namespace Dream
 		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) override;
 		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) override;
 		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) override;
-		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue,const Fence* pFence) override;
+		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const  PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) override;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;
 		virtual void WaitDeviceIdleCore() override;

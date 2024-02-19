@@ -149,7 +149,7 @@ namespace Dream
 			pCmdList->SetTextureMemoryBarrier(pDepthTexture, barrier);
 		}
 		pCmdList->EndRecording();
-		pDevice->SubmitCommands(&pCmdList, 1, pQueue, pFence);
+		pDevice->SubmitCommands(&pCmdList, 1, pQueue,nullptr,0,nullptr,nullptr,0, pFence);
 		pDevice->WaitFences(&pFence, 1);
 		pDevice->ResetFences(&pFence, 1);
 
@@ -270,7 +270,7 @@ namespace Dream
 	{
 		//Create window
 		WindowDesc windowDesc = {};
-		windowDesc.Title = "HelloTriangle Sample";
+		windowDesc.Title = "Rotating Cube Sample";
 		windowDesc.X = 100;
 		windowDesc.Y = 100;
 		windowDesc.Width = 1024;
@@ -632,7 +632,7 @@ namespace Dream
 		pCmdList->SetTextureMemoryBarrier(pTexture, postTextureBarrier);
 
 		pCmdList->EndRecording();
-		pDevice->SubmitCommands(&pCmdList, 1, pQueue, pFence);
+		pDevice->SubmitCommands(&pCmdList, 1, pQueue,nullptr,0,nullptr,nullptr,0, pFence);
 		pDevice->WaitFences(&pFence, 1);
 		pDevice->ResetFences(&pFence, 1);
 
@@ -857,12 +857,12 @@ namespace Dream
 			pCmdList->EndRecording();
 
 			//Submit and wait for the commands to finish
-			pDevice->SubmitCommands(&pCmdList, 1, pQueue, pFence);
+			pDevice->SubmitCommands(&pCmdList, 1, pQueue,nullptr,0,nullptr,nullptr,0, pFence);
 			pDevice->WaitFences(&pFence, 1);
 			pDevice->ResetFences(&pFence, 1);
 
 			//Present and wait for the present to finish
-			pSwapchain->Present();
+			pSwapchain->Present(nullptr,0);
 			pSwapchain->WaitForPresent(presentIndex);
 			presentIndex = (presentIndex + 1) % swapchainDesc.BufferCount;
 		}

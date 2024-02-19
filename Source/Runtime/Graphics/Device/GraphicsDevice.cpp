@@ -66,6 +66,14 @@ namespace Dream
 
         return pFence;
     }
+    Semaphore* GraphicsDevice::CreateSyncObject(const SemaphoreDesc& desc)
+    {
+        Semaphore* pSemaphore = CreateSyncObjectCore(desc);
+
+        RegisterObject(pSemaphore);
+
+        return pSemaphore;
+    }
     GraphicsMemory* GraphicsDevice::AllocateMemory(const GraphicsMemoryDesc& desc)
     {
         GraphicsMemory* pMemory = AllocateMemoryCore(desc);
@@ -166,9 +174,9 @@ namespace Dream
     {
         UpdateHostBufferCore(pTargetBuffer, desc);
     }
-    void GraphicsDevice::SubmitCommands(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence)
+    void GraphicsDevice::SubmitCommands(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
     {
-        SubmitCommandsCore(ppCmdLists, count, pTargetQueue,pFence);
+        SubmitCommandsCore(ppCmdLists, cmdListCount, pTargetQueue,ppSignalSemaphores,signalSemaphoreCount,ppWaitSemaphores,pWaitStageFlags,waitSemaphoreCount,pSignalFence);
     }
     void GraphicsDevice::ResetFences(Fence** ppFences, const unsigned int count)
     {

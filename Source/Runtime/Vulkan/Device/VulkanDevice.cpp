@@ -18,6 +18,8 @@
 #include <Runtime/Vulkan/Command/VulkanCommandPool.h>
 #include <Runtime/Vulkan/Command/VulkanCommandList.h>
 #include <Runtime/Vulkan/Descriptor/VulkanDescriptorUtils.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
+#include <Runtime/Vulkan/Pipeline/VulkanPipelineUtils.h>
 
 namespace Dream
 {
@@ -260,6 +262,10 @@ namespace Dream
 	{
 		return new VulkanFence(desc,this);
 	}
+	Semaphore* VulkanDevice::CreateSyncObjectCore(const SemaphoreDesc& desc)
+	{
+		return new VulkanSemaphore(desc,this);
+	}
 	GraphicsMemory* VulkanDevice::AllocateMemoryCore(const GraphicsMemoryDesc& desc)
 	{
 		return new VulkanMemory(desc,this);
@@ -284,27 +290,57 @@ namespace Dream
 	{
 		return new VulkanSwapchain(desc,this);
 	}
-	void VulkanDevice::SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count, const GraphicsQueue* pTargetQueue, const Fence* pFence)
+	void VulkanDevice::SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
 	{
-		const VulkanFence* pVkFence = (const VulkanFence*)pFence;
+		const VulkanFence* pVkFence = (const VulkanFence*)pSignalFence;
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pTargetQueue;
 
-		VkCommandBuffer vkCmdBuffers[255];
-		for (unsigned int cmdListIndex = 0; cmdListIndex < count; cmdListIndex++)
+		//Get cmd buffers
+		VkCommandBuffer vkCmdBuffers[32];
+		for (unsigned int cmdListIndex = 0; cmdListIndex < cmdListCount; cmdListIndex++)
 		{
 			const VulkanCommandList* pCmdList = (const VulkanCommandList*)ppCmdLists[cmdListIndex];
 			vkCmdBuffers[cmdListIndex] = pCmdList->GetVkCmdBuffer();
+		}
+		
+		//Get wait semaphores
+		VkSemaphore vkSignalSemahpores[32];
+		for (unsigned int i = 0; i < signalSemaphoreCount; i++)
+		{
+			const VulkanSemaphore* pSemaphore = (const VulkanSemaphore*)ppSignalSemaphores[i];
+			vkSignalSemahpores[i] = pSemaphore->GetVkSemaphore();
+		}
+
+		//Get wait semaphores
+		VkSemaphore vkWaitSemahpores[32];
+		for (unsigned int i = 0; i < waitSemaphoreCount; i++)
+		{
+			const VulkanSemaphore* pSemaphore = (const VulkanSemaphore*)ppWaitSemaphores[i];
+			vkWaitSemahpores[i] = pSemaphore->GetVkSemaphore();
+		}
+
+		//Get wait semaphore stage flags
+		VkPipelineStageFlags vkStageWaitFlags[32];
+		for (unsigned int i = 0; i < waitSemaphoreCount; i++)
+		{
+			vkStageWaitFlags[i] = VulkanPipelineUtils::GetStageFlags(pWaitStageFlags[i]);
 		}
 
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.pNext = nullptr;
-		submitInfo.waitSemaphoreCount = 0;
-		submitInfo.pWaitSemaphores = nullptr;
-		submitInfo.pCommandBuffers = vkCmdBuffers;
-		submitInfo.commandBufferCount = count;
 
-		DEV_ASSERT(vkQueueSubmit(pVkQueue->GetVkQueue(), count, &submitInfo, pVkFence != nullptr ? pVkFence->GetVkFence() :VK_NULL_HANDLE) == VK_SUCCESS, "VulkanDevice", "Failed to submit the command lists");
+		submitInfo.waitSemaphoreCount = waitSemaphoreCount;
+		submitInfo.pWaitSemaphores = vkWaitSemahpores;
+		submitInfo.pWaitDstStageMask = vkStageWaitFlags;
+
+		submitInfo.signalSemaphoreCount = signalSemaphoreCount;
+		submitInfo.pSignalSemaphores = vkSignalSemahpores;
+
+		submitInfo.commandBufferCount = cmdListCount;
+		submitInfo.pCommandBuffers = vkCmdBuffers;
+
+		DEV_ASSERT(vkQueueSubmit(pVkQueue->GetVkQueue(), cmdListCount, &submitInfo, pVkFence != nullptr ? pVkFence->GetVkFence() :VK_NULL_HANDLE) == VK_SUCCESS, "VulkanDevice", "Failed to submit the command lists");
 	}
 	void VulkanDevice::ResetFencesCore(Fence** ppFences, const unsigned int count)
 	{
@@ -399,7 +435,7 @@ namespace Dream
 
 					VkDescriptorImageInfo imageInfo = {};
 					imageInfo.imageView = pView->GetVkView();
-					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 					imageInfo.sampler = VK_NULL_HANDLE;
 					writeImageInformations[imageIndex] = imageInfo;
 					writeInfo.pImageInfo = &writeImageInformations[imageIndex];

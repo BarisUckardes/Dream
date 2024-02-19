@@ -9,6 +9,7 @@
 #include <Runtime/Graphics/Descriptor/DescriptorPool.h>
 #include <Runtime/Graphics/Descriptor/DescriptorSetLayout.h>
 #include <Runtime/Graphics/Fence/Fence.h>
+#include <Runtime/Graphics/Semaphore/Semaphore.h>
 #include <Runtime/Graphics/Memory/GraphicsMemory.h>
 #include <Runtime/Graphics/Sampler/Sampler.h>
 #include <Runtime/Graphics/Shader/Shader.h>
@@ -45,6 +46,7 @@ namespace Dream
 		DescriptorPool* CreateDescriptorPool(const DescriptorPoolDesc& desc);
 		DescriptorSetLayout* CreateDescriptorSetLayout(const DescriptorSetLayoutDesc& desc);
 		Fence* CreateFence(const FenceDesc& desc);
+		Semaphore* CreateSyncObject(const SemaphoreDesc& desc);
 		GraphicsMemory* AllocateMemory(const GraphicsMemoryDesc& desc);
 		Sampler* CreateSampler(const SamplerDesc& desc);
 		Shader* CreateShader(const ShaderDesc& desc);
@@ -60,7 +62,7 @@ namespace Dream
 		void UpdateDescriptorSet(DescriptorSet* pSet,const DescriptorSetUpdateDesc& desc);
 		void CopyDescriptorSet(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet,const DescriptorSetCopyDesc& desc);
 		void UpdateHostBuffer(GraphicsBuffer* pTargetBuffer,const HostBufferUpdateDesc& desc);
-		void SubmitCommands(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence);
+		void SubmitCommands(CommandList** ppCmdLists, const unsigned char cmdListCount,const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores,const unsigned int signalSemaphoreCount,Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,const unsigned int waitSemaphoreCount,const Fence* pSignalFence);
 		void ResetFences(Fence** ppFences, const unsigned int count);
 		void WaitFences(Fence** ppFences, const unsigned int count);
 		void WaitDeviceIdle();
@@ -77,6 +79,7 @@ namespace Dream
 		virtual DescriptorPool* CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) = 0;
 		virtual DescriptorSetLayout* CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc) = 0;
 		virtual Fence* CreateFenceCore(const FenceDesc& desc) = 0;
+		virtual Semaphore* CreateSyncObjectCore(const SemaphoreDesc& desc) = 0;
 		virtual GraphicsMemory* AllocateMemoryCore(const GraphicsMemoryDesc& desc) = 0;
 		virtual Sampler* CreateSamplerCore(const SamplerDesc& desc) = 0;
 		virtual Shader* CreateShaderCore(const ShaderDesc& desc) = 0;
@@ -92,7 +95,7 @@ namespace Dream
 		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) = 0;
 		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) = 0;
 		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) = 0;
-		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char count,const GraphicsQueue* pTargetQueue,const Fence* pFence) = 0;
+		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) = 0;
 		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) =  0;
 		virtual void WaitDeviceIdleCore() =  0;

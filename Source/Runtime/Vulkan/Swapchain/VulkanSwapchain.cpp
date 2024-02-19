@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <Runtime/Vulkan/Queue/VulkanQueue.h>
 #include <Runtime/Vulkan/Fence/VulkanFence.h>
+#include <Runtime/Vulkan/Semaphore/VulkanSemaphore.h>
 
 namespace Dream
 {
@@ -109,7 +110,7 @@ namespace Dream
 		swapchainInfo.minImageCount = desc.BufferCount;
 		swapchainInfo.imageExtent = selectedExtent;
 		swapchainInfo.imageArrayLayers = 1;
-		swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 		swapchainInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 		swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -268,7 +269,7 @@ namespace Dream
 		swapchainInfo.minImageCount = GetBufferCount();
 		swapchainInfo.imageExtent = selectedExtent;
 		swapchainInfo.imageArrayLayers = 1;
-		swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 		swapchainInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 		swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -322,7 +323,7 @@ namespace Dream
 		//Set textures
 		SetCustomSwapchainTextures(textures);
 	}
-	void VulkanSwapchain::PresentCore()
+	void VulkanSwapchain::PresentCore(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount)
 	{
 		VkFence fence = ((VulkanFence*)GetPresentFence(GetCurrentImageIndex()))->GetVkFence();
 
@@ -333,11 +334,19 @@ namespace Dream
 			return;
 		}
 
+		//Get semaphores
+		VkSemaphore vkWaitSemaphores[32];
+		for (unsigned int i = 0; i < waitSemaphoreCount; i++)
+		{
+			const VulkanSemaphore* pVkSemaphore = (const VulkanSemaphore*)ppWaitSemahpores[i];
+			vkWaitSemaphores[i] = pVkSemaphore->GetVkSemaphore();
+		}
+		
 		//Present
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		presentInfo.waitSemaphoreCount = 0;
-		presentInfo.pWaitSemaphores = nullptr;
+		presentInfo.waitSemaphoreCount = waitSemaphoreCount;
+		presentInfo.pWaitSemaphores = vkWaitSemaphores;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &mSwapchain;
 		presentInfo.pImageIndices = &imageIndex;

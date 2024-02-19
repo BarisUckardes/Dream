@@ -9,6 +9,8 @@ namespace Dream
 	}
 	VulkanAdapter::~VulkanAdapter()
 	{
+		VkSemaphoreCreateInfo info = {};
+		info.flags = VkSemaphoreCreateFlags();
 
 	}
 	GraphicsDevice* VulkanAdapter::CreateDeviceCore(const GraphicsDeviceDesc* pDesc)

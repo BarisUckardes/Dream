@@ -262,6 +262,8 @@ namespace Dream
             {
             case TextureMemoryLayout::Unknown:
                 return VK_IMAGE_LAYOUT_UNDEFINED;
+            case TextureMemoryLayout::General:
+                return VK_IMAGE_LAYOUT_GENERAL;
             case TextureMemoryLayout::ColorAttachment:
                 return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             case TextureMemoryLayout::DepthStencilAttachment:

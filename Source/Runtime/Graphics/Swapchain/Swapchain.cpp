@@ -21,14 +21,14 @@ namespace Dream
 		mWidth = width;
 		mHeight = height;
 	}
-	void Swapchain::Present()
+	void Swapchain::Present(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount)
 	{
 		//First wait for target fence
 		GetDevice()->WaitFences(&mPresentFences[mImageIndex], 1);
 		GetDevice()->ResetFences(&mPresentFences[mImageIndex],1);
 
 		//Present
-		PresentCore();
+		PresentCore(ppWaitSemahpores,waitSemaphoreCount);
 
 		//Increment index
 		mImageIndex = (mImageIndex + 1) % mBufferCount;

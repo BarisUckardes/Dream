@@ -247,9 +247,54 @@ namespace Dream
 		//Clean up the trash
 		mBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	}
-	VulkanPipeline::VulkanPipeline(const ComputePipelineDesc& desc, VulkanDevice* pDevice) : Pipeline(desc,pDevice), mBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS)
+	VulkanPipeline::VulkanPipeline(const ComputePipelineDesc& desc, VulkanDevice* pDevice) : Pipeline(desc,pDevice), mBindPoint(VK_PIPELINE_BIND_POINT_COMPUTE),mLayout(VK_NULL_HANDLE),mPipeline(VK_NULL_HANDLE), mLogicalDevice(pDevice->GetVkLogicalDevice())
 	{
-		
+		//Create pipeline shader stage informations
+		VkPipelineShaderStageCreateInfo vkShaderStageInfo;
+		std::string vkShaderStageNameCache;
+		const VulkanShader* pShader = (const VulkanShader*)desc.pComputeShader;
+
+		//Cache entry point
+		vkShaderStageNameCache = pShader->GetEntryMethod();
+
+		VkPipelineShaderStageCreateInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		info.module = pShader->GetVkModule();
+		info.pName = vkShaderStageNameCache.c_str();
+		info.stage = (VkShaderStageFlagBits)VulkanShaderUtils::GetShaderFlags(pShader->GetStage());
+		info.pSpecializationInfo = nullptr;
+		info.pNext = nullptr;
+		vkShaderStageInfo = info;
+
+		//Create resource layout
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+		for (unsigned int layoutIndex = 0; layoutIndex < desc.DescriptorSetLayouts.size(); layoutIndex++)
+		{
+			const VulkanDescriptorSetLayout* pLayout = (const VulkanDescriptorSetLayout*)desc.DescriptorSetLayouts[layoutIndex];
+			descriptorSetLayouts.push_back(pLayout->GetVkLayout());
+		}
+
+		VkPipelineLayoutCreateInfo layoutCreateInfo = {};
+		layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		layoutCreateInfo.setLayoutCount = descriptorSetLayouts.size();
+		layoutCreateInfo.pSetLayouts = descriptorSetLayouts.data();
+		layoutCreateInfo.pPushConstantRanges = nullptr;
+		layoutCreateInfo.pushConstantRangeCount = 0;
+		layoutCreateInfo.pNext = nullptr;
+
+		DEV_ASSERT(vkCreatePipelineLayout(pDevice->GetVkLogicalDevice(), &layoutCreateInfo, nullptr, &mLayout) == VK_SUCCESS, "VulkanPipeline", "Failed to create pipeline layout!");
+
+		//Create pipeine
+		VkComputePipelineCreateInfo pipelineInfo = {};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+		pipelineInfo.flags = VkPipelineCreateFlags();
+		pipelineInfo.layout = mLayout;
+		pipelineInfo.stage = vkShaderStageInfo;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineInfo.basePipelineIndex = -1;
+		pipelineInfo.pNext = nullptr;
+
+		DEV_ASSERT(vkCreateComputePipelines(mLogicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mPipeline) == VK_SUCCESS, "VulkanPipeline", "Failed to create compute pipeline!");
 	}
 
 	Dream::VulkanPipeline::~VulkanPipeline()

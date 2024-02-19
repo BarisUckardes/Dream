@@ -4,6 +4,7 @@
 #include <Runtime/Graphics/Fence/Fence.h>
 #include <Runtime/Graphics/Texture/Texture.h>
 #include <Runtime/Graphics/Texture/TextureView.h>
+#include <Runtime/Graphics/Semaphore/Semaphore.h>
 
 namespace Dream
 {
@@ -62,7 +63,7 @@ namespace Dream
 		}
 
 		void Resize(const unsigned int width, const unsigned int height);
-		void Present();
+		void Present(Semaphore** ppWaitSemahpores,const unsigned int waitSemaphoreCount);
 		void WaitForPresent(const unsigned char index);
 	protected:
 		Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice);
@@ -76,7 +77,7 @@ namespace Dream
 		}
 
 		virtual void ResizeCore(const unsigned int width, const unsigned int height) = 0;
-		virtual void PresentCore() = 0;
+		virtual void PresentCore(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount) = 0;
 	private:
 		void ClearTextures();
 	private:
