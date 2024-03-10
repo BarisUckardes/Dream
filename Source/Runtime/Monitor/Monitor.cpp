@@ -7,21 +7,12 @@ typedef Dream::Win32Monitor PlatformAbstraction;
 
 namespace Dream
 {
-	Monitor* Monitor::GetPrimaryMonitor()
+	Monitor* Monitor::primary_monitor()
 	{
-		return PlatformAbstraction::GetPrimaryMonitor();
+		return PlatformAbstraction::primary_monitor();
 	}
-	std::vector<Monitor*> Monitor::GetMonitors()
+	std::vector<Monitor*> Monitor::monitors()
 	{
-		return PlatformAbstraction::GetMonitors();
-	}
-	Monitor::~Monitor()
-	{
-
-	}
-	Monitor::Monitor(const std::string& name, const MonitorDisplayMode& currentMode, const std::vector<MonitorDisplayMode>& modes, const unsigned int width, const unsigned int height, const int x, const int y) :
-		mName(name),mCurrentMode(currentMode),mModes(modes),mWidth(width),mHeight(height), mX(x),mY(y)
-	{
-
+		return PlatformAbstraction::monitors();
 	}
 }

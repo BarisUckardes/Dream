@@ -12,15 +12,15 @@ namespace Dream
 		VulkanTexture(const TextureDesc& desc, VulkanDevice* pDevice);
 		~VulkanTexture();
 
-		FORCEINLINE VkImage GetVkImage() const noexcept
+		FORCEINLINE VkImage vk_image() const noexcept
 		{
 			return mImage;
 		}
-		FORCEINLINE unsigned long long GetVkMemoryOffset() const noexcept
+		FORCEINLINE unsigned long long vk_memory_offset() const noexcept
 		{
 			return mMemoryOffset;
 		}
-		FORCEINLINE unsigned long long GetVkMemoryAlignedOffset() const noexcept
+		FORCEINLINE unsigned long long vk_memory_aligned_offset() const noexcept
 		{
 			return mMemoryAlignedOffset;
 		}

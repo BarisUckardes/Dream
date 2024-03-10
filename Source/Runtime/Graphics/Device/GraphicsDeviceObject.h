@@ -11,11 +11,11 @@ namespace Dream
 		GraphicsDeviceObject(GraphicsDevice* pDevice);
 		~GraphicsDeviceObject();
 
-		FORCEINLINE GraphicsDevice* GetDevice() const noexcept
+		FORCEINLINE GraphicsDevice* device() const noexcept
 		{
 			return mDevice;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept = 0;
+		virtual GraphicsDeviceObjectType object_type() const noexcept = 0;
 	private:
 		GraphicsDevice* mDevice;
 	};

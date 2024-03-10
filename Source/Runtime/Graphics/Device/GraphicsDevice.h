@@ -32,74 +32,74 @@ namespace Dream
 	public:
 		~GraphicsDevice();
 
-		FORCEINLINE GraphicsAdapter* GetAdapter() const noexcept
+		FORCEINLINE GraphicsAdapter* adapter() const noexcept
 		{
 			return mOwnerAdapter;
 		}
 
-		virtual GraphicsBackend GetBackend() const noexcept = 0;
-		virtual bool HasQueue(const GraphicsQueueType type) const noexcept = 0;
+		virtual GraphicsBackend backend() const noexcept = 0;
+		virtual bool has_queue(const GraphicsQueueFamilyType type) const noexcept = 0;
 
-		GraphicsQueue* CreateQueue(const GraphicsQueueDesc& desc);
-		GraphicsBuffer* CreateBuffer(const GraphicsBufferDesc& desc);
-		DescriptorSet* CreateDescriptorSet(const DescriptorSetDesc& desc);
-		DescriptorPool* CreateDescriptorPool(const DescriptorPoolDesc& desc);
-		DescriptorSetLayout* CreateDescriptorSetLayout(const DescriptorSetLayoutDesc& desc);
-		Fence* CreateFence(const FenceDesc& desc);
-		Semaphore* CreateSyncObject(const SemaphoreDesc& desc);
-		GraphicsMemory* AllocateMemory(const GraphicsMemoryDesc& desc);
-		Sampler* CreateSampler(const SamplerDesc& desc);
-		Shader* CreateShader(const ShaderDesc& desc);
-		Texture* CreateTexture(const TextureDesc& desc);
-		TextureView* CreateTextureView(const TextureViewDesc& desc);
-		Swapchain* CreateSwapchain(const SwapchainDesc& desc);
-		Pipeline* CreateGraphicsPipeline(const GraphicsPipelineDesc& desc);
-		Pipeline* CreateComputePipeline(const ComputePipelineDesc& desc);
-		RenderPass* CreateRenderPass(const RenderPassDesc& desc);
-		CommandPool* CreateCommandPool(const CommandPoolDesc& desc);
-		CommandList* CreateCommandList(const CommandListDesc& desc);
+		GraphicsQueue* own_queue(const GraphicsQueueDesc& desc);
+		GraphicsBuffer* create_buffer(const GraphicsBufferDesc& desc);
+		DescriptorSet* create_descriptor_set(const DescriptorSetDesc& desc);
+		DescriptorPool* create_descriptor_pool(const DescriptorPoolDesc& desc);
+		DescriptorSetLayout* create_descriptor_set_layout(const DescriptorSetLayoutDesc& desc);
+		Fence* create_fence(const FenceDesc& desc);
+		Semaphore* create_sync_object(const SemaphoreDesc& desc);
+		GraphicsMemory* allocate_memory(const GraphicsMemoryDesc& desc);
+		Sampler* create_sampler(const SamplerDesc& desc);
+		Shader* create_shader(const ShaderDesc& desc);
+		Texture* create_texture(const TextureDesc& desc);
+		TextureView* create_texture_view(const TextureViewDesc& desc);
+		Swapchain* create_swapchain(const SwapchainDesc& desc);
+		Pipeline* create_graphics_pipeline(const GraphicsPipelineDesc& desc);
+		Pipeline* create_compute_pipeline(const ComputePipelineDesc& desc);
+		RenderPass* create_render_pass(const RenderPassDesc& desc);
+		CommandPool* create_cmd_pool(const CommandPoolDesc& desc);
+		CommandList* create_cmd_list(const CommandListDesc& desc);
 
-		void UpdateDescriptorSet(DescriptorSet* pSet,const DescriptorSetUpdateDesc& desc);
-		void CopyDescriptorSet(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet,const DescriptorSetCopyDesc& desc);
-		void UpdateHostBuffer(GraphicsBuffer* pTargetBuffer,const HostBufferUpdateDesc& desc);
-		void SubmitCommands(CommandList** ppCmdLists, const unsigned char cmdListCount,const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores,const unsigned int signalSemaphoreCount,Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,const unsigned int waitSemaphoreCount,const Fence* pSignalFence);
-		void ResetFences(Fence** ppFences, const unsigned int count);
-		void WaitFences(Fence** ppFences, const unsigned int count);
-		void WaitDeviceIdle();
-		void WaitQueueIdle(GraphicsQueue* pQueue);
+		void update_host_descriptor_set(DescriptorSet* pSet,const DescriptorSetUpdateDesc& desc);
+		void copy_descriptor_set(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet,const DescriptorSetCopyDesc& desc);
+		void update_host_buffer(GraphicsBuffer* pTargetBuffer,const HostBufferUpdateDesc& desc);
+		void submit_commands(CommandList** ppCmdLists, const unsigned char cmdListCount,const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores,const unsigned int signalSemaphoreCount,Semaphore** ppWaitSemaphores, const PipelineStageFlags* pWaitStageFlags,const unsigned int waitSemaphoreCount,const Fence* pSignalFence);
+		void reset_fences(Fence** ppFences, const unsigned int count);
+		void wait_fences(Fence** ppFences, const unsigned int count);
+		void wait_device_idle();
+		void wait_queue_idle(GraphicsQueue* pQueue);
 	protected:
 		GraphicsDevice(const GraphicsDeviceDesc* pDesc);
 
-		void RegisterObject(GraphicsDeviceObject* pObject);
-		void RemoveObject(GraphicsDeviceObject* pObject);
+		void register_object(GraphicsDeviceObject* pObject);
+		void remove_object(GraphicsDeviceObject* pObject);
 
-		virtual GraphicsQueue* CreateQueueCore(const GraphicsQueueDesc& desc) = 0;
-		virtual GraphicsBuffer* CreateBufferCore(const GraphicsBufferDesc& desc) = 0;
-		virtual DescriptorSet* CreateDescriptorSetCore(const DescriptorSetDesc& desc) = 0;
-		virtual DescriptorPool* CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) = 0;
-		virtual DescriptorSetLayout* CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc) = 0;
-		virtual Fence* CreateFenceCore(const FenceDesc& desc) = 0;
-		virtual Semaphore* CreateSyncObjectCore(const SemaphoreDesc& desc) = 0;
-		virtual GraphicsMemory* AllocateMemoryCore(const GraphicsMemoryDesc& desc) = 0;
-		virtual Sampler* CreateSamplerCore(const SamplerDesc& desc) = 0;
-		virtual Shader* CreateShaderCore(const ShaderDesc& desc) = 0;
-		virtual Texture* CreateTextureCore(const TextureDesc& desc) = 0;
-		virtual TextureView* CreateTextureViewCore(const TextureViewDesc& desc) = 0;
-		virtual Swapchain* CreateSwapchainCore(const SwapchainDesc& desc) = 0;
-		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) = 0;
-		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) = 0;
-		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) = 0;
-		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) = 0;
-		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) = 0;
+		virtual GraphicsQueue* own_queue_impl(const GraphicsQueueDesc& desc) = 0;
+		virtual GraphicsBuffer* create_buffer_impl(const GraphicsBufferDesc& desc) = 0;
+		virtual DescriptorSet* create_descriptor_set_impl(const DescriptorSetDesc& desc) = 0;
+		virtual DescriptorPool* create_descriptor_pool_impl(const DescriptorPoolDesc& desc) = 0;
+		virtual DescriptorSetLayout* create_descriptor_set_layout_impl(const DescriptorSetLayoutDesc& desc) = 0;
+		virtual Fence* create_fence_impl(const FenceDesc& desc) = 0;
+		virtual Semaphore* create_sync_object_impl(const SemaphoreDesc& desc) = 0;
+		virtual GraphicsMemory* allocate_memory_impl(const GraphicsMemoryDesc& desc) = 0;
+		virtual Sampler* create_sampler_impl(const SamplerDesc& desc) = 0;
+		virtual Shader* create_shader_impl(const ShaderDesc& desc) = 0;
+		virtual Texture* create_texture_impl(const TextureDesc& desc) = 0;
+		virtual TextureView* create_texture_view_impl(const TextureViewDesc& desc) = 0;
+		virtual Swapchain* create_swapchain_impl(const SwapchainDesc& desc) = 0;
+		virtual Pipeline* create_graphics_pipeline_impl(const GraphicsPipelineDesc& desc) = 0;
+		virtual Pipeline* create_compute_pipeline_impl(const ComputePipelineDesc& desc) = 0;
+		virtual RenderPass* create_render_pass_impl(const RenderPassDesc& desc) = 0;
+		virtual CommandPool* create_cmd_pool_impl(const CommandPoolDesc& desc) = 0;
+		virtual CommandList* create_cmd_list_impl(const CommandListDesc& desc) = 0;
 
-		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) = 0;
-		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) = 0;
-		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) = 0;
-		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) = 0;
-		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) =  0;
-		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) =  0;
-		virtual void WaitDeviceIdleCore() =  0;
-		virtual void WaitQueueIdleCore(GraphicsQueue* pQueue) =  0;
+		virtual void update_host_descriptor_set_impl(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) = 0;
+		virtual void copy_descriptor_set_impl(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) = 0;
+		virtual void update_host_buffer_impl(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) = 0;
+		virtual void submit_commands_impl(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) = 0;
+		virtual void reset_fences_impl(Fence** ppFences, const unsigned int count) =  0;
+		virtual void wait_fences_impl(Fence** ppFences, const unsigned int count) =  0;
+		virtual void wait_device_idle_impl() =  0;
+		virtual void wait_queue_idle_impl(GraphicsQueue* pQueue) =  0;
 	private:
 		std::vector<GraphicsDeviceObject*> mObjects;
 		GraphicsAdapter* mOwnerAdapter;

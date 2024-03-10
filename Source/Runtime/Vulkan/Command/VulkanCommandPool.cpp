@@ -6,7 +6,7 @@ namespace Dream
 	VulkanCommandPool::VulkanCommandPool(const CommandPoolDesc& desc, VulkanDevice* pDevice) : CommandPool(desc,pDevice),mPool(VK_NULL_HANDLE),mLogicalDevice(pDevice->GetVkLogicalDevice())
 	{
 		//Get family index
-		const unsigned char queueFamilyIndex = pDevice->vkGetQueueFamilyIndex((GraphicsQueueType)desc.Type);
+		const unsigned char queueFamilyIndex = pDevice->vkGetQueueFamilyIndex((GraphicsQueueFamilyType)desc.Type);
 
 		//Create command pool
 		VkCommandPoolCreateInfo cmdPoolInfo = {};

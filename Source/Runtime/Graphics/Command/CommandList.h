@@ -23,56 +23,56 @@ namespace Dream
 	public:
 		~CommandList();
 
-		FORCEINLINE const CommandPool* GetCmdPool() const noexcept
+		FORCEINLINE const CommandPool* cmd_pool() const noexcept
 		{
 			return mCmdPool;
 		}
-		FORCEINLINE bool IsRecording() const noexcept
+		FORCEINLINE bool recording() const noexcept
 		{
 			return mRecording;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::CommandList;
 		}
 
-		void BeginRecording();
-		void EndRecording();
-		void SetVertexBuffers(GraphicsBuffer** ppBuffers, const unsigned char count);
-		void SetIndexBuffer(GraphicsBuffer* pBuffer, const IndexBufferType type);
-		void DrawIndexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount);
-		void DispatchCompute(const unsigned int x, const unsigned int y, const unsigned int z);
-		void SetPipeline(Pipeline* pPipeline);
-		void BeginRenderPass(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount,const double clearDepth,const double clearStencil);
-		void EndRenderPass();
-		void SetViewports(ViewportDesc* pViewports,const unsigned char count);
-		void SetScissors(ScissorDesc* pScissors, const unsigned char count);
-		void CopyBufferToBuffer(const GraphicsBuffer* pSourceBuffer,const GraphicsBuffer* pDestinationBuffer,const BufferBufferCopyDesc& desc);
-		void CopyBufferToTexture(const GraphicsBuffer* pSourceBuffer,const Texture* pDestinationTexture,const BufferTextureCopyDesc& desc);
-		void CopyTextureToTexture(const Texture* pSourceTexture,const Texture* pDestinationTexture,const TextureCopyDesc& desc);
-		void SetTextureMemoryBarrier(const Texture* pTexture,const TextureMemoryBarrierDesc& desc);
-		void SetBufferMemoryBarrier(const GraphicsBuffer* pBuffer,const BufferMemoryBarrierDesc& desc);
-		void CommitResourceSets(DescriptorSet** ppSets, const unsigned char count);
+		void begin();
+		void end();
+		void set_vertex_buffers(GraphicsBuffer** ppBuffers, const unsigned char count);
+		void set_index_buffer(GraphicsBuffer* pBuffer, const IndexBufferType type);
+		void draw_indexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount);
+		void dispatch(const unsigned int x, const unsigned int y, const unsigned int z);
+		void set_pipeline(Pipeline* pPipeline);
+		void begin_render(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount,const double clearDepth,const double clearStencil);
+		void end_render();
+		void set_viewports(ViewportDesc* pViewports,const unsigned char count);
+		void set_scissors(ScissorDesc* pScissors, const unsigned char count);
+		void copy_buffer_buffer(const GraphicsBuffer* pSourceBuffer,const GraphicsBuffer* pDestinationBuffer,const BufferBufferCopyDesc& desc);
+		void copy_buffer_texture(const GraphicsBuffer* pSourceBuffer,const Texture* pDestinationTexture,const BufferTextureCopyDesc& desc);
+		void copy_texture_texture(const Texture* pSourceTexture,const Texture* pDestinationTexture,const TextureCopyDesc& desc);
+		void set_texture_barrier(const Texture* pTexture,const TextureMemoryBarrierDesc& desc);
+		void set_buffer_barrier(const GraphicsBuffer* pBuffer,const BufferMemoryBarrierDesc& desc);
+		void commit_resource_sets(DescriptorSet** ppSets, const unsigned char count);
 	protected:
 		CommandList(const CommandListDesc& desc, GraphicsDevice* pDevice);
 
-		virtual void BeginRecordingCore() = 0;
-		virtual void EndRecordingCore() = 0;
-		virtual void SetVertexBuffersCore(GraphicsBuffer** ppBuffers, const unsigned char count) = 0;
-		virtual void SetIndexBufferCore(GraphicsBuffer* pBuffer, const IndexBufferType type) = 0;
-		virtual void DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) = 0;
-		virtual void DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z) = 0;
-		virtual void SetPipelineCore(Pipeline* pPipeline) = 0;
-		virtual void BeginRenderPassCore(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil) = 0;
-		virtual void EndRenderPassCore() = 0;
-		virtual void SetViewportsCore(ViewportDesc* pViewports, const unsigned char count) = 0;
-		virtual void SetScissorsCore(ScissorDesc* pScissors, const unsigned char count) = 0;
-		virtual void CopyBufferToBufferCore(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc) = 0;
-		virtual void CopyBufferToTextureCore(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc) = 0;
-		virtual void CopyTextureToTextureCore(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc) = 0;
-		virtual void SetTextureMemoryBarrierCore(const Texture* pTexture, const TextureMemoryBarrierDesc& desc) = 0;
-		virtual void SetBufferMemoryBarrierCore(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc) = 0;
-		virtual void CommitResourceSetsCore(DescriptorSet** ppSets, const unsigned char count) = 0;
+		virtual void begin_impl() = 0;
+		virtual void end_impl() = 0;
+		virtual void set_vertex_buffers_impl(GraphicsBuffer** ppBuffers, const unsigned char count) = 0;
+		virtual void set_index_buffer_impl(GraphicsBuffer* pBuffer, const IndexBufferType type) = 0;
+		virtual void draw_indexed_impl(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount) = 0;
+		virtual void dispatch_impl(const unsigned int x, const unsigned int y, const unsigned int z) = 0;
+		virtual void set_pipeline_impl(Pipeline* pPipeline) = 0;
+		virtual void begin_render_impl(RenderPass* pPass,const ClearValue* pClearColorValues,const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil) = 0;
+		virtual void end_render_impl() = 0;
+		virtual void set_viewports_impl(ViewportDesc* pViewports, const unsigned char count) = 0;
+		virtual void set_scissors_impl(ScissorDesc* pScissors, const unsigned char count) = 0;
+		virtual void copy_buffer_buffer_impl(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc) = 0;
+		virtual void copy_buffer_texture_impl(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc) = 0;
+		virtual void copy_texture_texture_impl(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc) = 0;
+		virtual void set_texture_barrier_impl(const Texture* pTexture, const TextureMemoryBarrierDesc& desc) = 0;
+		virtual void set_buffer_barrier_impl(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc) = 0;
+		virtual void commit_resource_sets_impl(DescriptorSet** ppSets, const unsigned char count) = 0;
 
 		FORCEINLINE GraphicsBuffer* GetBoundIndexBuffer() const noexcept
 		{

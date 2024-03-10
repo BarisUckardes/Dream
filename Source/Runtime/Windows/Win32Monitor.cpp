@@ -15,7 +15,7 @@ namespace Dream
 		pData->ProcIndex++;
 		return TRUE;
 	}
-	Monitor* Win32Monitor::GetPrimaryMonitor()
+	Monitor* Win32Monitor::primary_monitor()
 	{
 		//Get process handle
 		const HMODULE processHandle = GetModuleHandle(NULL);
@@ -74,7 +74,7 @@ namespace Dream
 		Win32Monitor* pMonitor = new Win32Monitor(monitorHandle, monitorInfo.szDevice, currentDisplayMode, displayModes, monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top, monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.top);
 		return pMonitor;
 	}
-	std::vector<Monitor*> Win32Monitor::GetMonitors()
+	std::vector<Monitor*> Win32Monitor::monitors()
 	{
 		//Get process handle
 		const HMODULE processHandle = GetModuleHandle(NULL);

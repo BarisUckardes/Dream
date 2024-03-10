@@ -13,7 +13,7 @@ namespace Dream
 		info.flags = VkSemaphoreCreateFlags();
 
 	}
-	GraphicsDevice* VulkanAdapter::CreateDeviceCore(const GraphicsDeviceDesc* pDesc)
+	GraphicsDevice* VulkanAdapter::create_device_impl(const GraphicsDeviceDesc* pDesc)
 	{
 		return new VulkanDevice((VulkanDeviceDesc*)pDesc);
 	}

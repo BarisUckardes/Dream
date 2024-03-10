@@ -11,18 +11,18 @@ namespace Dream
 		VulkanSwapchain(const SwapchainDesc& desc, VulkanDevice* pDevice);
 		~VulkanSwapchain();
 
-		FORCEINLINE VkSwapchainKHR GetVkSwapchain() const noexcept
+		FORCEINLINE VkSwapchainKHR vk_swapchain() const noexcept
 		{
 			return mSwapchain;
 		}
-		FORCEINLINE VkSurfaceKHR GetVkSurface() const noexcept
+		FORCEINLINE VkSurfaceKHR vk_surface() const noexcept
 		{
 			return mSurface;
 		}
 	private:
-		virtual void ResizeCore(const unsigned int width, const unsigned int height) override;
-		virtual void PresentCore(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount) override;
-		void Delete();
+		virtual void resize_impl(const unsigned int width, const unsigned int height) override;
+		virtual void Present_impl(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount) override;
+		void delete_textures();
 	private:
 		VkSwapchainKHR mSwapchain;
 		VkSurfaceKHR mSurface;

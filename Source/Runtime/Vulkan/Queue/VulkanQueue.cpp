@@ -9,7 +9,7 @@ namespace Dream
 	}
 	VulkanQueue::~VulkanQueue()
 	{
-		VulkanDevice* pDevice = (VulkanDevice*)GetDevice();
-		pDevice->vkReturnQueue(GetType(), mQueue);
+		VulkanDevice* pDevice = (VulkanDevice*)device();
+		pDevice->vkReturnQueue(queue_type(), mQueue);
 	}
 }

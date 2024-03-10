@@ -21,30 +21,30 @@ namespace Dream
 	public:
 		~GraphicsMemory() = default;
 
-		FORCEINLINE unsigned long long GetHeapSize() const noexcept
+		FORCEINLINE unsigned long long size() const noexcept
 		{
 			return mSize;
 		}
-		FORCEINLINE unsigned long long GetOccupiedSize() const noexcept
+		FORCEINLINE unsigned long long occupied_size() const noexcept
 		{
 			return mOccupiedSize;
 		}
-		FORCEINLINE GraphicsMemoryType GetMemoryType() const noexcept
+		FORCEINLINE GraphicsMemoryType memory_type() const noexcept
 		{
 			return mType;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::MemoryHeap;
 		}
 
-		unsigned long long Allocate(const unsigned long long sizeInBytes);
-		void Free(const unsigned long long offsetInBytes);
+		unsigned long long allocate(const unsigned long long sizeInBytes);
+		void free(const unsigned long long offsetInBytes);
 	protected:
 		GraphicsMemory(const GraphicsMemoryDesc& desc,GraphicsDevice* pDevice);
 	private:
-		CompactReport GetCompactReport(const unsigned int index);
-		void Compact(const CompactReport& report);
+		CompactReport compact_report(const unsigned int index);
+		void compact(const CompactReport& report);
 	private:
 		const unsigned long long mSize;
 		const GraphicsMemoryType mType;

@@ -40,7 +40,7 @@ namespace Dream
 
 				inputAttributeDescriptions.push_back(vkAttributeDescription);
 
-				inputOffset += TextureUtils::GetFormatSize(inputElement.Format);
+				inputOffset += TextureUtils::format_size(inputElement.Format);
 			}
 
 			/**
@@ -171,7 +171,7 @@ namespace Dream
 		for (unsigned int layoutIndex = 0; layoutIndex < desc.ResourceLayout.ResourceLayouts.size(); layoutIndex++)
 		{
 			const VulkanDescriptorSetLayout* pLayout = (const VulkanDescriptorSetLayout*)desc.ResourceLayout.ResourceLayouts[layoutIndex];
-			descriptorSetLayouts.push_back(pLayout->GetVkLayout());
+			descriptorSetLayouts.push_back(pLayout->vk_layout());
 		}
 
 		VkPipelineLayoutCreateInfo layoutCreateInfo = {};
@@ -195,13 +195,13 @@ namespace Dream
 			const VulkanShader* pShader = (const VulkanShader*)desc.GraphicsShaders[shaderIndex];
 
 			//Cache entry point
-			vkShaderStageNameCache[shaderIndex] = pShader->GetEntryMethod();
+			vkShaderStageNameCache[shaderIndex] = pShader->entry_method();
 
 			VkPipelineShaderStageCreateInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 			info.module = pShader->GetVkModule();
 			info.pName = vkShaderStageNameCache[shaderIndex].c_str();
-			info.stage = (VkShaderStageFlagBits)VulkanShaderUtils::GetShaderFlags(pShader->GetStage());
+			info.stage = (VkShaderStageFlagBits)VulkanShaderUtils::GetShaderFlags(pShader->stage());
 			info.pSpecializationInfo = nullptr;
 			info.pNext = nullptr;
 			vkShaderStageInfos[shaderIndex] = info;
@@ -255,13 +255,13 @@ namespace Dream
 		const VulkanShader* pShader = (const VulkanShader*)desc.pComputeShader;
 
 		//Cache entry point
-		vkShaderStageNameCache = pShader->GetEntryMethod();
+		vkShaderStageNameCache = pShader->entry_method();
 
 		VkPipelineShaderStageCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		info.module = pShader->GetVkModule();
 		info.pName = vkShaderStageNameCache.c_str();
-		info.stage = (VkShaderStageFlagBits)VulkanShaderUtils::GetShaderFlags(pShader->GetStage());
+		info.stage = (VkShaderStageFlagBits)VulkanShaderUtils::GetShaderFlags(pShader->stage());
 		info.pSpecializationInfo = nullptr;
 		info.pNext = nullptr;
 		vkShaderStageInfo = info;
@@ -271,7 +271,7 @@ namespace Dream
 		for (unsigned int layoutIndex = 0; layoutIndex < desc.DescriptorSetLayouts.size(); layoutIndex++)
 		{
 			const VulkanDescriptorSetLayout* pLayout = (const VulkanDescriptorSetLayout*)desc.DescriptorSetLayouts[layoutIndex];
-			descriptorSetLayouts.push_back(pLayout->GetVkLayout());
+			descriptorSetLayouts.push_back(pLayout->vk_layout());
 		}
 
 		VkPipelineLayoutCreateInfo layoutCreateInfo = {};

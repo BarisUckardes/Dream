@@ -18,7 +18,7 @@ namespace Dream
 			const RenderPassAttachmentDesc& attachmentDesc = desc.ColorAttachments[i];
 			VkAttachmentDescription attachment = {};
 			attachment.format = VulkanTextureUtils::GetTextureFormat(attachmentDesc.Format);
-			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(attachmentDesc.SampleCount);
+			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::sample_count(attachmentDesc.SampleCount);
 			attachment.loadOp = VulkanRenderPassUtils::GetLoadOperation(attachmentDesc.ColorLoadOperation);
 			attachment.storeOp = VulkanRenderPassUtils::GetStoreOperation(attachmentDesc.ColorStoreOperation);
 			attachment.initialLayout = VulkanTextureUtils::GetImageLayout(attachmentDesc.InputLayout);
@@ -35,7 +35,7 @@ namespace Dream
 			const RenderPassAttachmentDesc& attachmentDesc = *desc.pDepthStencilAttachment;
 			VkAttachmentDescription attachment = {};
 			attachment.format = VulkanTextureUtils::GetTextureFormat(attachmentDesc.Format);
-			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(attachmentDesc.SampleCount);
+			attachment.samples = (VkSampleCountFlagBits)VulkanTextureUtils::sample_count(attachmentDesc.SampleCount);
 			attachment.loadOp = VulkanRenderPassUtils::GetLoadOperation(attachmentDesc.ColorLoadOperation);
 			attachment.storeOp = VulkanRenderPassUtils::GetStoreOperation(attachmentDesc.ColorStoreOperation);
 			attachment.initialLayout = VulkanTextureUtils::GetImageLayout(attachmentDesc.InputLayout);
@@ -93,13 +93,13 @@ namespace Dream
 		for (unsigned char i = 0; i < desc.ColorAttachments.size(); i++)
 		{
 			const VulkanTextureView* pView = (const VulkanTextureView*)desc.ColorAttachments[i].pView;
-			imageViews[i] = pView->GetVkView();
+			imageViews[i] = pView->vk_view();
 		}
 
 		if (desc.pDepthStencilAttachment != nullptr)
 		{
 			const VulkanTextureView* pView = (const VulkanTextureView*)desc.pDepthStencilAttachment->pView;
-			imageViews[desc.ColorAttachments.size()] = pView->GetVkView();
+			imageViews[desc.ColorAttachments.size()] = pView->vk_view();
 		}
 
 		VkFramebufferCreateInfo framebufferInfo = {};

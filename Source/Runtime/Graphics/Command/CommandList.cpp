@@ -9,79 +9,79 @@ namespace Dream
 		mBoundIndexBuffer(nullptr),mBoundPipeline(nullptr),mBoundRenderPass(nullptr)
 	{
 	}
-	void CommandList::BeginRecording()
+	void CommandList::begin()
 	{
-		BeginRecordingCore();
+		begin_impl();
 		mRecording = true;
 	}
-	void CommandList::EndRecording()
+	void CommandList::end()
 	{
-		EndRecordingCore();
+		end_impl();
 		ClearCachedState();
 	}
-	void CommandList::SetVertexBuffers(GraphicsBuffer** ppBuffers, const unsigned char count)
+	void CommandList::set_vertex_buffers(GraphicsBuffer** ppBuffers, const unsigned char count)
 	{
-		SetVertexBuffersCore(ppBuffers,count);
+		set_vertex_buffers_impl(ppBuffers,count);
 	}
-	void CommandList::SetIndexBuffer(GraphicsBuffer* pBuffer, const IndexBufferType type)
+	void CommandList::set_index_buffer(GraphicsBuffer* pBuffer, const IndexBufferType type)
 	{
-		SetIndexBufferCore(pBuffer, type);
+		set_index_buffer_impl(pBuffer, type);
 		mBoundIndexBuffer = pBuffer;
 	}
-	void CommandList::DrawIndexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount)
+	void CommandList::draw_indexed(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount)
 	{
-		DrawIndexedCore(indexCount, indexOffset, vertexOffset, instanceOffset, instanceCount);
+		draw_indexed_impl(indexCount, indexOffset, vertexOffset, instanceOffset, instanceCount);
 	}
-	void CommandList::DispatchCompute(const unsigned int x, const unsigned int y, const unsigned int z)
+	void CommandList::dispatch(const unsigned int x, const unsigned int y, const unsigned int z)
 	{
-		DispatchComputeCore(x, y, z);
+		dispatch_impl(x, y, z);
 	}
-	void CommandList::SetPipeline(Pipeline* pPipeline)
+	void CommandList::set_pipeline(Pipeline* pPipeline)
 	{
-		SetPipelineCore(pPipeline);
+		set_pipeline_impl(pPipeline);
 		mBoundPipeline = pPipeline;
 	}
-	void CommandList::BeginRenderPass(RenderPass* pPass, const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
+	void CommandList::begin_render(RenderPass* pPass, const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
 	{
-		BeginRenderPassCore(pPass, pClearColorValues,clearColorValueCount,clearDepth,clearStencil);
+		begin_render_impl(pPass, pClearColorValues,clearColorValueCount,clearDepth,clearStencil);
 		mBoundRenderPass = pPass;
 	}
-	void CommandList::EndRenderPass()
+	void CommandList::end_render()
 	{
-		EndRenderPassCore();
+		end_render_impl();
 		mBoundRenderPass = nullptr;
 	}
-	void CommandList::SetViewports(ViewportDesc* pViewports, const unsigned char count)
+	void CommandList::set_viewports(ViewportDesc* pViewports, const unsigned char count)
 	{
-		SetViewportsCore(pViewports, count);
+		set_viewports_impl(pViewports, count);
 	}
-	void CommandList::SetScissors(ScissorDesc* pScissors, const unsigned char count)
+	void CommandList::set_scissors(ScissorDesc* pScissors, const unsigned char count)
 	{
-		SetScissorsCore(pScissors, count);
+		set_scissors_impl(pScissors, count);
 	}
-	void CommandList::CopyBufferToBuffer(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc)
+	void CommandList::copy_buffer_buffer(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc)
 	{
-		CopyBufferToBufferCore(pSourceBuffer, pDestinationBuffer, desc);
+		copy_buffer_buffer_impl(pSourceBuffer, pDestinationBuffer, desc);
 	}
-	void CommandList::CopyBufferToTexture(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc)
+	void CommandList::copy_buffer_texture(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc)
 	{
-		CopyBufferToTextureCore(pSourceBuffer, pDestinationTexture, desc);
+		copy_buffer_texture_impl(pSourceBuffer, pDestinationTexture, desc);
 	}
-	void CommandList::CopyTextureToTexture(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc)
+	void CommandList::copy_texture_texture(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc)
 	{
-		CopyTextureToTextureCore(pSourceTexture, pDestinationTexture, desc);
+		copy_texture_texture_impl(pSourceTexture, pDestinationTexture, desc);
 	}
-	void CommandList::SetTextureMemoryBarrier(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
+	void CommandList::set_texture_barrier(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
 	{
-		SetTextureMemoryBarrierCore(pTexture, desc);
+		set_texture_barrier_impl(pTexture, desc);
 	}
-	void CommandList::SetBufferMemoryBarrier(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
+	void CommandList::set_buffer_barrier(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
 	{
-		SetBufferMemoryBarrierCore(pBuffer, desc);
+		set_buffer_barrier_impl(pBuffer, desc);
 	}
-	void CommandList::CommitResourceSets(DescriptorSet** ppSets, const unsigned char count)
+	void CommandList::commit_resource_sets(DescriptorSet** ppSets, const unsigned char count)
 	{
-		CommitResourceSetsCore(ppSets, count);
+		commit_resource_sets_impl(ppSets, count);
 	}
 	void CommandList::ClearCachedState()
 	{

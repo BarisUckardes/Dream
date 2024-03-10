@@ -9,17 +9,17 @@ namespace Dream
 	public:
 		~GraphicsQueue();
 
-		FORCEINLINE GraphicsQueueType GetType() const noexcept
+		FORCEINLINE GraphicsQueueFamilyType queue_type() const noexcept
 		{
 			return mType;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::Queue;
 		}
 	protected:
 		GraphicsQueue(const GraphicsQueueDesc& desc,GraphicsDevice* pDevice);
 	private:
-		const GraphicsQueueType mType;
+		const GraphicsQueueFamilyType mType;
 	};
 }

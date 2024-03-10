@@ -9,26 +9,22 @@ namespace Dream
 	public:
 		~DescriptorPool();
 
-		FORCEINLINE DescriptorMemoryType GetMemoryType() const noexcept
+		FORCEINLINE DescriptorMemoryType memory_type() const noexcept
 		{
 			return mType;
 		}
-		FORCEINLINE unsigned long long GetSetCount() const noexcept
-		{
-			return mSetCount;
-		}
-		FORCEINLINE const std::vector<DescriptorPoolSize>& GetSizes() const noexcept
+		
+		FORCEINLINE const std::vector<DescriptorPoolSize>& sizes() const noexcept
 		{
 			return mSizes;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::DescriptorPool;
 		}
 	protected:
 		DescriptorPool(const DescriptorPoolDesc& desc,GraphicsDevice* pDevice);
 	private:
-		const unsigned long long mSetCount;
 		const DescriptorMemoryType mType;
 		const std::vector<DescriptorPoolSize> mSizes;
 	};

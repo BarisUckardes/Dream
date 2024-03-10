@@ -1,6 +1,7 @@
 #pragma once
 #include <Runtime/Core/Core.h>
 #include <Runtime/Graphics/Texture/TextureFormat.h>
+#include <string>
 
 namespace Dream
 {
@@ -10,6 +11,7 @@ namespace Dream
         TextureUtils() = delete;
         ~TextureUtils() = delete;
 
-        static unsigned char GetFormatSize(const TextureFormat format);
+        static unsigned char format_size(const TextureFormat format);
+
     };
 }

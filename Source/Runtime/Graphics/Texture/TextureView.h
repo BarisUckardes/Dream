@@ -9,20 +9,20 @@ namespace Dream
 	public:
 		~TextureView();
 
-		FORCEINLINE unsigned char GetArrayLevel() const noexcept
+		FORCEINLINE unsigned char array_level() const noexcept
 		{
 			return mArrayLevel;
 		}
-		FORCEINLINE unsigned char GetMipLevel() const noexcept
+		FORCEINLINE unsigned char mip_level() const noexcept
 		{
 			return mMipLevel;
 		}
-		FORCEINLINE const Texture* GetTargetTexture() const noexcept
+		FORCEINLINE const Texture* target_texture() const noexcept
 		{
 			return mTexture;
 		}
 
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::TextureView;
 		}

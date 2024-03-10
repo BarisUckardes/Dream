@@ -11,7 +11,7 @@ namespace Dream
 		VulkanDescriptorPool(const DescriptorPoolDesc& desc, VulkanDevice* pDevice);
 		~VulkanDescriptorPool();
 
-		FORCEINLINE VkDescriptorPool GetVkPool() const noexcept
+		FORCEINLINE VkDescriptorPool vk_pool() const noexcept
 		{
 			return mPool;
 		}

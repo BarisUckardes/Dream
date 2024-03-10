@@ -12,7 +12,7 @@ namespace Dream
 		VulkanTextureView(const TextureViewDesc& desc, VulkanDevice* pDevice);
 		~VulkanTextureView();
 
-		FORCEINLINE VkImageView GetVkView() const noexcept
+		FORCEINLINE VkImageView vk_view() const noexcept
 		{
 			return mView;
 		}

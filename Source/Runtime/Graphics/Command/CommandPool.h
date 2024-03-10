@@ -9,11 +9,11 @@ namespace Dream
 	public:
 		~CommandPool();
 
-		FORCEINLINE CommandPoolType GetType() const noexcept
+		FORCEINLINE CommandPoolType type() const noexcept
 		{
 			return mType;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::CommandPool;
 		}

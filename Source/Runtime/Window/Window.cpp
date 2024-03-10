@@ -1,5 +1,4 @@
 #include "Window.h"
-#include <Runtime/Monitor/Monitor.h>
 
 #ifdef DREAM_PLATFORM_WINDOWS
 #include <Runtime/Windows/Win32Window.h>
@@ -8,68 +7,58 @@ typedef Dream::Win32Window PlatformAbstraction;
 
 namespace Dream
 {
-	Window* Window::Create(const WindowDesc& desc)
-	{
-		return new PlatformAbstraction(desc);
-	}
-	Window::~Window()
-	{
+    Window* Window::create(const WindowDesc& desc)
+    {
+        return new PlatformAbstraction(desc);
+    }
+    void Window::set_title(const std::string& title)
+    {
+        set_title_impl(title);
 
-	}
-	void Window::SetTitle(const std::string& title)
-	{
-		SetTitleCore(title);
+        mTitle = title;
+    }
+    void Window::set_mode(const WindowMode mode)
+    {
+        set_mode_impl(mode);
 
-		mTitle = title;
-	}
-	void Window::SetOffset(const int x, const int y)
-	{
-		SetOffsetCore(x, y);
+        set_size(mWidth, mHeight);
 
-		mX = x;
-		mY = y;
-	}
-	void Window::SetSize(const unsigned int width, const unsigned int height)
-	{
-		SetSizeCore(width, height);
+        mMode = mode;
+    }
+    void Window::set_offset(const int x, const int y)
+    {
+        set_offset_impl(x, y);
 
-		mWidth = width;
-		mHeight = height;
-	}
-	void Window::SetMode(const WindowMode mode)
-	{
-		//Call implementation
-		SetModeCore(mode);
+        mX = x;
+        mY = y;
+    }
+    void Window::set_size(const unsigned int width, const unsigned int height)
+    {
+        set_size_impl(width, height);
+        
+        mWidth = width;
+        mHeight = height;
+    }
+    void Window::poll_events()
+    {
+        mBufferedEvents.clear();
 
-		SetSize(mWidth, mHeight);
+        poll_events_impl();
+    }
+    void Window::show()
+    {
+        show_impl();
 
-		//Set properties
-		mMode = mode;
-	}
-	void Window::PollEvents()
-	{
-		mBufferedEvents.clear();
+        mVisible = true;
+    }
+    void Window::hide()
+    {
+        hide_impl();
 
-		PollEventsCore();
-	}
-	void Window::Show()
-	{
-		ShowCore();
-
-		mVisible = true;
-	}
-	void Window::Hide()
-	{
-		HideCore();
-
-		mVisible = false;
-	}
-	Window::Window(const WindowDesc& desc) : mMode(WindowMode::Border),mTitle(desc.Title),mX(desc.X),mY(desc.Y),mWidth(desc.Width),mHeight(desc.Height), mVisible(false), mActive(true)
-	{
-
-	}
-	void Window::DispatchWindowEvent(const WindowEventData& event)
-	{
+        mVisible = false;
+    }
+    void Window::DispatchWindowEvent(const WindowEventData& event)
+    {
 		switch (event.Type)
 		{
 		case Dream::WindowEventType::None:
@@ -86,7 +75,7 @@ namespace Dream
 			mY = event.WindowPosition[1];
 			break;
 		}
-		case Dream::WindowEventType::WindowResized:
+		case Dream::WindowEventType::Windowresized:
 		{
 			mWidth = event.WindowSize[0];
 			mHeight = event.WindowSize[1];
@@ -121,5 +110,5 @@ namespace Dream
 		}
 
 		mBufferedEvents.push_back(event);
-	}
+    }
 }

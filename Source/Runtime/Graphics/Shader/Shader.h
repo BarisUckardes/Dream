@@ -9,15 +9,15 @@ namespace Dream
 	public:
 		~Shader();
 
-		FORCEINLINE ShaderStage GetStage() const noexcept
+		FORCEINLINE ShaderStage stage() const noexcept
 		{
 			return mStage;
 		}
-		FORCEINLINE std::string GetEntryMethod() const noexcept
+		FORCEINLINE std::string entry_method() const noexcept
 		{
 			return mEntryMethod;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept
+		virtual GraphicsDeviceObjectType object_type() const noexcept
 		{
 			return GraphicsDeviceObjectType::Shader;
 		}

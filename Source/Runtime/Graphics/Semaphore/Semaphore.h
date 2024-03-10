@@ -9,7 +9,7 @@ namespace Dream
 	public:
 		~Semaphore();
 
-		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept
+		FORCEINLINE virtual GraphicsDeviceObjectType object_type() const noexcept
 		{
 			return GraphicsDeviceObjectType::Semaphore;
 		}

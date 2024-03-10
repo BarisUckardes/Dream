@@ -9,12 +9,12 @@ namespace Dream
 	public:
 		~DescriptorSetLayout();
 
-		FORCEINLINE const std::vector<DescriptorSetLayoutEntry>& GetEntries() const noexcept
+		FORCEINLINE const std::vector<DescriptorSetLayoutEntry>& entries() const noexcept
 		{
 			return mEntries;
 		}
 
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::DescriptorLayout;
 		}

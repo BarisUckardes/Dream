@@ -25,7 +25,7 @@ namespace Dream
 		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 		imageInfo.usage = VulkanTextureUtils::GetImageUsages(desc.Usages);
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		imageInfo.samples = (VkSampleCountFlagBits)VulkanTextureUtils::GetSampleCount(desc.SampleCount);
+		imageInfo.samples = (VkSampleCountFlagBits)VulkanTextureUtils::sample_count(desc.SampleCount);
 		imageInfo.flags = VkImageCreateFlags();
 
 		DEV_ASSERT(vkCreateImage(mLogicalDevice, &imageInfo, nullptr, &mImage) == VK_SUCCESS, "VulkanTexture", "Failed to create texture");
@@ -35,7 +35,7 @@ namespace Dream
 		vkGetImageMemoryRequirements(mLogicalDevice, mImage, &requirements);
 
 		//Rent memory
-		const unsigned long long memoryOffset = desc.pMemory->Allocate(requirements.size + requirements.alignment);
+		const unsigned long long memoryOffset = desc.pMemory->allocate(requirements.size + requirements.alignment);
 		const unsigned long long memoryAlignedOffset = memoryOffset + (memoryOffset == 0 ? 0 : (requirements.alignment - (memoryOffset % requirements.alignment)));
 
 		DEV_ASSERT(vkBindImageMemory(mLogicalDevice, mImage, pVkMemory->GetVkMemory(), memoryAlignedOffset) == VK_SUCCESS, "VulkanTexture", "Failed to bind the texture memory!");
@@ -45,7 +45,10 @@ namespace Dream
 	}
 	VulkanTexture::~VulkanTexture()
 	{
-		if(!mSwapchain)
+		if (!mSwapchain)
+		{
+
 			vkDestroyImage(mLogicalDevice, mImage, nullptr);
+		}
 	}
 }

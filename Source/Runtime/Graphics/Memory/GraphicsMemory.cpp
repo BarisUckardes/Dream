@@ -10,7 +10,7 @@ namespace Dream
         initialBlock.SizeInBytes = desc.SizeInBytes;
         mBlocks.push_back(initialBlock);
     }
-    unsigned long long GraphicsMemory::Allocate(const unsigned long long sizeInBytes)
+    unsigned long long GraphicsMemory::allocate(const unsigned long long sizeInBytes)
     {
         //Check enough space is left
         const unsigned long long sizeLeft = mSize - mOccupiedSize;
@@ -47,7 +47,7 @@ namespace Dream
 
         return uint64_max;
     }
-    void GraphicsMemory::Free(const unsigned long long offsetInBytes)
+    void GraphicsMemory::free(const unsigned long long offsetInBytes)
     {
         //Find and free owned memory
         unsigned long long currentOffset = 0;
@@ -69,11 +69,11 @@ namespace Dream
         for (unsigned int i = 0; i < mBlocks.size(); i++)
         {
             SubAllocationBlock& block = mBlocks[i];
-            CompactReport report = GetCompactReport(i);
+            CompactReport report = compact_report(i);
             if (report.Min == report.Max)
                 continue;
 
-            Compact(report);
+            compact(report);
 
             if (report.Min < i)
             {
@@ -83,7 +83,7 @@ namespace Dream
         }
 
     }
-    Dream::GraphicsMemory::CompactReport GraphicsMemory::GetCompactReport(const unsigned int index)
+    Dream::GraphicsMemory::CompactReport GraphicsMemory::compact_report(const unsigned int index)
     {
         //Check min
         unsigned int min = index;
@@ -109,7 +109,7 @@ namespace Dream
 
         return { min,max };
     }
-    void GraphicsMemory::Compact(const CompactReport& report)
+    void GraphicsMemory::compact(const CompactReport& report)
     {
         //Calculate size
         unsigned long long size = 0;

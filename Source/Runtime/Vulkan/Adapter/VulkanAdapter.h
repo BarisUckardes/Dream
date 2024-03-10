@@ -15,7 +15,7 @@ namespace Dream
 			return mDevice;
 		}
 	private:
-		virtual GraphicsDevice* CreateDeviceCore(const GraphicsDeviceDesc* pDesc) override;
+		virtual GraphicsDevice* create_device_impl(const GraphicsDeviceDesc* pDesc) override;
 	private:
 		const VkPhysicalDevice mDevice;
 	};

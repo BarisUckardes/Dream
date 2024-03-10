@@ -11,7 +11,7 @@ namespace Dream
 		VulkanDescriptorSet(const DescriptorSetDesc& desc, VulkanDevice* pDevice);
 		~VulkanDescriptorSet();
 
-		FORCEINLINE VkDescriptorSet GetVkSet() const noexcept
+		FORCEINLINE VkDescriptorSet vk_set() const noexcept
 		{
 			return mSet;
 		}

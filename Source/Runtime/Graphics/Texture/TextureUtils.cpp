@@ -1,9 +1,10 @@
 #include "TextureUtils.h"
 
+
 namespace Dream
 {
 
-    unsigned char TextureUtils::GetFormatSize(const TextureFormat format)
+    unsigned char TextureUtils::format_size(const TextureFormat format)
     {
         switch (format)
         {
@@ -159,5 +160,4 @@ namespace Dream
             return 0;
         }
     }
-
 }

@@ -1,48 +1,55 @@
 #pragma once
 #include <Runtime/Monitor/MonitorDisplayMode.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace Dream
 {
 	class RUNTIME_API Monitor
 	{
 	public:
-		static Monitor* GetPrimaryMonitor();
-		static std::vector<Monitor*> GetMonitors();
+		static Monitor* primary_monitor();
+		static std::vector<Monitor*> monitors();
 	public:
-		~Monitor();
+		~Monitor()
+		{
 
-		FORCEINLINE std::string GetName() const noexcept
+		}
+
+		FORCEINLINE std::string name() const noexcept
 		{
 			return mName;
 		}
-		FORCEINLINE const MonitorDisplayMode& GetCurrentMode() const noexcept
+		FORCEINLINE MonitorDisplayMode current_mode() const noexcept
 		{
 			return mCurrentMode;
 		}
-		FORCEINLINE const std::vector<MonitorDisplayMode>& GetModes() const noexcept
+		FORCEINLINE const std::vector<MonitorDisplayMode>& modes() const noexcept
 		{
 			return mModes;
 		}
-		FORCEINLINE unsigned int GetWidth() const noexcept
+		FORCEINLINE unsigned int width() const noexcept
 		{
 			return mWidth;
 		}
-		FORCEINLINE unsigned int GetHeight() const noexcept
+		FORCEINLINE unsigned int height() const noexcept
 		{
 			return mHeight;
 		}
-		FORCEINLINE int GetPositionX() const noexcept
+		FORCEINLINE int x() const noexcept
 		{
 			return mX;
 		}
-		FORCEINLINE int GetPositionY() const noexcept
+		FORCEINLINE int y() const noexcept
 		{
 			return mY;
 		}
 	protected:
-		Monitor(const std::string& name,const MonitorDisplayMode& currentMode,const std::vector<MonitorDisplayMode>& modes,const unsigned int width,const unsigned int height,const int x,const int y);
+		Monitor(const std::string& name, const MonitorDisplayMode& currentMode, const std::vector<MonitorDisplayMode>& modes, const unsigned int width, const unsigned int height, const int x, const int y) :
+			mName(name), mCurrentMode(currentMode), mModes(modes), mWidth(width), mHeight(height), mX(x), mY(y)
+		{
+
+		}
 	private:
 		const std::string mName;
 		const MonitorDisplayMode mCurrentMode;

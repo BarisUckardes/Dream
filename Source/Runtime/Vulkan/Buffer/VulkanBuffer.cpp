@@ -16,7 +16,7 @@ namespace Dream
         info.flags = VkBufferCreateFlags();
         info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         info.usage = VulkanBufferUtils::GetUsages(desc.Usage);
-        info.size = GetTotalSize();
+        info.size = total_size();
         info.pNext = nullptr;
 
         DEV_ASSERT(vkCreateBuffer(mLogicalDevice, &info, nullptr, &mBuffer) == VK_SUCCESS, "VulkanBuffer", "Failed to create the buffer");
@@ -26,7 +26,7 @@ namespace Dream
         vkGetBufferMemoryRequirements(mLogicalDevice, mBuffer, &requirements);
 
         //Get buffer memory
-        const unsigned long long memoryOffset = desc.pMemory->Allocate(requirements.size + requirements.alignment);
+        const unsigned long long memoryOffset = desc.pMemory->allocate(requirements.size + requirements.alignment);
         const unsigned long long alignedMemoryOffset = memoryOffset + (memoryOffset % requirements.alignment == 0 ? 0 : (requirements.alignment - (memoryOffset % requirements.alignment)));
 
         //Bind memory

@@ -11,7 +11,7 @@ namespace Dream
 		VulkanDescriptorSetLayout(const DescriptorSetLayoutDesc& desc, VulkanDevice* pDevice);
 		~VulkanDescriptorSetLayout();
 
-		FORCEINLINE VkDescriptorSetLayout GetVkLayout() const noexcept
+		FORCEINLINE VkDescriptorSetLayout vk_layout() const noexcept
 		{
 			return mLayout;
 		}

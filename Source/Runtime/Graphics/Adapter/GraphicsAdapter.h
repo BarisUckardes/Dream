@@ -13,37 +13,37 @@ namespace Dream
 		~GraphicsAdapter();
 
 
-		FORCEINLINE std::string GetProductName() const noexcept { return mProductName; }
-		FORCEINLINE std::string GetVendorName() const noexcept { return mVendorName; }
-		FORCEINLINE bool DoesSupportGeometryShader() const noexcept { return mSupportGeometryShader; }
-		FORCEINLINE bool DoesSupportComputeShader() const noexcept { return mSupportComputeShader; }
-		FORCEINLINE unsigned int GetColorAttachmentCount() const noexcept { return mColorAttachmentCount; }
-		FORCEINLINE unsigned int GetShaderTextureCount() const noexcept { return mShaderTextureCount; }
-		FORCEINLINE unsigned int GetShaderSamplerCount() const noexcept { return mShaderSamplerCount; }
-		FORCEINLINE unsigned int GetShaderBufferCount() const noexcept { return mShaderBufferCount; }
-		FORCEINLINE unsigned long long GetMemory() const noexcept { return mMemory; }
-		FORCEINLINE unsigned int GetImageWidth() const noexcept
+		FORCEINLINE std::string product_name() const noexcept { return mProductName; }
+		FORCEINLINE std::string vendor_name() const noexcept { return mVendorName; }
+		FORCEINLINE bool support_geometryShader() const noexcept { return mSupportGeometryShader; }
+		FORCEINLINE bool support_compute_shader() const noexcept { return mSupportComputeShader; }
+		FORCEINLINE unsigned int color_attachment_count() const noexcept { return mColorAttachmentCount; }
+		FORCEINLINE unsigned int shader_texture_count() const noexcept { return mShaderTextureCount; }
+		FORCEINLINE unsigned int shader_sampler_count() const noexcept { return mShaderSamplerCount; }
+		FORCEINLINE unsigned int shader_buffer_count() const noexcept { return mShaderBufferCount; }
+		FORCEINLINE unsigned long long memory() const noexcept { return mMemory; }
+		FORCEINLINE unsigned int image_width() const noexcept
 		{
 			return mImageWidth;
 		}
-		FORCEINLINE unsigned int GetImageHeight() const noexcept
+		FORCEINLINE unsigned int image_height() const noexcept
 		{
 			return mImageHeight;
 		}
-		FORCEINLINE unsigned int GetImageDepth() const noexcept
+		FORCEINLINE unsigned int image_depth() const noexcept
 		{
 			return mImageDepth;
 		}
-		FORCEINLINE GraphicsInstance* GetOwnerInstance() const noexcept
+		FORCEINLINE GraphicsInstance* owner_instance() const noexcept
 		{
 			return mOwnerInstance;
 		}
 
-		GraphicsDevice* CreateDevice(const GraphicsDeviceDesc* pDesc);
+		GraphicsDevice* create_device(const GraphicsDeviceDesc* pDesc);
 	protected:
 		GraphicsAdapter(const GraphicsAdapterDesc& desc);
 	protected:
-		virtual GraphicsDevice* CreateDeviceCore(const GraphicsDeviceDesc* pDesc) = 0;
+		virtual GraphicsDevice* create_device_impl(const GraphicsDeviceDesc* pDesc) = 0;
 	private:
 		const std::string mProductName;
 		const std::string mVendorName;

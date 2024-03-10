@@ -8,6 +8,7 @@ namespace Dream
     {
         //Create descriptor sizes
         VkDescriptorPoolSize sizes[5];
+        unsigned int maxSetCount = 0;
         for (unsigned char i = 0; i < desc.Sizes.size(); i++)
         {
             const DescriptorPoolSize& size = desc.Sizes[i];
@@ -15,14 +16,14 @@ namespace Dream
             VkDescriptorPoolSize vkSize = {};
             vkSize.descriptorCount = size.Count;
             vkSize.type = VulkanDescriptorUtils::GetDescriptorType(size.Type);
-
+            maxSetCount = size.Count;
             sizes[i] = vkSize;
         }
 
         //Create
         VkDescriptorPoolCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        info.maxSets = desc.SetCount;
+        info.maxSets = maxSetCount;
         info.poolSizeCount = desc.Sizes.size();
         info.pPoolSizes = sizes;
         info.pNext = nullptr;

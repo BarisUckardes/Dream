@@ -5,18 +5,18 @@ namespace Dream
 {
 	Swapchain::~Swapchain()
 	{
-		ClearTextures();
+		clear_textures();
 	}
-	void Swapchain::Resize(const unsigned int width, const unsigned int height)
+	void Swapchain::resize(const unsigned int width, const unsigned int height)
 	{
 		//Wait device idle
-		GetDevice()->WaitDeviceIdle();
+		device()->wait_device_idle();
 
 		//Clear the textures
-		ClearTextures();
+		clear_textures();
 
-		//Resize
-		ResizeCore(width, height);
+		//resize
+		resize_impl(width, height);
 
 		mWidth = width;
 		mHeight = height;
@@ -24,36 +24,36 @@ namespace Dream
 	void Swapchain::Present(Semaphore** ppWaitSemahpores, const unsigned int waitSemaphoreCount)
 	{
 		//First wait for target fence
-		GetDevice()->WaitFences(&mPresentFences[mImageIndex], 1);
-		GetDevice()->ResetFences(&mPresentFences[mImageIndex],1);
+		device()->wait_fences(&mPresentFences[mImageIndex], 1);
+		device()->reset_fences(&mPresentFences[mImageIndex],1);
 
 		//Present
-		PresentCore(ppWaitSemahpores,waitSemaphoreCount);
+		Present_impl(ppWaitSemahpores,waitSemaphoreCount);
 
 		//Increment index
 		mImageIndex = (mImageIndex + 1) % mBufferCount;
 	}
-	void Swapchain::WaitForPresent(const unsigned char index)
+	void Swapchain::wait_present(const unsigned char index)
 	{
-		GetDevice()->WaitFences(&mPresentFences[index], 1);
+		device()->wait_fences(&mPresentFences[index], 1);
 	}
 	
 	Swapchain::Swapchain(const SwapchainDesc& desc, GraphicsDevice* pDevice) :
-		GraphicsDeviceObject(pDevice),mMode(desc.Mode),mBufferCount(desc.BufferCount),mColorBufferFormat(desc.ColorFormat),mDepthStencilBufferFormat(desc.DepthStencilFormat),mWindow(desc.pWindow),
+		GraphicsDeviceObject(pDevice),mMode(desc.Mode),mBufferCount(desc.BufferCount),mColorBufferFormat(desc.ColorFormat),mWindow(desc.pWindow),
 		mImageIndex(0),mQueue(desc.pQueue)
 	{
-		mWidth = mWindow->GetWidth();
-		mHeight = mWindow->GetHeight();
+		mWidth = mWindow->width();
+		mHeight = mWindow->height();
 
 		for (unsigned char i = 0; i < desc.BufferCount; i++)
-			mPresentFences.push_back(pDevice->CreateFence({ true }));
+			mPresentFences.push_back(pDevice->create_fence({ true }));
 	}
-	void Swapchain::SetCustomSize(const unsigned int width, const unsigned int height)
+	void Swapchain::set_custom_size(const unsigned int width, const unsigned int height)
 	{
 		mWidth = width;
 		mHeight = height;
 	}
-	void Swapchain::ClearTextures()
+	void Swapchain::clear_textures()
 	{
 		for (unsigned char i = 0; i < mColorTextures.size(); i++)
 		{
@@ -63,7 +63,7 @@ namespace Dream
 		mColorTextureViews.clear();
 		mColorTextures.clear();
 	}
-	void Swapchain::SetCustomSwapchainTextures(const std::vector<Texture*>& textures)
+	void Swapchain::set_custom_textures(const std::vector<Texture*>& textures)
 	{
 		mColorTextures = textures;
 		for (Texture* pTexture : textures)
@@ -74,7 +74,7 @@ namespace Dream
 			desc.ArrayLevel = 0;
 			desc.MipLevel = 0;
 
-			mColorTextureViews.push_back(GetDevice()->CreateTextureView(desc));
+			mColorTextureViews.push_back(device()->create_texture_view(desc));
 		}
 	}
 }

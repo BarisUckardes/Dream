@@ -4,7 +4,7 @@
 namespace Dream
 {
 	/// <summary>
-	/// Represents the available types of PlatformWindow events
+	/// RePresents the available types of PlatformWindow events
 	/// </summary>
 	enum class RUNTIME_API WindowEventType : unsigned char
 	{
@@ -12,7 +12,7 @@ namespace Dream
 
 		WindowClosed,
 		WindowMoved,
-		WindowResized,
+		Windowresized,
 
 		DragDrop,
 

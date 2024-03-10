@@ -9,60 +9,60 @@ namespace Dream
 	public:
 		~Sampler();
 
-        FORCEINLINE const SamplerFiltering GetMinFilter() const
+        FORCEINLINE const SamplerFiltering min_filter() const
         {
             return mMinFilter;
         }
-        FORCEINLINE const SamplerFiltering GetMagFilter() const
+        FORCEINLINE const SamplerFiltering mag_filter() const
         {
             return mMagFilter;
         }
-        FORCEINLINE const SamplerMapMode GetMipmapMode() const
+        FORCEINLINE const SamplerMapMode mipmap_mode() const
         {
             return mMipmapMode;
         }
-        FORCEINLINE const SamplerAddressMode GetAddressModeU() const
+        FORCEINLINE const SamplerAddressMode address_u() const
         {
             return mAddressModeU;
         }
-        FORCEINLINE const SamplerAddressMode GetAddressModeV() const
+        FORCEINLINE const SamplerAddressMode address_v() const
         {
             return mAddressModeV;
         }
-        FORCEINLINE const SamplerAddressMode GetAddressModeW() const
+        FORCEINLINE const SamplerAddressMode address_w() const
         {
             return mAddressModeW;
         }
-        FORCEINLINE const float GetMipLodBias() const
+        FORCEINLINE const float mip_lod_bias() const
         {
             return mMipLodBias;
         }
-        FORCEINLINE const float GetMaxAnisotropy() const
+        FORCEINLINE const float mas_anisotropy() const
         {
             return mMaxAnisotropy;
         }
-        FORCEINLINE const bool IsComparisonEnabled() const
+        FORCEINLINE const bool comparision_enabled() const
         {
             return mComparisonEnabled;
         }
-        FORCEINLINE const CompareOperation GetCompareOperation() const
+        FORCEINLINE const CompareOperation compare_operation() const
         {
             return mCompareOperation;
         }
-        FORCEINLINE const float GetMinLod() const
+        FORCEINLINE const float min_lod() const
         {
             return mMinLod;
         }
-        FORCEINLINE const float GetMaxLod() const
+        FORCEINLINE const float max_lod() const
         {
             return mMaxLod;
         }
-        FORCEINLINE const SamplerBorderColor GetBorderColor() const
+        FORCEINLINE const SamplerBorderColor border_color() const
         {
             return mBorderColor;
         }
 
-        FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override
+        FORCEINLINE virtual GraphicsDeviceObjectType object_type() const noexcept override
         {
             return GraphicsDeviceObjectType::Sampler;
         }

@@ -9,16 +9,16 @@ namespace Dream
 	public:
 		~DescriptorSet();
 
-		FORCEINLINE const DescriptorSetLayout* GetLayout() const noexcept
+		FORCEINLINE const DescriptorSetLayout* layout() const noexcept
 		{
 			return mLayout;
 		}
-		FORCEINLINE const DescriptorPool* GetPool() const noexcept
+		FORCEINLINE const DescriptorPool* pool() const noexcept
 		{
 			return mPool;
 		}
 
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::DescriptorSet;
 		}

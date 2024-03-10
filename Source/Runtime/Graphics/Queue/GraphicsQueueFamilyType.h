@@ -3,7 +3,7 @@
 
 namespace Dream
 {
-	enum class RUNTIME_API GraphicsQueueType : unsigned char
+	enum class RUNTIME_API GraphicsQueueFamilyType : unsigned char
 	{
 		Graphics,
 		Compute,

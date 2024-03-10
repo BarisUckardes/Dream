@@ -9,28 +9,28 @@ namespace Dream
 	public:
 		~GraphicsBuffer();
 
-		FORCEINLINE GraphicsBufferUsage GetUsages() const noexcept
+		FORCEINLINE GraphicsBufferUsage usages() const noexcept
 		{
 			return mUsages;
 		}
-		FORCEINLINE unsigned int GetSubItemCount() const noexcept
+		FORCEINLINE unsigned int sub_item_count() const noexcept
 		{
 			return mSubItemCount;
 		}
-		FORCEINLINE unsigned int GetSubItemSize() const noexcept
+		FORCEINLINE unsigned int sub_item_size() const noexcept
 		{
 			return mSubItemSize;
 		}
-		FORCEINLINE unsigned long long GetTotalSize() const noexcept
+		FORCEINLINE unsigned long long total_size() const noexcept
 		{
 			return mTotalSize;
 		}
-		FORCEINLINE const GraphicsMemory* GetMemory() const noexcept
+		FORCEINLINE const GraphicsMemory* memory() const noexcept
 		{
 			return mMemory;
 		}
 
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::Buffer;
 		}

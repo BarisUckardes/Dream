@@ -12,12 +12,12 @@ namespace Dream
 	public:
 		~GraphicsInstance();
 
-		FORCEINLINE GraphicsBackend GetBackend() const noexcept
+		FORCEINLINE GraphicsBackend backend() const noexcept
 		{
 			return mBackend;
 		}
 
-		FORCEINLINE GraphicsAdapter* GetAdapter(const unsigned char index)
+		FORCEINLINE GraphicsAdapter* adapter(const unsigned char index)
 		{
 			if (index >= mAdapters.size())
 				return nullptr;
@@ -25,7 +25,7 @@ namespace Dream
 			return mAdapters[index];
 		}
 
-		FORCEINLINE const std::vector<GraphicsAdapter*>& GetAdapters() const noexcept
+		FORCEINLINE const std::vector<GraphicsAdapter*>& adapters() const noexcept
 		{
 			return mAdapters;
 		}

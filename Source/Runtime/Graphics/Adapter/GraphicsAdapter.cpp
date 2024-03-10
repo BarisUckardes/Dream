@@ -12,12 +12,12 @@ namespace Dream
     {
 
     }
-    GraphicsDevice* GraphicsAdapter::CreateDevice(const GraphicsDeviceDesc* pDesc)
+    GraphicsDevice* GraphicsAdapter::create_device(const GraphicsDeviceDesc* pDesc)
     {
         //Validations
         DEV_ASSERT(pDesc->pOwnerAdapter != nullptr, "GraphicsDevice", "Cannot give nullptr to GraphicsAdapter");
 
-        GraphicsDevice* pDevice = CreateDeviceCore(pDesc);
+        GraphicsDevice* pDevice = create_device_impl(pDesc);
 
         mDevices.push_back(pDevice);
 

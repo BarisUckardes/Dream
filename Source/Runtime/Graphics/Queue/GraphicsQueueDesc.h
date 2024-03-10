@@ -1,10 +1,10 @@
 #pragma once
-#include <Runtime/Graphics/Queue/GraphicsQueueType.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueFamilyType.h>
 
 namespace Dream
 {
 	struct RUNTIME_API GraphicsQueueDesc
 	{
-		GraphicsQueueType Type;
+		GraphicsQueueFamilyType Type;
 	};
 }

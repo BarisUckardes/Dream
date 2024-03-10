@@ -220,7 +220,7 @@ namespace Dream
             return flags;
         }
 
-        FORCEINLINE static VkSampleCountFlags GetSampleCount(const TextureSampleCount samples) noexcept
+        FORCEINLINE static VkSampleCountFlags sample_count(const TextureSampleCount samples) noexcept
         {
             switch (samples)
             {

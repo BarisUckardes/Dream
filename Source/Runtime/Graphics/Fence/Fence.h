@@ -9,7 +9,7 @@ namespace Dream
 	public:
 		~Fence();
 
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::Fence;
 		}

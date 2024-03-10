@@ -5,79 +5,85 @@
 
 namespace Dream
 {
-	class Monitor;
 	class RUNTIME_API Window
 	{
 	public:
-		static Window* Create(const WindowDesc& desc);
+		static Window* create(const WindowDesc& desc);
 	public:
-		~Window();
+		~Window()
+		{
 
-		FORCEINLINE const std::vector<WindowEventData>& GetBufferedEvents() const noexcept
+		}
+
+		FORCEINLINE const std::vector<WindowEventData>& buffered_events() const noexcept
 		{
 			return mBufferedEvents;
 		}
-		FORCEINLINE std::string GetTitle() const noexcept
+		FORCEINLINE std::string title() const noexcept
 		{
 			return mTitle;
 		}
-		FORCEINLINE int GetPositionX() const noexcept
-		{
-			return mX;
-		}
-		FORCEINLINE int GetPositionY() const noexcept
-		{
-			return mY;
-		}
-		FORCEINLINE unsigned int GetWidth() const noexcept
-		{
-			return mWidth;
-		}
-		FORCEINLINE unsigned int GetHeight() const noexcept
-		{
-			return mHeight;
-		}
-		FORCEINLINE WindowMode GetMode() const noexcept
+		FORCEINLINE WindowMode mode() const noexcept
 		{
 			return mMode;
 		}
-		FORCEINLINE bool IsVisible() const noexcept
+		FORCEINLINE int x() const noexcept
 		{
-			return mVisible;
+			return mX;
 		}
-		FORCEINLINE bool IsActive() const noexcept
+		FORCEINLINE int y() const noexcept
+		{
+			return mY;
+		}
+		FORCEINLINE unsigned int width() const noexcept
+		{
+			return mWidth;
+		}
+		FORCEINLINE unsigned int height() const noexcept
+		{
+			return mHeight;
+		}
+		FORCEINLINE bool active() const noexcept
 		{
 			return mActive;
 		}
+		FORCEINLINE bool visible() const noexcept
+		{
+			return mVisible;
+		}
 
-		void SetTitle(const std::string& title);
-		void SetOffset(const int x, const int y);
-		void SetSize(const unsigned int width, const unsigned int height);
-		void SetMode(const WindowMode mode);
-		void PollEvents();
-		void Show();
-		void Hide();
+		void set_title(const std::string& title);
+		void set_mode(const WindowMode mode);
+		void set_offset(const int x,const int y);
+		void set_size(const unsigned int width,const unsigned int height);
+		void poll_events();
+		void show();
+		void hide();
 	protected:
-		Window(const WindowDesc& desc);
+		Window(const WindowDesc& desc) : mMode(WindowMode::Fixed), mTitle(desc.Title), mX(desc.X), mY(desc.Y), mWidth(desc.Width), mHeight(desc.Height), mVisible(false), mActive(true)
+		{
 
-		virtual void SetTitleCore(const std::string& title) = 0;
-		virtual void SetOffsetCore(const int x, const int y) = 0;
-		virtual void SetSizeCore(const unsigned int width, const unsigned int height) = 0;
-		virtual void SetModeCore(const WindowMode mode) = 0;
-		virtual void PollEventsCore() = 0;
-		virtual void ShowCore() = 0;
-		virtual void HideCore() = 0;
+		}
+
 
 		void DispatchWindowEvent(const WindowEventData& event);
+
+		virtual void set_title_impl(const std::string& title) = 0;
+		virtual void set_mode_impl(const WindowMode mode) = 0;
+		virtual void set_offset_impl(const int x,const int y) = 0;
+		virtual void set_size_impl(const unsigned int width,const unsigned int height) = 0;
+		virtual void poll_events_impl() = 0;
+		virtual void show_impl() = 0;
+		virtual void hide_impl() = 0;
 	private:
 		std::vector<WindowEventData> mBufferedEvents;
 		std::string mTitle;
+		WindowMode mMode;
 		int mX;
 		int mY;
 		unsigned int mWidth;
 		unsigned int mHeight;
-		WindowMode mMode;
-		bool mVisible;
 		bool mActive;
+		bool mVisible;
 	};
 }

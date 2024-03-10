@@ -52,7 +52,7 @@ namespace Dream
 				Win32Window* pWindow = GetUserWindowData(hwnd);
 
 				WindowEventData event = {};
-				event.Type = WindowEventType::WindowResized;
+				event.Type = WindowEventType::Windowresized;
 				event.WindowSize[0] = LOWORD(lParam);
 				event.WindowSize[1] = HIWORD(lParam);
 
@@ -104,23 +104,23 @@ namespace Dream
 		ReleaseDC(mHandle, mContext);
 		DestroyWindow(mHandle);
 	}
-	void Win32Window::SetTitleCore(const std::string& title)
+	void Win32Window::set_title_impl(const std::string& title)
 	{
 		SetWindowText(mHandle, title.c_str());
 	}
-	void Win32Window::SetOffsetCore(const int x, const int y)
+	void Win32Window::set_offset_impl(const int x, const int y)
 	{
 		SetWindowPos(mHandle, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_FRAMECHANGED);
 	}
-	void Win32Window::SetSizeCore(const unsigned int width, const unsigned int height)
+	void Win32Window::set_size_impl(const unsigned int width, const unsigned int height)
 	{
 		SetWindowPos(mHandle, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_FRAMECHANGED);
 	}
-	void Win32Window::SetModeCore(const WindowMode mode)
+	void Win32Window::set_mode_impl(const WindowMode mode)
 	{
 		switch (mode)
 		{
-			case Dream::WindowMode::Border:
+			case Dream::WindowMode::Fixed:
 			default:
 			{
 				SetWindowLongPtr(mHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
@@ -133,7 +133,7 @@ namespace Dream
 			}
 		}
 	}
-	void Win32Window::PollEventsCore()
+	void Win32Window::poll_events_impl()
 	{
 		MSG msg = {};
 		while (PeekMessage(&msg, mHandle, NULL, NULL, PM_REMOVE) > 0)
@@ -142,11 +142,11 @@ namespace Dream
 			DispatchMessage(&msg);
 		}
 	}
-	void Win32Window::ShowCore()
+	void Win32Window::show_impl()
 	{
 		ShowWindow(mHandle, SW_SHOW);
 	}
-	void Win32Window::HideCore()
+	void Win32Window::hide_impl()
 	{
 		ShowWindow(mHandle, SW_HIDE);
 	}

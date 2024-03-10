@@ -10,21 +10,19 @@ namespace Dream
 	public:
 		~RenderPass() = default;
 
-		FORCEINLINE const std::vector<RenderPassAttachmentDesc>& GetColorAttachments() const noexcept
+		FORCEINLINE const std::vector<RenderPassAttachmentDesc>& color_attachments() const noexcept
 		{
 			return mAttachments;
 		}
-
-		
-		FORCEINLINE unsigned int GetRenderWidth() const noexcept
+		FORCEINLINE unsigned int render_width() const noexcept
 		{
 			return mTargetRenderWidth;
 		}
-		FORCEINLINE unsigned int GetRenderHeight() const noexcept
+		FORCEINLINE unsigned int render_height() const noexcept
 		{
 			return mTargetRenderHeight;
 		}
-		FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+		FORCEINLINE virtual GraphicsDeviceObjectType object_type() const noexcept override final
 		{
 			return GraphicsDeviceObjectType::RenderPass;
 		}

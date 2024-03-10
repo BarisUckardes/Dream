@@ -6,7 +6,7 @@
 
 namespace Dream
 {
-	bool ShaderCompiler::CompileToSPIRV(const std::string& source, const std::string& entryMethod, const ShaderStage stage, const ShaderLanguage language, unsigned char** ppBytesOut, unsigned int& bytesSizeOut, std::string& errorMessageOut)
+	bool ShaderCompiler::compile_to_spirv(const std::string& source, const std::string& entryMethod, const ShaderStage stage, const ShaderLanguage language, unsigned char** ppBytesOut, unsigned int& bytesSizeOut, std::string& errorMessageOut)
 	{
 		shaderc::Compiler vkCompiler;
 		shaderc::CompileOptions compileOptions;
@@ -44,7 +44,7 @@ namespace Dream
 
 		return true;
 	}
-	bool ShaderCompiler::CompileFromSPIRV(const unsigned char* pSource, const unsigned int sourceLength, const GraphicsBackend backend, unsigned char** ppBytesOut, unsigned int& bytesSizeOut, std::string& errorMessageOut)
+	bool ShaderCompiler::compile_spirv_to_backend(const unsigned char* pSource, const unsigned int sourceLength, const GraphicsBackend backend, unsigned char** ppBytesOut, unsigned int& bytesSizeOut, std::string& errorMessageOut)
 	{
 		*ppBytesOut = nullptr;
 

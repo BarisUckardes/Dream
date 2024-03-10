@@ -13,15 +13,15 @@ namespace Dream
 		//Allocate
 		VkDescriptorSetAllocateInfo allocateInfo = {};
 		allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocateInfo.descriptorPool = pVkPool->GetVkPool();
-		VkDescriptorSetLayout layouts = pVkLayout->GetVkLayout();
+		allocateInfo.descriptorPool = pVkPool->vk_pool();
+		VkDescriptorSetLayout layouts = pVkLayout->vk_layout();
 		allocateInfo.pSetLayouts = &layouts;
 		allocateInfo.descriptorSetCount = 1;
 		allocateInfo.pNext = nullptr;
 
 		DEV_ASSERT(vkAllocateDescriptorSets(mLogicalDevice, &allocateInfo, &mSet) == VK_SUCCESS, "VulkanDescriptorSet", "Failed to allocate descriptorset set");
 
-		mPool = pVkPool->GetVkPool();
+		mPool = pVkPool->vk_pool();
 	}
 	VulkanDescriptorSet::~VulkanDescriptorSet()
 	{

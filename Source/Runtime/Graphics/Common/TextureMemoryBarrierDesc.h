@@ -2,7 +2,7 @@
 #include <Runtime/Graphics/Texture/TextureMemoryLayout.h>
 #include <Runtime/Graphics/Texture/TextureAspectFlags.h>
 #include <Runtime/Graphics/Memory/GraphicsMemoryAccessFlags.h>
-#include <Runtime/Graphics/Queue/GraphicsQueueType.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueFamilyType.h>
 #include <Runtime/Graphics/Pipeline/PipelineStageFlags.h>
 
 namespace Dream
@@ -16,11 +16,11 @@ namespace Dream
 		TextureMemoryLayout SourceLayout;
 		GraphicsMemoryAccessFlags SourceAccessFlags;
 		PipelineStageFlags SourceStageFlags;
-		GraphicsQueueType SourceQueue;
+		GraphicsQueueFamilyType SourceQueue;
 
 		TextureMemoryLayout DestinationLayout;
 		GraphicsMemoryAccessFlags DestinationAccessFlags;
 		PipelineStageFlags DestinationStageFlags;
-		GraphicsQueueType DestinationQueue;
+		GraphicsQueueFamilyType DestinationQueue;
 	};
 }

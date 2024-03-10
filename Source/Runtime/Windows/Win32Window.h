@@ -12,23 +12,23 @@ namespace Dream
 		Win32Window(const WindowDesc& desc);
 		~Win32Window();
 
-		FORCEINLINE HWND GetWin32WindowHandle() const noexcept
+		FORCEINLINE HWND win32_handle() const noexcept
 		{
 			return mHandle;
 		}
-		FORCEINLINE HDC GetWin32Context() const noexcept
+		FORCEINLINE HDC win32_context() const noexcept
 		{
 			return mContext;
 		}
 	private:
 		// Inherited via Window
-		void SetTitleCore(const std::string& title) override;
-		void SetOffsetCore(const int x, const int y) override;
-		void SetSizeCore(const unsigned int width, const unsigned int height) override;
-		void SetModeCore(const WindowMode mode) override;
-		void PollEventsCore() override;
-		void ShowCore() override;
-		void HideCore() override;
+		void set_title_impl(const std::string& title) override;
+		void set_offset_impl(const int x, const int y) override;
+		void set_size_impl(const unsigned int width, const unsigned int height) override;
+		void set_mode_impl(const WindowMode mode) override;
+		void poll_events_impl() override;
+		void show_impl() override;
+		void hide_impl() override;
 	private:
 		HWND mHandle;
 		HDC mContext;

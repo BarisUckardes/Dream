@@ -23,14 +23,14 @@ namespace Dream
         //Create image view
         VkImageViewCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        info.image = pTexture->GetVkImage();
-        info.format = VulkanTextureUtils::GetTextureFormat(pTexture->GetFormat());
-        info.viewType = VulkanTextureUtils::GetImageViewType(pTexture->GetTextureType());
+        info.image = pTexture->vk_image();
+        info.format = VulkanTextureUtils::GetTextureFormat(pTexture->format());
+        info.viewType = VulkanTextureUtils::GetImageViewType(pTexture->texture_type());
         info.subresourceRange.aspectMask = VulkanTextureUtils::GetImageAspects(desc.AspectFlags);
         info.subresourceRange.baseArrayLayer = desc.ArrayLevel;
         info.subresourceRange.baseMipLevel = desc.MipLevel;
-        info.subresourceRange.layerCount = desc.pTexture->GetArrayLevels();
-        info.subresourceRange.levelCount = desc.pTexture->GetMipLevels();
+        info.subresourceRange.layerCount = desc.pTexture->array_levels();
+        info.subresourceRange.levelCount = desc.pTexture->mip_levels();
         info.components = swizzleMap;
         info.flags = VkImageViewCreateFlags();
         info.pNext = nullptr;

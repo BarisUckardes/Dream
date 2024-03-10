@@ -5,7 +5,7 @@ namespace Dream
 {
 	enum class RUNTIME_API WindowMode : unsigned char
 	{
-		Border,
+		Fixed,
 		Borderless
 	};
 }

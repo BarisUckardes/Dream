@@ -9,43 +9,43 @@ namespace Dream
 	public:
 		~Texture();
 
-		FORCEINLINE TextureType GetTextureType() const noexcept
+		FORCEINLINE TextureType texture_type() const noexcept
 		{
 			return mType;
 		}
-		FORCEINLINE TextureUsage GetUsages() const noexcept
+		FORCEINLINE TextureUsage usages() const noexcept
 		{
 			return mUsages;
 		}
-		FORCEINLINE TextureFormat GetFormat() const noexcept
+		FORCEINLINE TextureFormat format() const noexcept
 		{
 			return mFormat;
 		}
-		FORCEINLINE unsigned int GetWidth() const noexcept
+		FORCEINLINE unsigned int width() const noexcept
 		{
 			return mWidth;
 		}
-		FORCEINLINE unsigned int GetHeight() const noexcept
+		FORCEINLINE unsigned int height() const noexcept
 		{
 			return mHeight;
 		}
-		FORCEINLINE unsigned int GetDepth() const noexcept
+		FORCEINLINE unsigned int depth() const noexcept
 		{
 			return mDepth;
 		}
-		FORCEINLINE unsigned char GetMipLevels() const noexcept
+		FORCEINLINE unsigned char mip_levels() const noexcept
 		{
 			return mMipLevels;
 		}
-		FORCEINLINE unsigned char GetArrayLevels() const noexcept
+		FORCEINLINE unsigned char array_levels() const noexcept
 		{
 			return mArrayLevels;
 		}
-		FORCEINLINE TextureSampleCount GetSampleCount() const noexcept
+		FORCEINLINE TextureSampleCount sample_count() const noexcept
 		{
 			return mSampleCount;
 		}
-		virtual GraphicsDeviceObjectType GetObjectType() const noexcept
+		virtual GraphicsDeviceObjectType object_type() const noexcept
 		{
 			return GraphicsDeviceObjectType::Texture;
 		}

@@ -159,82 +159,82 @@ namespace Dream
 	{
 		
 	}
-	VkQueue VulkanDevice::vkOwnQueue(const GraphicsQueueType type)
+	VkQueue VulkanDevice::vkOwnQueue(const GraphicsQueueFamilyType type)
 	{
 		switch (type)
 		{
 			default:
-			case Dream::GraphicsQueueType::Graphics:
+			case Dream::GraphicsQueueFamilyType::Graphics:
 				return mGraphicsFamily.OwnQueue();
-			case Dream::GraphicsQueueType::Compute:
+			case Dream::GraphicsQueueFamilyType::Compute:
 				return mComputeFamily.OwnQueue();
-			case Dream::GraphicsQueueType::Transfer:
+			case Dream::GraphicsQueueFamilyType::Transfer:
 				return mTransferFamily.OwnQueue();
 		}
 	}
-	void VulkanDevice::vkReturnQueue(const GraphicsQueueType type, const VkQueue queue)
+	void VulkanDevice::vkReturnQueue(const GraphicsQueueFamilyType type, const VkQueue queue)
 	{
 		switch (type)
 		{
 			default:
-			case Dream::GraphicsQueueType::Graphics:
+			case Dream::GraphicsQueueFamilyType::Graphics:
 			{
 				mGraphicsFamily.ReturnQueue(queue);
 				break;
 			}
-			case Dream::GraphicsQueueType::Compute:
+			case Dream::GraphicsQueueFamilyType::Compute:
 			{
 				mComputeFamily.ReturnQueue(queue);
 				break;
 			}
-			case Dream::GraphicsQueueType::Transfer:
+			case Dream::GraphicsQueueFamilyType::Transfer:
 			{
 				mTransferFamily.ReturnQueue(queue);
 				break;
 			}
 		}
 	}
-	unsigned char VulkanDevice::vkGetQueueFamilyIndex(const GraphicsQueueType type) const noexcept
+	unsigned char VulkanDevice::vkGetQueueFamilyIndex(const GraphicsQueueFamilyType type) const noexcept
 	{
 		switch (type)
 		{
-			case Dream::GraphicsQueueType::Graphics:
+			case Dream::GraphicsQueueFamilyType::Graphics:
 				return mGraphicsFamily.FamilyIndex;
-			case Dream::GraphicsQueueType::Compute:
+			case Dream::GraphicsQueueFamilyType::Compute:
 				return mComputeFamily.FamilyIndex;
-			case Dream::GraphicsQueueType::Transfer:
+			case Dream::GraphicsQueueFamilyType::Transfer:
 				return mTransferFamily.FamilyIndex;
 			default:
 				return 255;
 		}
 	}
-	Texture* VulkanDevice::vkCreateSwapchainTexture(const TextureDesc& desc, const VkImage image)
+	Texture* VulkanDevice::vkcreate_swapchainTexture(const TextureDesc& desc, const VkImage image)
 	{
 		Texture* pTexture = new VulkanTexture(desc, image, this);
-		RegisterObject(pTexture);
+		register_object(pTexture);
 		return pTexture;
 	}
-	TextureView* VulkanDevice::vkCreateSwapchainTextureView(const TextureViewDesc& desc, const VkImageView view)
+	TextureView* VulkanDevice::vkcreate_swapchainTextureView(const TextureViewDesc& desc, const VkImageView view)
 	{
 		TextureView* pView = new VulkanTextureView(desc, view, this);
-		RegisterObject(pView);
+		register_object(pView);
 		return pView;
 	}
-	bool VulkanDevice::HasQueue(const GraphicsQueueType type) const noexcept
+	bool VulkanDevice::has_queue(const GraphicsQueueFamilyType type) const noexcept
 	{
 		switch (type)
 		{
-			case Dream::GraphicsQueueType::Graphics:
+			case Dream::GraphicsQueueFamilyType::Graphics:
 				return mGraphicsFamily.FreeQueues.size() > 0;
-			case Dream::GraphicsQueueType::Compute:
+			case Dream::GraphicsQueueFamilyType::Compute:
 				return mComputeFamily.FreeQueues.size() > 0;
-			case Dream::GraphicsQueueType::Transfer:
+			case Dream::GraphicsQueueFamilyType::Transfer:
 				return mTransferFamily.FreeQueues.size() > 0;
 			default:
 				return false;
 		}
 	}
-	GraphicsQueue* VulkanDevice::CreateQueueCore(const GraphicsQueueDesc& desc)
+	GraphicsQueue* VulkanDevice::own_queue_impl(const GraphicsQueueDesc& desc)
 	{
 		const VkQueue queue = vkOwnQueue(desc.Type);
 		const unsigned char familyIndex = vkGetQueueFamilyIndex(desc.Type);
@@ -242,55 +242,55 @@ namespace Dream
 
 		return new VulkanQueue(desc,queue,familyIndex,this);
 	}
-	GraphicsBuffer* VulkanDevice::CreateBufferCore(const GraphicsBufferDesc& desc)
+	GraphicsBuffer* VulkanDevice::create_buffer_impl(const GraphicsBufferDesc& desc)
 	{
 		return new VulkanBuffer(desc,this);
 	}
-	DescriptorSet* VulkanDevice::CreateDescriptorSetCore(const DescriptorSetDesc& desc)
+	DescriptorSet* VulkanDevice::create_descriptor_set_impl(const DescriptorSetDesc& desc)
 	{
 		return new VulkanDescriptorSet(desc,this);
 	}
-	DescriptorPool* VulkanDevice::CreateDescriptorPoolCore(const DescriptorPoolDesc& desc)
+	DescriptorPool* VulkanDevice::create_descriptor_pool_impl(const DescriptorPoolDesc& desc)
 	{
 		return new VulkanDescriptorPool(desc,this);
 	}
-	DescriptorSetLayout* VulkanDevice::CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc)
+	DescriptorSetLayout* VulkanDevice::create_descriptor_set_layout_impl(const DescriptorSetLayoutDesc& desc)
 	{
 		return new VulkanDescriptorSetLayout(desc,this);
 	}
-	Fence* VulkanDevice::CreateFenceCore(const FenceDesc& desc)
+	Fence* VulkanDevice::create_fence_impl(const FenceDesc& desc)
 	{
 		return new VulkanFence(desc,this);
 	}
-	Semaphore* VulkanDevice::CreateSyncObjectCore(const SemaphoreDesc& desc)
+	Semaphore* VulkanDevice::create_sync_object_impl(const SemaphoreDesc& desc)
 	{
 		return new VulkanSemaphore(desc,this);
 	}
-	GraphicsMemory* VulkanDevice::AllocateMemoryCore(const GraphicsMemoryDesc& desc)
+	GraphicsMemory* VulkanDevice::allocate_memory_impl(const GraphicsMemoryDesc& desc)
 	{
 		return new VulkanMemory(desc,this);
 	}
-	Sampler* VulkanDevice::CreateSamplerCore(const SamplerDesc& desc)
+	Sampler* VulkanDevice::create_sampler_impl(const SamplerDesc& desc)
 	{
 		return new VulkanSampler(desc,this);
 	}
-	Shader* VulkanDevice::CreateShaderCore(const ShaderDesc& desc)
+	Shader* VulkanDevice::create_shader_impl(const ShaderDesc& desc)
 	{
 		return new VulkanShader(desc,this);
 	}
-	Texture* VulkanDevice::CreateTextureCore(const TextureDesc& desc)
+	Texture* VulkanDevice::create_texture_impl(const TextureDesc& desc)
 	{
 		return new VulkanTexture(desc,this);
 	}
-	TextureView* VulkanDevice::CreateTextureViewCore(const TextureViewDesc& desc)
+	TextureView* VulkanDevice::create_texture_view_impl(const TextureViewDesc& desc)
 	{
 		return new VulkanTextureView(desc,this);
 	}
-	Swapchain* VulkanDevice::CreateSwapchainCore(const SwapchainDesc& desc)
+	Swapchain* VulkanDevice::create_swapchain_impl(const SwapchainDesc& desc)
 	{
 		return new VulkanSwapchain(desc,this);
 	}
-	void VulkanDevice::SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
+	void VulkanDevice::submit_commands_impl(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
 	{
 		const VulkanFence* pVkFence = (const VulkanFence*)pSignalFence;
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pTargetQueue;
@@ -300,7 +300,7 @@ namespace Dream
 		for (unsigned int cmdListIndex = 0; cmdListIndex < cmdListCount; cmdListIndex++)
 		{
 			const VulkanCommandList* pCmdList = (const VulkanCommandList*)ppCmdLists[cmdListIndex];
-			vkCmdBuffers[cmdListIndex] = pCmdList->GetVkCmdBuffer();
+			vkCmdBuffers[cmdListIndex] = pCmdList->vk_cmd_buffer();
 		}
 		
 		//Get wait semaphores
@@ -342,7 +342,7 @@ namespace Dream
 
 		DEV_ASSERT(vkQueueSubmit(pVkQueue->GetVkQueue(), cmdListCount, &submitInfo, pVkFence != nullptr ? pVkFence->GetVkFence() :VK_NULL_HANDLE) == VK_SUCCESS, "VulkanDevice", "Failed to submit the command lists");
 	}
-	void VulkanDevice::ResetFencesCore(Fence** ppFences, const unsigned int count)
+	void VulkanDevice::reset_fences_impl(Fence** ppFences, const unsigned int count)
 	{
 		VkFence fences[512];
 		for (unsigned int i = 0; i < count; i++)
@@ -353,7 +353,7 @@ namespace Dream
 
 		DEV_ASSERT(vkResetFences(mLogicalDevice, count, fences) == VK_SUCCESS, "VulkanDevice", "Failed to reset the fences");
 	}
-	void VulkanDevice::WaitFencesCore(Fence** ppFences, const unsigned int count)
+	void VulkanDevice::wait_fences_impl(Fence** ppFences, const unsigned int count)
 	{
 		VkFence fences[512];
 		for (unsigned int i = 0; i < count; i++)
@@ -364,17 +364,17 @@ namespace Dream
 
 		DEV_ASSERT(vkWaitForFences(mLogicalDevice, count, fences, VK_TRUE, UINT64_MAX) == VK_SUCCESS, "VulkanDevice", "Failed to wait for fences");
 	}
-	void VulkanDevice::WaitDeviceIdleCore()
+	void VulkanDevice::wait_device_idle_impl()
 	{
 		DEV_ASSERT(vkDeviceWaitIdle(mLogicalDevice) == VK_SUCCESS, "VulkanDevice", "Failed to wait device idle");
 	}
-	void VulkanDevice::WaitQueueIdleCore(GraphicsQueue* pQueue)
+	void VulkanDevice::wait_queue_idle_impl(GraphicsQueue* pQueue)
 	{
 		const VulkanQueue* pVkQueue = (const VulkanQueue*)pQueue;
 
 		DEV_ASSERT(vkQueueWaitIdle(pVkQueue->GetVkQueue()) == VK_SUCCESS, "VulkanDevice", "Failed to wait for queue");
 	}
-	void VulkanDevice::UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
+	void VulkanDevice::update_host_descriptor_set_impl(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
 	{
 		const VulkanDescriptorSet* pVkSet = (const VulkanDescriptorSet*)pSet;
 
@@ -394,7 +394,7 @@ namespace Dream
 			writeInfo.descriptorCount = 1;
 			writeInfo.dstArrayElement = entry.ArrayElement;
 			writeInfo.dstBinding = entry.Binding;
-			writeInfo.dstSet = pVkSet->GetVkSet();
+			writeInfo.dstSet = pVkSet->vk_set();
 			writeInfo.pNext = nullptr;
 			writeInfo.pBufferInfo = nullptr;
 			writeInfo.pImageInfo = nullptr;
@@ -420,7 +420,7 @@ namespace Dream
 					const VulkanTextureView* pView = (const VulkanTextureView*)entry.pResource;
 
 					VkDescriptorImageInfo imageInfo = {};
-					imageInfo.imageView = pView->GetVkView();
+					imageInfo.imageView = pView->vk_view();
 					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 					imageInfo.sampler = VK_NULL_HANDLE;
 					writeImageInformations[imageIndex] = imageInfo;
@@ -434,7 +434,7 @@ namespace Dream
 					const VulkanTextureView* pView = (const VulkanTextureView*)entry.pResource;
 
 					VkDescriptorImageInfo imageInfo = {};
-					imageInfo.imageView = pView->GetVkView();
+					imageInfo.imageView = pView->vk_view();
 					imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 					imageInfo.sampler = VK_NULL_HANDLE;
 					writeImageInformations[imageIndex] = imageInfo;
@@ -450,7 +450,7 @@ namespace Dream
 					VkDescriptorBufferInfo bufferInfo = {};
 					bufferInfo.buffer = pBuffer->GetVkBuffer();
 					bufferInfo.offset = entry.BufferOffsetInBytes;
-					bufferInfo.range = pBuffer->GetTotalSize();
+					bufferInfo.range = pBuffer->total_size();
 					writeBufferInformations[bufferIndex] = bufferInfo;
 					writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
 					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -464,7 +464,7 @@ namespace Dream
 					VkDescriptorBufferInfo bufferInfo = {};
 					bufferInfo.buffer = pBuffer->GetVkBuffer();
 					bufferInfo.offset = entry.BufferOffsetInBytes;
-					bufferInfo.range = pBuffer->GetTotalSize();
+					bufferInfo.range = pBuffer->total_size();
 					writeBufferInformations[bufferIndex] = bufferInfo;
 					writeInfo.pBufferInfo = &writeBufferInformations[bufferIndex];
 					writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -480,7 +480,7 @@ namespace Dream
 
 		vkUpdateDescriptorSets(mLogicalDevice, desc.Entries.size(), writeInformations, 0, nullptr);
 	}
-	void VulkanDevice::CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
+	void VulkanDevice::copy_descriptor_set_impl(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
 	{
 		const VulkanDescriptorSet* pVkSourceSet = (const VulkanDescriptorSet*)pSourceSet;
 		const VulkanDescriptorSet* pVkDestinationSet = (const VulkanDescriptorSet*)pDestinationSet;
@@ -493,11 +493,11 @@ namespace Dream
 
 			VkCopyDescriptorSet info = {};
 			info.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
-			info.srcSet = pVkSourceSet->GetVkSet();
+			info.srcSet = pVkSourceSet->vk_set();
 			info.srcBinding = entry.SourceBinding;
 			info.srcArrayElement = entry.SourceArrayElement;
 
-			info.dstSet = pVkDestinationSet->GetVkSet();
+			info.dstSet = pVkDestinationSet->vk_set();
 			info.dstBinding = entry.DestinationBinding;
 			info.dstArrayElement = entry.DestinationArrayElement;
 
@@ -509,9 +509,9 @@ namespace Dream
 		
 		vkUpdateDescriptorSets(mLogicalDevice, 0, nullptr, desc.Entries.size(), informations);
 	}
-	void VulkanDevice::UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
+	void VulkanDevice::update_host_buffer_impl(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
 	{
-		const VulkanMemory* pMemory = (const VulkanMemory*)pTargetBuffer->GetMemory();
+		const VulkanMemory* pMemory = (const VulkanMemory*)pTargetBuffer->memory();
 		const VulkanBuffer* pBuffer = (const VulkanBuffer*)pTargetBuffer;
 
 		unsigned char* pTargetHostData = nullptr;
@@ -519,23 +519,23 @@ namespace Dream
 		memcpy(pTargetHostData, desc.pBuffer, desc.SizeInBytes);
 		vkUnmapMemory(mLogicalDevice, pMemory->GetVkMemory());
 	}
-	CommandPool* VulkanDevice::CreateCommandPoolCore(const CommandPoolDesc& desc)
+	CommandPool* VulkanDevice::create_cmd_pool_impl(const CommandPoolDesc& desc)
 	{
 		return new VulkanCommandPool(desc,this);
 	}
-	CommandList* VulkanDevice::CreateCommandListCore(const CommandListDesc& desc)
+	CommandList* VulkanDevice::create_cmd_list_impl(const CommandListDesc& desc)
 	{
 		return new VulkanCommandList(desc,this);
 	}
-	Pipeline* VulkanDevice::CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc)
+	Pipeline* VulkanDevice::create_graphics_pipeline_impl(const GraphicsPipelineDesc& desc)
 	{
 		return new VulkanPipeline(desc,this);
 	}
-	Pipeline* VulkanDevice::CreateComputePipelineCore(const ComputePipelineDesc& desc)
+	Pipeline* VulkanDevice::create_compute_pipeline_impl(const ComputePipelineDesc& desc)
 	{
 		return new VulkanPipeline(desc,this);
 	}
-	RenderPass* VulkanDevice::CreateRenderPassCore(const RenderPassDesc& desc)
+	RenderPass* VulkanDevice::create_render_pass_impl(const RenderPassDesc& desc)
 	{
 		return new VulkanRenderPass(desc,this);
 	}

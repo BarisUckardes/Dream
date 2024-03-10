@@ -42,45 +42,45 @@ namespace Dream
 		{
 			return mLogicalDevice;
 		}
-		VkQueue vkOwnQueue(const GraphicsQueueType type);
-		void vkReturnQueue(const GraphicsQueueType type,const VkQueue queue);
-		unsigned char vkGetQueueFamilyIndex(const GraphicsQueueType type) const noexcept;
-		Texture* vkCreateSwapchainTexture(const TextureDesc& desc,const VkImage image);
-		TextureView* vkCreateSwapchainTextureView(const TextureViewDesc& desc, const VkImageView view);
+		VkQueue vkOwnQueue(const GraphicsQueueFamilyType type);
+		void vkReturnQueue(const GraphicsQueueFamilyType type,const VkQueue queue);
+		unsigned char vkGetQueueFamilyIndex(const GraphicsQueueFamilyType type) const noexcept;
+		Texture* vkcreate_swapchainTexture(const TextureDesc& desc,const VkImage image);
+		TextureView* vkcreate_swapchainTextureView(const TextureViewDesc& desc, const VkImageView view);
 	private:
-		virtual GraphicsBackend GetBackend() const noexcept
+		virtual GraphicsBackend backend() const noexcept
 		{
 			return GraphicsBackend::Vulkan;
 		}
 
-		virtual bool HasQueue(const GraphicsQueueType type) const noexcept override;
-		virtual GraphicsQueue* CreateQueueCore(const GraphicsQueueDesc& desc) override;
-		virtual GraphicsBuffer* CreateBufferCore(const GraphicsBufferDesc& desc) override;
-		virtual DescriptorSet* CreateDescriptorSetCore(const DescriptorSetDesc& desc) override;
-		virtual DescriptorPool* CreateDescriptorPoolCore(const DescriptorPoolDesc& desc) override;
-		virtual DescriptorSetLayout* CreateDescriptorSetLayoutCore(const DescriptorSetLayoutDesc& desc) override;
-		virtual Fence* CreateFenceCore(const FenceDesc& desc) override;
-		virtual Semaphore* CreateSyncObjectCore(const SemaphoreDesc& desc) override;
-		virtual GraphicsMemory* AllocateMemoryCore(const GraphicsMemoryDesc& desc) override;
-		virtual Sampler* CreateSamplerCore(const SamplerDesc& desc) override;
-		virtual Shader* CreateShaderCore(const ShaderDesc& desc) override;
-		virtual Texture* CreateTextureCore(const TextureDesc& desc) override;
-		virtual TextureView* CreateTextureViewCore(const TextureViewDesc& desc) override;
-		virtual Swapchain* CreateSwapchainCore(const SwapchainDesc& desc) override;
-		virtual Pipeline* CreateGraphicsPipelineCore(const GraphicsPipelineDesc& desc) override;
-		virtual Pipeline* CreateComputePipelineCore(const ComputePipelineDesc& desc) override;
-		virtual RenderPass* CreateRenderPassCore(const RenderPassDesc& desc) override;
-		virtual CommandPool* CreateCommandPoolCore(const CommandPoolDesc& desc) override;
-		virtual CommandList* CreateCommandListCore(const CommandListDesc& desc) override;
+		virtual bool has_queue(const GraphicsQueueFamilyType type) const noexcept override;
+		virtual GraphicsQueue* own_queue_impl(const GraphicsQueueDesc& desc) override;
+		virtual GraphicsBuffer* create_buffer_impl(const GraphicsBufferDesc& desc) override;
+		virtual DescriptorSet* create_descriptor_set_impl(const DescriptorSetDesc& desc) override;
+		virtual DescriptorPool* create_descriptor_pool_impl(const DescriptorPoolDesc& desc) override;
+		virtual DescriptorSetLayout* create_descriptor_set_layout_impl(const DescriptorSetLayoutDesc& desc) override;
+		virtual Fence* create_fence_impl(const FenceDesc& desc) override;
+		virtual Semaphore* create_sync_object_impl(const SemaphoreDesc& desc) override;
+		virtual GraphicsMemory* allocate_memory_impl(const GraphicsMemoryDesc& desc) override;
+		virtual Sampler* create_sampler_impl(const SamplerDesc& desc) override;
+		virtual Shader* create_shader_impl(const ShaderDesc& desc) override;
+		virtual Texture* create_texture_impl(const TextureDesc& desc) override;
+		virtual TextureView* create_texture_view_impl(const TextureViewDesc& desc) override;
+		virtual Swapchain* create_swapchain_impl(const SwapchainDesc& desc) override;
+		virtual Pipeline* create_graphics_pipeline_impl(const GraphicsPipelineDesc& desc) override;
+		virtual Pipeline* create_compute_pipeline_impl(const ComputePipelineDesc& desc) override;
+		virtual RenderPass* create_render_pass_impl(const RenderPassDesc& desc) override;
+		virtual CommandPool* create_cmd_pool_impl(const CommandPoolDesc& desc) override;
+		virtual CommandList* create_cmd_list_impl(const CommandListDesc& desc) override;
 
-		virtual void UpdateDescriptorSetCore(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) override;
-		virtual void CopyDescriptorSetCore(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) override;
-		virtual void UpdateHostBufferCore(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) override;
-		virtual void SubmitCommandsCore(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const  PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) override;
-		virtual void ResetFencesCore(Fence** ppFences, const unsigned int count) override;
-		virtual void WaitFencesCore(Fence** ppFences, const unsigned int count) override;
-		virtual void WaitDeviceIdleCore() override;
-		virtual void WaitQueueIdleCore(GraphicsQueue* pQueue) override;
+		virtual void update_host_descriptor_set_impl(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc) override;
+		virtual void copy_descriptor_set_impl(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc) override;
+		virtual void update_host_buffer_impl(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc) override;
+		virtual void submit_commands_impl(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const  PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence) override;
+		virtual void reset_fences_impl(Fence** ppFences, const unsigned int count) override;
+		virtual void wait_fences_impl(Fence** ppFences, const unsigned int count) override;
+		virtual void wait_device_idle_impl() override;
+		virtual void wait_queue_idle_impl(GraphicsQueue* pQueue) override;
 	private:
 		VkDevice mLogicalDevice;
         DeviceQueueFamily mGraphicsFamily;

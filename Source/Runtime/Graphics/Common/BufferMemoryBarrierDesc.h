@@ -1,7 +1,7 @@
 #pragma once
 #include <Runtime/Graphics/Pipeline/PipelineStageFlags.h>
 #include <Runtime/Graphics/Memory/GraphicsMemoryAccessFlags.h>
-#include <Runtime/Graphics/Queue/GraphicsQueueType.h>
+#include <Runtime/Graphics/Queue/GraphicsQueueFamilyType.h>
 
 namespace Dream
 {
@@ -12,11 +12,11 @@ namespace Dream
 
 		PipelineStageFlags SourceStageFlags;
 		GraphicsMemoryAccessFlags SourceAccessFlags;
-		GraphicsQueueType SourceQueue;
+		GraphicsQueueFamilyType SourceQueue;
 
 		PipelineStageFlags DestinationStageFlags;
 		GraphicsMemoryAccessFlags DestinationAccessFlags;
-		GraphicsQueueType DestinationQueue;
+		GraphicsQueueFamilyType DestinationQueue;
 
 	};
 }

@@ -35,7 +35,7 @@ namespace Dream
 	{
 		vkFreeCommandBuffers(mLogicalDevice, mCommandPool, 1, &mCommandBuffer);
 	}
-	void VulkanCommandList::BeginRecordingCore()
+	void VulkanCommandList::begin_impl()
 	{
 		DEV_ASSERT(vkResetCommandBuffer(mCommandBuffer, VkCommandPoolResetFlags()) == VK_SUCCESS, "VulkanCommandList", "Failed to reset the cmd list");
 
@@ -47,11 +47,11 @@ namespace Dream
 
 		DEV_ASSERT(vkBeginCommandBuffer(mCommandBuffer, &info) == VK_SUCCESS, "VulkanCommandList", "Failed to begin command list");
 	}
-	void VulkanCommandList::EndRecordingCore()
+	void VulkanCommandList::end_impl()
 	{
 		DEV_ASSERT(vkEndCommandBuffer(mCommandBuffer) == VK_SUCCESS, "VulkanCommandList", "Failed to end command list");
 	}
-	void VulkanCommandList::SetVertexBuffersCore(GraphicsBuffer** ppBuffers, const unsigned char count)
+	void VulkanCommandList::set_vertex_buffers_impl(GraphicsBuffer** ppBuffers, const unsigned char count)
 	{
 		VkDeviceSize offsets[32];
 		VkBuffer buffers[32];
@@ -62,31 +62,31 @@ namespace Dream
 
 			buffers[i] = pBuffer->GetVkBuffer();
 			offsets[i] = offset;
-			offset += pBuffer->GetTotalSize();
+			offset += pBuffer->total_size();
 		}
 
 		vkCmdBindVertexBuffers(mCommandBuffer,0,count,buffers,offsets);
 	}
-	void VulkanCommandList::SetIndexBufferCore(GraphicsBuffer* pBuffer, const IndexBufferType type)
+	void VulkanCommandList::set_index_buffer_impl(GraphicsBuffer* pBuffer, const IndexBufferType type)
 	{
 		const VulkanBuffer* pVkBuffer = (const VulkanBuffer*)pBuffer;
 		vkCmdBindIndexBuffer(mCommandBuffer, pVkBuffer->GetVkBuffer(), 0, type == IndexBufferType::UInt32 ? VK_INDEX_TYPE_UINT32 : VK_INDEX_TYPE_UINT16);
 	}
-	void VulkanCommandList::DrawIndexedCore(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount)
+	void VulkanCommandList::draw_indexed_impl(const unsigned int indexCount, const unsigned int indexOffset, const unsigned int vertexOffset, const unsigned int instanceOffset, const unsigned int instanceCount)
 	{
 		vkCmdDrawIndexed(mCommandBuffer, indexCount, instanceCount, indexOffset, vertexOffset, instanceOffset);
 	}
-	void VulkanCommandList::DispatchComputeCore(const unsigned int x, const unsigned int y, const unsigned int z)
+	void VulkanCommandList::dispatch_impl(const unsigned int x, const unsigned int y, const unsigned int z)
 	{
 		vkCmdDispatch(mCommandBuffer, x, y, z);
 	}
-	void VulkanCommandList::SetPipelineCore(Pipeline* pPipeline)
+	void VulkanCommandList::set_pipeline_impl(Pipeline* pPipeline)
 	{
 		const VulkanPipeline* pVkPipeline = (const VulkanPipeline*)pPipeline;
 
 		vkCmdBindPipeline(mCommandBuffer, pVkPipeline->GetVkPipelinBindPoint(), pVkPipeline->GetVkPipeline());
 	}
-	void VulkanCommandList::BeginRenderPassCore(RenderPass* pPass,const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
+	void VulkanCommandList::begin_render_impl(RenderPass* pPass,const ClearValue* pClearColorValues, const unsigned char clearColorValueCount, const double clearDepth, const double clearStencil)
 	{
 		//Get framebuffer
 		const VulkanRenderPass* pVkPass = (const VulkanRenderPass*)pPass;
@@ -98,7 +98,7 @@ namespace Dream
 		renderPassInfo.renderPass = pVkPass->GetVkRenderPass();
 		renderPassInfo.framebuffer = framebuffer;
 		renderPassInfo.renderArea.offset = { 0,0 };
-		renderPassInfo.renderArea.extent = { pPass->GetRenderWidth(),pPass->GetRenderHeight()};
+		renderPassInfo.renderArea.extent = { pPass->render_width(),pPass->render_height()};
 
 		VkClearValue clearValues[32];
 		unsigned int clearValueCount = clearColorValueCount;
@@ -129,11 +129,11 @@ namespace Dream
 		//Start render pass
 		vkCmdBeginRenderPass(mCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
-	void VulkanCommandList::EndRenderPassCore()
+	void VulkanCommandList::end_render_impl()
 	{
 		vkCmdEndRenderPass(mCommandBuffer);
 	}
-	void VulkanCommandList::SetViewportsCore(ViewportDesc* pViewports, const unsigned char count)
+	void VulkanCommandList::set_viewports_impl(ViewportDesc* pViewports, const unsigned char count)
 	{
 		VkViewport vkViewports[32];
 		for (unsigned char viewportIndex = 0; viewportIndex < count; viewportIndex++)
@@ -152,7 +152,7 @@ namespace Dream
 		}
 		vkCmdSetViewport(mCommandBuffer, 0, count, vkViewports);
 	}
-	void VulkanCommandList::SetScissorsCore(ScissorDesc* pScissors, const unsigned char count)
+	void VulkanCommandList::set_scissors_impl(ScissorDesc* pScissors, const unsigned char count)
 	{
 		VkRect2D vkScissors[32];
 		for (unsigned char scissorIndex = 0; scissorIndex < count; scissorIndex++)
@@ -168,7 +168,7 @@ namespace Dream
 
 		vkCmdSetScissor(mCommandBuffer, 0, count, vkScissors);
 	}
-	void VulkanCommandList::CopyBufferToBufferCore(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc)
+	void VulkanCommandList::copy_buffer_buffer_impl(const GraphicsBuffer* pSourceBuffer, const GraphicsBuffer* pDestinationBuffer, const BufferBufferCopyDesc& desc)
 	{
 		const VulkanBuffer* pVkSourceBuffer = (const VulkanBuffer*)pSourceBuffer;
 		const VulkanBuffer* pVkDestinationBuffer = (const VulkanBuffer*)pDestinationBuffer;
@@ -180,7 +180,7 @@ namespace Dream
 
 		vkCmdCopyBuffer(mCommandBuffer, pVkSourceBuffer->GetVkBuffer(), pVkDestinationBuffer->GetVkBuffer(), 1, &copyDesc);
 	}
-	void VulkanCommandList::CopyBufferToTextureCore(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc)
+	void VulkanCommandList::copy_buffer_texture_impl(const GraphicsBuffer* pSourceBuffer, const Texture* pDestinationTexture, const BufferTextureCopyDesc& desc)
 	{
 		const VulkanBuffer* pVkBuffer = (const VulkanBuffer*)pSourceBuffer;
 		const VulkanTexture* pVkTexture = (const VulkanTexture*)pDestinationTexture;
@@ -193,14 +193,14 @@ namespace Dream
 		copyDesc.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		copyDesc.imageSubresource.baseArrayLayer = desc.TargetArrayIndex;
 		copyDesc.imageSubresource.mipLevel = desc.TargetMipIndex;
-		copyDesc.imageSubresource.layerCount = pDestinationTexture->GetArrayLevels();
+		copyDesc.imageSubresource.layerCount = pDestinationTexture->array_levels();
 
 		copyDesc.imageOffset = { (int)desc.TextureOffsetX,(int)desc.TextureOffsetY,(int)desc.TextureOffsetZ };
 		copyDesc.imageExtent = { desc.Width,desc.Height,desc.Depth};
 
-		vkCmdCopyBufferToImage(mCommandBuffer, pVkBuffer->GetVkBuffer(), pVkTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyDesc);
+		vkCmdCopyBufferToImage(mCommandBuffer, pVkBuffer->GetVkBuffer(), pVkTexture->vk_image(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyDesc);
 	}
-	void VulkanCommandList::CopyTextureToTextureCore(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc)
+	void VulkanCommandList::copy_texture_texture_impl(const Texture* pSourceTexture, const Texture* pDestinationTexture, const TextureCopyDesc& desc)
 	{
 		const VulkanTexture* pVkSourceTexture = (const VulkanTexture*)pSourceTexture;
 		const VulkanTexture* pVkDestinationTexture = (const VulkanTexture*)pDestinationTexture;
@@ -210,22 +210,22 @@ namespace Dream
 		blitInfo.srcOffsets[0] = { (int)desc.SourceOffsetX,(int)desc.SourceOffsetY,(int)desc.SourceOffsetZ };
 		blitInfo.srcSubresource.aspectMask = VulkanTextureUtils::GetImageAspects(desc.SourceAspect);
 		blitInfo.srcSubresource.baseArrayLayer = desc.SourceArrayIndex;
-		blitInfo.srcSubresource.layerCount = pSourceTexture->GetMipLevels();
+		blitInfo.srcSubresource.layerCount = pSourceTexture->mip_levels();
 		blitInfo.srcSubresource.mipLevel = desc.SourceMipIndex;
 
 		blitInfo.dstOffsets[0] = { (int)desc.DestinationOffsetX,(int)desc.DestinationOffsetY,(int)desc.DestinationOffsetZ };
 		blitInfo.dstSubresource.aspectMask = VulkanTextureUtils::GetImageAspects(desc.DestinationAspect);
 		blitInfo.dstSubresource.baseArrayLayer = desc.DestinationArrayIndex;
-		blitInfo.dstSubresource.layerCount = pDestinationTexture->GetMipLevels();
+		blitInfo.dstSubresource.layerCount = pDestinationTexture->mip_levels();
 		blitInfo.dstSubresource.mipLevel = desc.DestinationMipIndex;
 
-		vkCmdBlitImage(mCommandBuffer, pVkSourceTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pVkDestinationTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitInfo, VulkanSamplerUtils::GetFilter(desc.Filtering));
+		vkCmdBlitImage(mCommandBuffer, pVkSourceTexture->vk_image(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pVkDestinationTexture->vk_image(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitInfo, VulkanSamplerUtils::GetFilter(desc.Filtering));
 	}
-	void VulkanCommandList::SetTextureMemoryBarrierCore(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
+	void VulkanCommandList::set_texture_barrier_impl(const Texture* pTexture, const TextureMemoryBarrierDesc& desc)
 	{
-		const VulkanDevice* pDevice = (const VulkanDevice*)GetDevice();
+		const VulkanDevice* pDevice = (const VulkanDevice*)device();
 		const VulkanTexture* pVkTexture = (const VulkanTexture*)pTexture;
-		const VkImage image = pVkTexture->GetVkImage();
+		const VkImage image = pVkTexture->vk_image();
 
 		VkImageMemoryBarrier memoryBarrier = {};
 		memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -237,9 +237,9 @@ namespace Dream
 		memoryBarrier.dstQueueFamilyIndex = pDevice->vkGetQueueFamilyIndex(desc.DestinationQueue);
 		memoryBarrier.subresourceRange.aspectMask = VulkanTextureUtils::GetImageAspects(desc.AspectFlags);
 		memoryBarrier.subresourceRange.baseMipLevel = desc.MipIndex;
-		memoryBarrier.subresourceRange.levelCount = pTexture->GetMipLevels();
+		memoryBarrier.subresourceRange.levelCount = pTexture->mip_levels();
 		memoryBarrier.subresourceRange.baseArrayLayer = desc.ArrayIndex;
-		memoryBarrier.subresourceRange.layerCount = pTexture->GetArrayLevels();
+		memoryBarrier.subresourceRange.layerCount = pTexture->array_levels();
 		memoryBarrier.srcAccessMask = VulkanMemoryUtils::GetMemoryAccessFlags(desc.SourceAccessFlags);
 		memoryBarrier.dstAccessMask = VulkanMemoryUtils::GetMemoryAccessFlags(desc.DestinationAccessFlags);
 
@@ -250,9 +250,9 @@ namespace Dream
 			0, nullptr,
 			1, &memoryBarrier);
 	}
-	void VulkanCommandList::SetBufferMemoryBarrierCore(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
+	void VulkanCommandList::set_buffer_barrier_impl(const GraphicsBuffer* pBuffer, const BufferMemoryBarrierDesc& desc)
 	{
-		const VulkanDevice* pDevice = (const VulkanDevice*)GetDevice();
+		const VulkanDevice* pDevice = (const VulkanDevice*)device();
 		const VulkanBuffer* pVkBuffer = (const VulkanBuffer*)pBuffer;
 
 		VkBufferMemoryBarrier barrier = {};
@@ -272,7 +272,7 @@ namespace Dream
 			1, &barrier,
 			0, nullptr);
 	}
-	void VulkanCommandList::CommitResourceSetsCore(DescriptorSet** ppSets, const unsigned char count)
+	void VulkanCommandList::commit_resource_sets_impl(DescriptorSet** ppSets, const unsigned char count)
 	{
 		const VulkanPipeline* pPipeline = (const VulkanPipeline*)GetBoundPipeline();
 
@@ -282,7 +282,7 @@ namespace Dream
 		{
 			const VulkanDescriptorSet* pSet = (const VulkanDescriptorSet*)ppSets[resourceIndex];
 
-			descriptorSets[resourceIndex] = pSet->GetVkSet();
+			descriptorSets[resourceIndex] = pSet->vk_set();
 		}
 
 		vkCmdBindDescriptorSets(mCommandBuffer, pPipeline->GetVkPipelinBindPoint(), pPipeline->GetVkPipelineLayout(), 0, count, descriptorSets, 0, nullptr);

@@ -6,203 +6,203 @@ namespace Dream
     {
 
     }
-    GraphicsQueue* GraphicsDevice::CreateQueue(const GraphicsQueueDesc& desc)
+    GraphicsQueue* GraphicsDevice::own_queue(const GraphicsQueueDesc& desc)
     {
         //First validate if device can give queue
-        if (!HasQueue(desc.Type))
+        if (!has_queue(desc.Type))
             return nullptr;
 
-        GraphicsQueue* pQueue = CreateQueueCore(desc);
+        GraphicsQueue* pQueue = own_queue_impl(desc);
 
-        RegisterObject(pQueue);
+        register_object(pQueue);
 
         return pQueue;
     }
-    GraphicsBuffer* GraphicsDevice::CreateBuffer(const GraphicsBufferDesc& desc)
+    GraphicsBuffer* GraphicsDevice::create_buffer(const GraphicsBufferDesc& desc)
     {
         //Validations
         if (desc.pMemory == nullptr)
             return nullptr;
 
-        GraphicsBuffer* pBuffer = CreateBufferCore(desc);
+        GraphicsBuffer* pBuffer = create_buffer_impl(desc);
 
-        RegisterObject(pBuffer);
+        register_object(pBuffer);
 
         return pBuffer;
     }
-    DescriptorSet* GraphicsDevice::CreateDescriptorSet(const DescriptorSetDesc& desc)
+    DescriptorSet* GraphicsDevice::create_descriptor_set(const DescriptorSetDesc& desc)
     {
         //Validations
         if (desc.pLayout == nullptr || desc.pPool == nullptr)
             return nullptr;
 
-        DescriptorSet* pSet = CreateDescriptorSetCore(desc);
+        DescriptorSet* pSet = create_descriptor_set_impl(desc);
 
-        RegisterObject(pSet);
+        register_object(pSet);
 
         return pSet;
     }
-    DescriptorPool* GraphicsDevice::CreateDescriptorPool(const DescriptorPoolDesc& desc)
+    DescriptorPool* GraphicsDevice::create_descriptor_pool(const DescriptorPoolDesc& desc)
     {
-        DescriptorPool* pPool = CreateDescriptorPoolCore(desc);
+        DescriptorPool* pPool = create_descriptor_pool_impl(desc);
 
-        RegisterObject(pPool);
+        register_object(pPool);
 
         return pPool;
     }
-    DescriptorSetLayout* GraphicsDevice::CreateDescriptorSetLayout(const DescriptorSetLayoutDesc& desc)
+    DescriptorSetLayout* GraphicsDevice::create_descriptor_set_layout(const DescriptorSetLayoutDesc& desc)
     {
-        DescriptorSetLayout* pLayout = CreateDescriptorSetLayoutCore(desc);
+        DescriptorSetLayout* pLayout = create_descriptor_set_layout_impl(desc);
 
-        RegisterObject(pLayout);
+        register_object(pLayout);
 
         return pLayout;
     }
-    Fence* GraphicsDevice::CreateFence(const FenceDesc& desc)
+    Fence* GraphicsDevice::create_fence(const FenceDesc& desc)
     {
-        Fence* pFence = CreateFenceCore(desc);
+        Fence* pFence = create_fence_impl(desc);
 
-        RegisterObject(pFence);
+        register_object(pFence);
 
         return pFence;
     }
-    Semaphore* GraphicsDevice::CreateSyncObject(const SemaphoreDesc& desc)
+    Semaphore* GraphicsDevice::create_sync_object(const SemaphoreDesc& desc)
     {
-        Semaphore* pSemaphore = CreateSyncObjectCore(desc);
+        Semaphore* pSemaphore = create_sync_object_impl(desc);
 
-        RegisterObject(pSemaphore);
+        register_object(pSemaphore);
 
         return pSemaphore;
     }
-    GraphicsMemory* GraphicsDevice::AllocateMemory(const GraphicsMemoryDesc& desc)
+    GraphicsMemory* GraphicsDevice::allocate_memory(const GraphicsMemoryDesc& desc)
     {
-        GraphicsMemory* pMemory = AllocateMemoryCore(desc);
+        GraphicsMemory* pMemory = allocate_memory_impl(desc);
 
-        RegisterObject(pMemory);
+        register_object(pMemory);
 
         return pMemory;
     }
-    Sampler* GraphicsDevice::CreateSampler(const SamplerDesc& desc)
+    Sampler* GraphicsDevice::create_sampler(const SamplerDesc& desc)
     {
-        Sampler* pSampler = CreateSamplerCore(desc);
+        Sampler* pSampler = create_sampler_impl(desc);
 
-        RegisterObject(pSampler);
+        register_object(pSampler);
 
         return pSampler;
     }
-    Shader* GraphicsDevice::CreateShader(const ShaderDesc& desc)
+    Shader* GraphicsDevice::create_shader(const ShaderDesc& desc)
     {
-        Shader* pShader = CreateShaderCore(desc);
+        Shader* pShader = create_shader_impl(desc);
 
-        RegisterObject(pShader);
+        register_object(pShader);
 
         return pShader;
     }
-    Texture* GraphicsDevice::CreateTexture(const TextureDesc& desc)
+    Texture* GraphicsDevice::create_texture(const TextureDesc& desc)
     {
-        Texture* pTexture = CreateTextureCore(desc);
+        Texture* pTexture = create_texture_impl(desc);
 
-        RegisterObject(pTexture);
+        register_object(pTexture);
 
         return pTexture;
     }
-    TextureView* GraphicsDevice::CreateTextureView(const TextureViewDesc& desc)
+    TextureView* GraphicsDevice::create_texture_view(const TextureViewDesc& desc)
     {
-        TextureView* pView = CreateTextureViewCore(desc);
+        TextureView* pView = create_texture_view_impl(desc);
 
-        RegisterObject(pView);
+        register_object(pView);
 
         return pView;
     }
-    Swapchain* GraphicsDevice::CreateSwapchain(const SwapchainDesc& desc)
+    Swapchain* GraphicsDevice::create_swapchain(const SwapchainDesc& desc)
     {
-        Swapchain* pSwapchain = CreateSwapchainCore(desc);
+        Swapchain* pSwapchain = create_swapchain_impl(desc);
 
-        RegisterObject(pSwapchain);
+        register_object(pSwapchain);
 
         return pSwapchain;
     }
-    Pipeline* GraphicsDevice::CreateGraphicsPipeline(const GraphicsPipelineDesc& desc)
+    Pipeline* GraphicsDevice::create_graphics_pipeline(const GraphicsPipelineDesc& desc)
     {
-        Pipeline* pPipeline = CreateGraphicsPipelineCore(desc);
+        Pipeline* pPipeline = create_graphics_pipeline_impl(desc);
 
-        RegisterObject(pPipeline);
+        register_object(pPipeline);
 
         return pPipeline;
     }
-    Pipeline* GraphicsDevice::CreateComputePipeline(const ComputePipelineDesc& desc)
+    Pipeline* GraphicsDevice::create_compute_pipeline(const ComputePipelineDesc& desc)
     {
-        Pipeline* pPipeline = CreateComputePipelineCore(desc);
+        Pipeline* pPipeline = create_compute_pipeline_impl(desc);
 
-        RegisterObject(pPipeline);
+        register_object(pPipeline);
 
         return pPipeline;
     }
-    RenderPass* GraphicsDevice::CreateRenderPass(const RenderPassDesc& desc)
+    RenderPass* GraphicsDevice::create_render_pass(const RenderPassDesc& desc)
     {
-        RenderPass* pRenderPass = CreateRenderPassCore(desc);
+        RenderPass* pRenderPass = create_render_pass_impl(desc);
 
-        RegisterObject(pRenderPass);
+        register_object(pRenderPass);
 
         return pRenderPass;
     }
-    CommandPool* GraphicsDevice::CreateCommandPool(const CommandPoolDesc& desc)
+    CommandPool* GraphicsDevice::create_cmd_pool(const CommandPoolDesc& desc)
     {
-        CommandPool* pCmdPool = CreateCommandPoolCore(desc);
+        CommandPool* pCmdPool = create_cmd_pool_impl(desc);
 
-        RegisterObject(pCmdPool);
+        register_object(pCmdPool);
 
         return pCmdPool;
     }
-    CommandList* GraphicsDevice::CreateCommandList(const CommandListDesc& desc)
+    CommandList* GraphicsDevice::create_cmd_list(const CommandListDesc& desc)
     {
-        CommandList* pCmdList = CreateCommandListCore(desc);
+        CommandList* pCmdList = create_cmd_list_impl(desc);
 
-        RegisterObject(pCmdList);
+        register_object(pCmdList);
 
         return pCmdList;
     }
-    void GraphicsDevice::UpdateDescriptorSet(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
+    void GraphicsDevice::update_host_descriptor_set(DescriptorSet* pSet, const DescriptorSetUpdateDesc& desc)
     {
-        UpdateDescriptorSetCore(pSet, desc);
+        update_host_descriptor_set_impl(pSet, desc);
     }
-    void GraphicsDevice::CopyDescriptorSet(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
+    void GraphicsDevice::copy_descriptor_set(DescriptorSet* pSourceSet, DescriptorSet* pDestinationSet, const DescriptorSetCopyDesc& desc)
     {
-        CopyDescriptorSetCore(pSourceSet, pDestinationSet,desc);
+        copy_descriptor_set_impl(pSourceSet, pDestinationSet,desc);
     }
-    void GraphicsDevice::UpdateHostBuffer(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
+    void GraphicsDevice::update_host_buffer(GraphicsBuffer* pTargetBuffer, const HostBufferUpdateDesc& desc)
     {
-        UpdateHostBufferCore(pTargetBuffer, desc);
+        update_host_buffer_impl(pTargetBuffer, desc);
     }
-    void GraphicsDevice::SubmitCommands(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
+    void GraphicsDevice::submit_commands(CommandList** ppCmdLists, const unsigned char cmdListCount, const GraphicsQueue* pTargetQueue, Semaphore** ppSignalSemaphores, const unsigned int signalSemaphoreCount, Semaphore** ppWaitSemaphores,const PipelineStageFlags* pWaitStageFlags, const unsigned int waitSemaphoreCount, const Fence* pSignalFence)
     {
-        SubmitCommandsCore(ppCmdLists, cmdListCount, pTargetQueue,ppSignalSemaphores,signalSemaphoreCount,ppWaitSemaphores,pWaitStageFlags,waitSemaphoreCount,pSignalFence);
+        submit_commands_impl(ppCmdLists, cmdListCount, pTargetQueue,ppSignalSemaphores,signalSemaphoreCount,ppWaitSemaphores,pWaitStageFlags,waitSemaphoreCount,pSignalFence);
     }
-    void GraphicsDevice::ResetFences(Fence** ppFences, const unsigned int count)
+    void GraphicsDevice::reset_fences(Fence** ppFences, const unsigned int count)
     {
-        ResetFencesCore(ppFences, count);
+        reset_fences_impl(ppFences, count);
     }
-    void GraphicsDevice::WaitFences(Fence** ppFences, const unsigned int count)
+    void GraphicsDevice::wait_fences(Fence** ppFences, const unsigned int count)
     {
-        WaitFencesCore(ppFences, count);
+        wait_fences_impl(ppFences, count);
     }
-    void GraphicsDevice::WaitDeviceIdle()
+    void GraphicsDevice::wait_device_idle()
     {
-        WaitDeviceIdleCore();
+        wait_device_idle_impl();
     }
-    void GraphicsDevice::WaitQueueIdle(GraphicsQueue* pQueue)
+    void GraphicsDevice::wait_queue_idle(GraphicsQueue* pQueue)
     {
-        WaitQueueIdleCore(pQueue);
+        wait_queue_idle_impl(pQueue);
     }
     GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc* pDesc)
     {
         mOwnerAdapter = pDesc->pOwnerAdapter;
     }
-    void GraphicsDevice::RegisterObject(GraphicsDeviceObject* pObject)
+    void GraphicsDevice::register_object(GraphicsDeviceObject* pObject)
     {
         mObjects.push_back(pObject);
     }
-    void GraphicsDevice::RemoveObject(GraphicsDeviceObject* pObject)
+    void GraphicsDevice::remove_object(GraphicsDeviceObject* pObject)
     {
         auto findIterator = std::find(mObjects.begin(), mObjects.end(), pObject);
         if (findIterator == mObjects.end())

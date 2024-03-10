@@ -11,7 +11,6 @@ namespace Dream
 		PresentMode Mode;
 		unsigned char BufferCount;
 		TextureFormat ColorFormat;
-		TextureFormat DepthStencilFormat;
 		Window* pWindow;
 		GraphicsQueue* pQueue;
 	};

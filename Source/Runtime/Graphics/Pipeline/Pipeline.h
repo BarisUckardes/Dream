@@ -12,7 +12,7 @@ namespace Dream
             mBlendState(desc.BlendState), mDepthStencilState(desc.DepthStencilState),
             mInputLayout(desc.InputLayout), mMultisample(desc.Multisample),
             mRasterizerState(desc.RasterizerState),
-            mResourceLayout(desc.ResourceLayout), mGraphicsShaders(desc.GraphicsShaders),mSubpassIndex(desc.SubpassIndex)
+            mResourceLayout(desc.ResourceLayout), mGraphicsShaders(desc.GraphicsShaders),mSubpassIndex(desc.SubpassIndex),mComputeShader(nullptr)
         {
         }
 
@@ -26,48 +26,48 @@ namespace Dream
 
         ~Pipeline() = default;
 
-        FORCEINLINE PipelineBindPoint GetBindPoint() const
+        FORCEINLINE PipelineBindPoint bind_point() const
         {
             return mBindPoint;
         }
-        FORCEINLINE const BlendStateDesc& GetBlendState() const
+        FORCEINLINE const BlendStateDesc& blend_state() const
         {
             return mBlendState;
         }
-        FORCEINLINE const DepthStencilStateDesc& GetDepthStencilState() const
+        FORCEINLINE const DepthStencilStateDesc& depth_stencil_state() const
         {
             return mDepthStencilState;
         }
-        FORCEINLINE const InputLayoutDesc& GetInputLayout() const
+        FORCEINLINE const InputLayoutDesc& input_layout() const
         {
             return mInputLayout;
         }
-        FORCEINLINE const MultisampleDesc& GetMultisample() const
+        FORCEINLINE const MultisampleDesc& multisample() const
         {
             return mMultisample;
         }
-        FORCEINLINE const RasterizerStateDesc& GetRasterizerState() const
+        FORCEINLINE const RasterizerStateDesc& rasterizer_state() const
         {
             return mRasterizerState;
         }
-        FORCEINLINE const ResourceLayoutDesc& GetResourceLayout() const
+        FORCEINLINE const ResourceLayoutDesc& resource_layout() const
         {
             return mResourceLayout;
         }
-        FORCEINLINE const std::vector<Shader*>& GetGraphicsShaders() const
+        FORCEINLINE const std::vector<Shader*>& graphics_shaders() const
         {
             return mGraphicsShaders;
         }
-        FORCEINLINE const Shader* GetComputeShader() const noexcept
+        FORCEINLINE const Shader* compute_shader() const noexcept
         {
             return mComputeShader;
         }
-        FORCEINLINE unsigned char GetSubpassIndex() const noexcept
+        FORCEINLINE unsigned char subpass_index() const noexcept
         {
             return mSubpassIndex;
         }
 
-        FORCEINLINE virtual GraphicsDeviceObjectType GetObjectType() const noexcept override final
+        FORCEINLINE virtual GraphicsDeviceObjectType object_type() const noexcept override final
         {
             return GraphicsDeviceObjectType::Pipeline;
         }
